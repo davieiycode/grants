@@ -428,6 +428,15 @@
                             untuk melanjutkan pengajuan.</div>
                     </div>
                 </div>
+
+                <!-- Blacklist Warning Card -->
+                <div id="blacklist-warning-info" class="info-card danger" style="margin-top: 24px; display:none; border-left: 4px solid var(--error);">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">block</span>
+                    <div>
+                        <h4 style="margin: 0; color: var(--error); font-weight: 700;">USER DALAM DAFTAR CEKAL</h4>
+                        <div id="blacklist-display-note" style="font-size: 0.85rem; margin-top: 2px;">User ini masuk dalam daftar hitam program. Pengajuan tetap dapat dilanjutkan namun akan ditandai secara khusus.</div>
+                    </div>
+                </div>
             </div>
 
             <div class="footer-actions">
@@ -886,10 +895,27 @@
         function checkIsNew() {
             const emailVal = emailInput.value.toLowerCase().trim();
             const nameVal = fullnameInput.value.toLowerCase().trim();
+            const blacklistCard = document.getElementById('blacklist-warning-info');
+            const blacklistNote = document.getElementById('blacklist-display-note');
+            
             if (!emailVal && !nameVal) {
                 infoCard.style.display = 'none';
+                blacklistCard.style.display = 'none';
                 return;
             }
+
+            // Check Blacklist logic
+            const blacklisted = (currentProgMeta.blacklist || []).find(b => 
+                b.user.toLowerCase() === nameVal || (b.user.toLowerCase() === emailVal)
+            );
+
+            if (blacklisted) {
+                blacklistCard.style.display = 'flex';
+                blacklistNote.innerHTML = `<strong>Catatan Cekal:</strong> ${blacklisted.note}<br><span style="font-size:0.75rem; opacity:0.8;">Berlaku s/d: ${blacklisted.end || 'Selamanya'}</span>`;
+            } else {
+                blacklistCard.style.display = 'none';
+            }
+
             const exists = contacts.some(c =>
                 (emailVal && c.email.toLowerCase() === emailVal) ||
                 (nameVal && c.fullname.toLowerCase() === nameVal)
@@ -974,6 +1000,11 @@
                 
                 document.getElementById('sum-time').innerText = now.toLocaleString('id-ID');
 
+                const blacklistedData = (currentProgMeta.blacklist || []).find(b => 
+                    b.user.toLowerCase() === fullnameInput.value.toLowerCase().trim() || 
+                    b.user.toLowerCase() === emailInput.value.toLowerCase().trim()
+                );
+
                 proposals.push({
                     id: rand,
                     title: titleInput.value,
@@ -983,7 +1014,9 @@
                     email: emailInput.value,
                     date: now.toISOString().split('T')[0],
                     status: "Baru Terkirim",
-                    allowMultiple: currentProgMeta.allowMultiple
+                    allowMultiple: currentProgMeta.allowMultiple,
+                    isBlacklisted: !!blacklistedData,
+                    blacklistNote: blacklistedData ? blacklistedData.note : null
                 });
                 saveProposals();
                 nextStep(4);
