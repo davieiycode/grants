@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usulan Program Sederhana</title>
+    <!-- Google Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --background: #0f172a;
+            --surface: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: var(--transition);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .container {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hero Shine Effect */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        header {
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* Stepper UI */
+        .stepper {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .step-dot {
+            height: 4px;
+            flex-grow: 1;
+            background: var(--border);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--background);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input.invalid {
+            border-color: var(--error) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 12px;
+        }
+
+        .input-row .f-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            display: none;
+            /* Hidden by default */
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+            transition: var(--transition);
+        }
+
+        .info-card span.material-symbols-outlined {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .info-card.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+
+        .info-card.danger {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .info-card.success {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+
+        .info-card h4 {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-card .record-details {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        button.primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button.primary:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--background);
+        }
+
+        /* Auto-Suggest Styles */
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-top: 4px;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .suggestion-item:hover {
+            background: var(--background);
+            color: var(--primary);
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Theme Toggle */
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        #theme-toggle:hover {
+            background: var(--background);
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <div class="container">
+        <button id="theme-toggle">
+            <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+
+        <header>
+            <h1>Formulir Usulan</h1>
+            <p class="subtitle">Silakan isi detail usulan untuk memulai.</p>
+        </header>
+
+        <div class="stepper">
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+        </div>
+
+        <!-- Step 1: Identitas Pengusul -->
+        <div id="step-1" class="step-content">
+            <div id="search-section" class="form-group">
+                <label>Cari Nama Pengusul</label>
+                <div style="position: relative;">
+                    <input type="text" id="contact-search" placeholder="Ketik nama atau email pengusul...">
+                    <span class="material-symbols-outlined"
+                        style="position: absolute; right: 12px; top: 12px; color: var(--text-muted);">search</span>
+                </div>
+                <div id="contact-results" class="suggestions"></div>
+                <div class="helper-text">Mulai mengetik untuk mencari data pengusul yang sudah ada.</div>
+            </div>
+
+            <!-- Detailed Fields (Hidden by Default) -->
+            <div id="detail-fields-wrapper" style="display: none; animation: fadeIn 0.4s ease;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: 0.9rem; color: var(--primary); font-family: 'Outfit';">Identitas Detail</h3>
+                    <button id="btn-reset-search" class="primary"
+                        style="padding: 6px 14px; font-size: 0.8rem; background: var(--text-main); color: var(--surface); border: none; border-radius: var(--radius-md); position: relative; z-index: 10; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm);">
+                        <span class="material-symbols-outlined"
+                            style="font-size: 16px; pointer-events: none;">restart_alt</span>
+                        <span style="pointer-events: none; font-weight: 600;">Ganti Pencarian</span>
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Lengkap & Gelar</label>
+                    <div class="input-row">
+                        <div class="f-item" style="grid-column: span 1;">
+                            <input type="text" id="prefix" placeholder="Prefix (Opsional)">
+                        </div>
+                        <div class="f-item" style="grid-column: span 2;">
+                            <input type="text" id="fullname" placeholder="Nama Lengkap" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <input type="text" id="suffix" placeholder="Suffix (Opsional)">
+                    </div>
+                </div>
+
+                <!-- Name Preview Card -->
+                <div id="name-preview"
+                    style="background: var(--background); padding: 16px; border-radius: var(--radius-md); border: 1px dashed var(--border); margin-bottom: 24px; display: none;">
+                    <div
+                        style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px;">
+                        Pratinjau Nama Resmi</div>
+                    <div id="preview-text" style="font-size: 1.1rem; font-weight: 600; color: var(--primary);"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Alamat Email</label>
+                    <input type="email" id="email" placeholder="contoh@email.com" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="unit">Unit Kerja / Institusi</label>
+                    <input type="text" id="unit" placeholder="Nama Departemen / Unit" required>
+                </div>
+
+                <div id="new-contact-info" class="info-card warning"
+                    style="margin-top: 24px; border-left: 4px solid #d97706;">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">info</span>
+                    <div>
+                        <h4 style="margin: 0; color: #b45309; font-weight: 700;">KONTAK BARU TERDETEKSI</h4>
+                        <div style="font-size: 0.85rem; margin-top: 2px;">Silakan lengkapi detail identitas pengusul
+                            untuk melanjutkan pengajuan.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-actions">
+                <button id="btn-next-1" class="primary" onclick="nextStep(2)" disabled>
+                    Lanjutkan
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Detail Usulan -->
+        <div id="step-2" class="step-content" style="display:none;">
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label for="program-title">Judul Usulan</label>
+                <input type="text" id="program-title" placeholder="Masukkan judul usulan akademik anda">
+                <div class="helper-text">Mendukung format ilmiah (contoh: &lt;i&gt;Homo sapiens&lt;/i&gt;, CO&lt;sub&gt;2&lt;/sub&gt;, m&lt;sup&gt;2&lt;/sup&gt;)</div>
+
+                <!-- Title Validation Alerts -->
+                <div id="title-alert-container" style="margin-top: 16px;">
+                    <!-- Exact Match Alert (Dynamic Color/Logic) -->
+                    <div id="alert-exact" class="info-card">
+                         <span id="exact-icon" class="material-symbols-outlined">info</span>
+                         <div>
+                            <h4 id="exact-title-status">Status Judul</h4>
+                            <div id="exact-details" class="record-details"></div>
+                            <div id="duplicate-policy-msg" style="font-size: 0.75rem; margin-top: 6px; font-weight: 600;"></div>
+                         </div>
+                    </div>
+                    <!-- Similar Match (Warning) -->
+                    <div id="alert-similar" class="info-card warning">
+                        <span class="material-symbols-outlined">lightbulb</span>
+                        <div style="flex: 1;">
+                            <h4>Mungkin yang Anda Maksud?</h4>
+                            <div id="similar-details" class="record-details"></div>
+                            <button id="btn-use-suggested" class="secondary" style="margin-top: 12px; padding: 4px 12px; font-size: 0.75rem; border-color: rgba(217, 119, 6, 0.3); color: #b45309; background: rgba(245, 158, 11, 0.1);">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">input_circle</span>
+                                Gunakan Judul Ini
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Unique (Success) -->
+                    <div id="alert-unique" class="info-card success">
+                        <span class="material-symbols-outlined">verified</span>
+                        <div>
+                            <h4>Judul Unik</h4>
+                            <div class="record-details">Tidak ada pengajuan yang mirip ditemukan.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Custom Attributes Container -->
+            <div id="dynamic-attributes-container" style="margin-top: 32px; border-top: 1px solid var(--border); padding-top: 24px;">
+                <!-- Dynamically generated fields will go here -->
+            </div>
+
+            <div class="form-group" style="margin-top: 24px;">
+                <label for="submission-time">Waktu Pengajuan</label>
+                <input type="datetime-local" id="submission-time">
+                <div class="helper-text">Waktu default adalah saat ini, dapat diubah ke waktu sebelumnya.</div>
+            </div>
+            <div class="footer-actions">
+                <button class="secondary" onclick="nextStep(1)">
+                    Kembali
+                </button>
+                <button id="btn-next-2" class="primary" onclick="nextStep(3)" disabled>
+                    Lanjutkan
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Konfirmasi (Review) -->
+        <div id="step-3" class="step-content" style="display:none;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span class="material-symbols-outlined" style="font-size: 48px; color: var(--primary); margin-bottom: 12px;">fact_check</span>
+                <h2>Tinjau Usulan</h2>
+                <p class="subtitle">Silakan periksa kembali data sebelum dikirim.</p>
+            </div>
+
+            <div id="review-summary" style="background: var(--background); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-bottom: 32px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                    <div class="review-item">
+                        <label style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px;">Pengusul</label>
+                        <div id="rev-name" style="font-weight: 600;"></div>
+                        <div id="rev-email" style="font-size: 0.85rem; opacity: 0.8;"></div>
+                    </div>
+                    <div class="review-item">
+                        <label style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px;">Unit Kerja</label>
+                        <div id="rev-unit" style="font-weight: 500;"></div>
+                    </div>
+                    <div style="height: 1px; background: var(--border);"></div>
+                    <div class="review-item">
+                        <label style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px;">Judul Usulan</label>
+                        <div id="rev-title" style="font-weight: 600; color: var(--primary);"></div>
+                    </div>
+                    
+                    <!-- Dynamic Attributes Review -->
+                    <div id="rev-custom-data" style="display:contents;"></div>
+
+                    <div class="review-item">
+                        <label style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px;">Waktu Pengajuan</label>
+                        <div id="rev-time" style="font-weight: 500;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-actions">
+                <button class="secondary" onclick="nextStep(2)">
+                    Kembali
+                </button>
+                <button id="btn-submit" class="primary" style="background: var(--secondary);" onclick="submitProposal()">
+                    Kirim Usulan
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Summary Berhasil -->
+        <div id="step-4" class="step-content" style="display:none;">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <span class="material-symbols-outlined" style="font-size: 48px; color: var(--secondary); animation: scaleIn 0.5s ease;">check_circle</span>
+                </div>
+                <h2 style="color: var(--secondary);">Usulan Terkirim!</h2>
+                <p class="subtitle">Nomor Registrasi: <strong id="reg-number" style="color: var(--text-main);"></strong></p>
+            </div>
+
+            <div id="final-summary-card" style="background: var(--background); padding: 24px; border-radius: var(--radius-lg); border: 1px solid rgba(16, 185, 129, 0.2); margin-bottom: 32px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top:0; left:0; width:4px; height:100%; background: var(--secondary);"></div>
+                <h3 style="font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
+                    Ringkasan Berkas
+                </h3>
+                <div style="display: grid; gap: 12px; font-size: 0.9rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Pengusul:</span>
+                        <span id="sum-name" style="font-weight: 600;"></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Unit:</span>
+                        <span id="sum-unit" style="font-weight: 600;"></span>
+                    </div>
+                    <div style="height: 1px; background: var(--border); margin: 4px 0;"></div>
+                    <div style="color: var(--text-muted); margin-bottom: 4px;">Judul Usulan:</div>
+                    <div id="sum-title" style="font-weight: 600; line-height: 1.4; color: var(--primary);"></div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                        <span style="color: var(--text-muted);">Waktu Kirim:</span>
+                        <span id="sum-time" style="font-weight: 500;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="primary" style="justify-content: center;" onclick="window.location.href = 'index.html?p=' + currentProgMeta.id">
+                    <span class="material-symbols-outlined">list_alt</span>
+                    Lihat Daftar Usulan
+                </button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="secondary" style="flex: 1; justify-content: center;" onclick="window.print()">
+                        <span class="material-symbols-outlined">print</span>
+                        Cetak
+                    </button>
+                    <button class="secondary" style="flex: 1; justify-content: center;" onclick="window.location.href='index.html'">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Daftar Usulan -->
+        <div id="step-5" class="step-content" style="display:none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-size: 1.25rem;">Daftar Usulan Masuk</h2>
+                <button class="secondary" onclick="window.location.href='index.html'" style="padding: 6px 12px; font-size: 0.8rem;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">dashboard</span>
+                    Dashboard
+                </button>
+            </div>
+            
+            <div id="proposal-list-container" style="display: grid; gap: 16px;">
+                <!-- Prop entries here via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Mock Database Kontak
+        const contacts = [
+            { fullname: "Budi Santoso", prefix: "Dr.", suffix: "M.Kom", email: "budi@univ.ac.id", unit: "Fakultas Teknik" },
+            { fullname: "Siti Aminah", prefix: "Prof.", suffix: "M.Pd", email: "siti@univ.ac.id", unit: "Fakultas Pendidikan" },
+            { fullname: "Rahmat Hidayat", prefix: "", suffix: "S.T., M.T.", email: "rahmat@univ.ac.id", unit: "Departemen Mesin" },
+            { fullname: "Ani Wijaya", prefix: "Dr.", suffix: "S.E., M.M.", email: "ani@bisnis.ac.id", unit: "Program Studi Manajemen" }
+        ];
+
+        // Persistent Programs & Proposals meta
+        let programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
+            { id: '1', name: "Grants 2025", allowMultiple: false },
+            { id: '2', name: "Riset Unggulan", allowMultiple: true },
+            { id: '3', name: "Abdimas 2024", allowMultiple: false }
+        ];
+
+        let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
+            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Diterima", allowMultiple: false },
+            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Sedang Direview", allowMultiple: true },
+            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Selesai", allowMultiple: false }
+        ];
+
+        // Get Context from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        const activeProgramName = urlParams.get('program') || "Grants 2025";
+        
+        let currentProgMeta = programs.find(p => p.name === activeProgramName) || programs[0];
+        let isEditMode = false;
+        let originalProposal = null;
+
+        // Load Edit Data if exists
+        if (editId) {
+            originalProposal = proposals.find(p => p.id == editId);
+            if (originalProposal) {
+                isEditMode = true;
+                currentProgMeta = programs.find(p => p.name === originalProposal.program) || currentProgMeta;
+            }
+        }
+
+        // Update UI with Program Context
+        document.querySelector('h1').innerText = isEditMode ? `Edit Usulan` : `Usulan ${activeProgramName}`;
+        if (isEditMode) {
+             document.querySelector('.subtitle').innerText = `Memperbarui data usulan: #${editId}`;
+             document.getElementById('btn-submit').innerText = "Simpan Perubahan";
+        }
+
+        function saveProposals() {
+            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+        }
+
+        // UI Selectors
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const infoCard = document.getElementById('new-contact-info');
+        const searchInput = document.getElementById('contact-search');
+        const searchResults = document.getElementById('contact-results');
+
+        // Theme Management
+        themeToggle.addEventListener('click', () => {
+            const current = body.getAttribute('data-theme');
+            const target = current === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', target);
+            themeToggle.innerHTML = `<span class="material-symbols-outlined">${target === 'light' ? 'dark_mode' : 'light_mode'}</span>`;
+        });
+
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const prefixInput = document.getElementById('prefix');
+        const suffixInput = document.getElementById('suffix');
+        const unitInput = document.getElementById('unit');
+
+        const previewCard = document.getElementById('name-preview');
+        const previewText = document.getElementById('preview-text');
+        const titleInput = document.getElementById('program-title');
+        const alertExact = document.getElementById('alert-exact');
+        const alertSimilar = document.getElementById('alert-similar');
+        const alertUnique = document.getElementById('alert-unique');
+        const exactDetails = document.getElementById('exact-details');
+        const similarDetails = document.getElementById('similar-details');
+
+        // Set Default Submission Time
+        function setDefaultTime() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('submission-time').value = now.toISOString().slice(0, 16);
+            document.getElementById('submission-time').max = now.toISOString().slice(0, 16);
+        }
+
+        // Set Default / Load Data
+        function init() {
+            setDefaultTime();
+            if (isEditMode && originalProposal) {
+                // Pre-fill Name Details (Logic to split if needed, but here we just fill)
+                // For this mock, we assume the proposer name has been parsed or we just map back
+                fullnameInput.value = originalProposal.proposer;
+                titleInput.value = originalProposal.title;
+                unitInput.value = originalProposal.unit || "Unit Utama";
+                emailInput.value = originalProposal.email || "user@univ.ac.id";
+                
+                showDetailFields();
+                updatePreview();
+                validateCurrentStep();
+            }
+        }
+        
+        init();
+
+        // Title Similarity Logic
+        let isTitleForbidden = false; 
+
+        function checkTitle() {
+            const queryRaw = titleInput.value.trim();
+            const query = queryRaw.toLowerCase();
+            isTitleForbidden = false; 
+            
+            alertExact.style.display = "none";
+            alertSimilar.style.display = "none";
+            alertUnique.style.display = "none";
+
+            if (query.length < 4) return;
+
+            const exact = proposals.find(p => p.title.toLowerCase() === query);
+            if (exact) {
+                exactDetails.innerHTML = `<strong>Program:</strong> ${exact.program}<br><strong>Tanggal:</strong> ${exact.date}<br><strong>Pengusul:</strong> ${exact.proposer}<br><strong>Status:</strong> ${exact.status}`;
+                
+                const statusTitle = document.getElementById('exact-title-status');
+                const statusIcon = document.getElementById('exact-icon');
+                const policyMsg = document.getElementById('duplicate-policy-msg');
+                
+                // Use policy from the matched project's program
+                const matchProgMeta = programs.find(pm => pm.name === exact.program) || { allowMultiple: false };
+                
+                // NEW: Check if current program explicitly allows duplicates from matchProgMeta via excludedPrograms
+                const isExplicitlyAllowed = currentProgMeta.excludedPrograms && currentProgMeta.excludedPrograms.includes(exact.program);
+
+                if (matchProgMeta.allowMultiple || isExplicitlyAllowed) {
+                    // Safe duplicate
+                    alertExact.className = "info-card warning";
+                    statusTitle.innerText = "Judul Pernah Diajukan";
+                    statusIcon.innerText = "info";
+                    policyMsg.innerText = "✓ Program memperbolehkan pengajuan ganda.";
+                    policyMsg.style.color = "#b45309";
+                } else {
+                    alertExact.className = "info-card danger";
+                    statusTitle.innerText = "Judul Terduplikasi (Dilarang)";
+                    statusIcon.innerText = "error";
+                    policyMsg.innerText = "✗ Program ini TIDAK memperbolehkan duplikasi usulan.";
+                    policyMsg.style.color = "#dc2626";
+                    isTitleForbidden = true;
+                }
+                
+                alertExact.style.display = "flex";
+                return;
+            }
+
+            const queryWords = query.split(" ").filter(w => w.length > 3);
+            const similar = proposals.find(p => {
+                const pWords = p.title.toLowerCase().split(" ");
+                const overlap = queryWords.filter(w => pWords.includes(w));
+                return (overlap.length / Math.max(queryWords.length, 1)) >= 0.5;
+            });
+
+            if (similar) {
+                similarDetails.innerHTML = `<strong>Judul:</strong> "${similar.title}"<br><strong>Program:</strong> ${similar.program}<br><strong>Tanggal:</strong> ${similar.date}<br><strong>Pengusul:</strong> ${similar.proposer}`;
+                const useBtn = document.getElementById('btn-use-suggested');
+                useBtn.onclick = () => useSuggestedTitle(similar.title);
+                alertSimilar.style.display = "flex";
+            } else {
+                alertUnique.style.display = "flex";
+            }
+        }
+
+        function useSuggestedTitle(title) {
+            titleInput.value = title;
+            checkTitle(); 
+            validateCurrentStep();
+            titleInput.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+            setTimeout(() => titleInput.style.backgroundColor = "", 1000);
+        }
+
+        titleInput.addEventListener("input", checkTitle);
+
+        const searchSection = document.getElementById('search-section');
+        const detailFieldsWrapper = document.getElementById('detail-fields-wrapper');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            searchResults.innerHTML = '';
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            const matches = contacts.filter(c =>
+                c.fullname.toLowerCase().includes(query) ||
+                c.email.toLowerCase().includes(query)
+            );
+            if (matches.length > 0) {
+                matches.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `
+                        <div style="font-weight:600">${m.prefix ? m.prefix + ' ' : ''}${m.fullname}${m.suffix ? ', ' + m.suffix : ''}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted)">${m.email} • ${m.unit}</div>
+                    `;
+                    div.onclick = () => selectContact(m);
+                    searchResults.appendChild(div);
+                });
+                searchResults.style.display = 'block';
+                detailFieldsWrapper.style.display = 'none';
+            } else if (query.length > 3) {
+                searchResults.style.display = 'none';
+                showDetailFields();
+                fullnameInput.value = searchInput.value;
+                checkIsNew();
+            }
+        });
+
+        function showDetailFields() {
+            detailFieldsWrapper.style.display = 'block';
+            searchSection.style.display = 'none';
+        }
+
+        function resetSearch() {
+            detailFieldsWrapper.style.display = 'none';
+            searchSection.style.display = 'block';
+            searchInput.value = '';
+            [fullnameInput, emailInput, prefixInput, suffixInput, unitInput].forEach(el => el.value = '');
+            updatePreview();
+            validateCurrentStep();
+        }
+
+        const btnReset = document.getElementById('btn-reset-search');
+        if (btnReset) {
+            btnReset.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                resetSearch();
+            });
+        }
+
+        function selectContact(c) {
+            fullnameInput.value = c.fullname;
+            emailInput.value = c.email;
+            prefixInput.value = c.prefix;
+            suffixInput.value = c.suffix;
+            unitInput.value = c.unit;
+            searchResults.style.display = 'none';
+            showDetailFields();
+            updatePreview();
+            validateCurrentStep();
+        }
+
+        function updatePreview() {
+            const full = fullnameInput.value.trim();
+            const pre = prefixInput.value.trim();
+            const suf = suffixInput.value.trim();
+            if (!full) {
+                previewCard.style.display = 'none';
+                return;
+            }
+            let result = pre ? `${pre} ` : '';
+            result += full;
+            result += suf ? `, ${suf}` : '';
+            previewText.innerText = result;
+            previewCard.style.display = 'block';
+            checkIsNew();
+        }
+
+        function checkIsNew() {
+            const emailVal = emailInput.value.toLowerCase().trim();
+            const nameVal = fullnameInput.value.toLowerCase().trim();
+            if (!emailVal && !nameVal) {
+                infoCard.style.display = 'none';
+                return;
+            }
+            const exists = contacts.some(c =>
+                (emailVal && c.email.toLowerCase() === emailVal) ||
+                (nameVal && c.fullname.toLowerCase() === nameVal)
+            );
+            if (!exists && (emailVal.length > 5 || nameVal.length > 3)) {
+                infoCard.style.display = 'flex';
+            } else {
+                infoCard.style.display = 'none';
+            }
+        }
+
+        [fullnameInput, prefixInput, suffixInput, emailInput, unitInput, titleInput].forEach(el => {
+            el.addEventListener('input', () => {
+                updatePreview();
+                validateCurrentStep();
+            });
+        });
+
+        function validateCurrentStep() {
+            const step1Visible = document.getElementById('step-1').style.display !== 'none';
+            const step2Visible = document.getElementById('step-2').style.display !== 'none';
+            if (step1Visible) {
+                const isValid = fullnameInput.value.trim() && 
+                               emailInput.value.trim() && 
+                               emailInput.value.includes('@') && 
+                               unitInput.value.trim();
+                document.getElementById('btn-next-1').disabled = !isValid;
+            }
+            if (step2Visible) {
+                const isValid = titleInput.value.trim().length >= 4 && !isTitleForbidden;
+                document.getElementById('btn-next-2').disabled = !isValid;
+            }
+        }
+
+        validateCurrentStep();
+
+        function nextStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.style.display = 'none';
+                el.style.opacity = '0';
+            });
+            const target = document.getElementById(`step-${step}`);
+            target.style.display = 'block';
+            setTimeout(() => {
+                target.style.opacity = '1';
+                validateCurrentStep();
+            }, 10);
+            if (step === 3) {
+                document.getElementById('rev-name').innerText = previewText.innerText;
+                document.getElementById('rev-email').innerText = emailInput.value;
+                document.getElementById('rev-unit').innerText = unitInput.value;
+                document.getElementById('rev-title').innerHTML = titleInput.value;
+                const timeStr = document.getElementById('submission-time').value.replace('T', ' ');
+                document.getElementById('rev-time').innerText = timeStr;
+            }
+            const dots = document.querySelectorAll('.step-dot');
+            dots.forEach((dot, idx) => {
+                if (idx < step) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function submitProposal() {
+            const now = new Date();
+            if (isEditMode) {
+                const idx = proposals.findIndex(p => p.id == editId);
+                if (idx !== -1) {
+                    proposals[idx].title = titleInput.value;
+                    proposals[idx].proposer = previewText.innerText;
+                    proposals[idx].unit = unitInput.value;
+                    proposals[idx].email = emailInput.value;
+                }
+                saveProposals();
+                window.location.href = 'index.html'; // Go back to dashboard after edit
+            } else {
+                const rand = Math.floor(1000 + Math.random() * 9000);
+                const regNo = `GR-2026-${rand}`;
+                document.getElementById('reg-number').innerText = regNo;
+                document.getElementById('sum-name').innerText = previewText.innerText;
+                document.getElementById('sum-unit').innerText = unitInput.value;
+                document.getElementById('sum-title').innerHTML = titleInput.value;
+                
+                document.getElementById('sum-time').innerText = now.toLocaleString('id-ID');
+
+                proposals.push({
+                    id: rand,
+                    title: titleInput.value,
+                    program: activeProgramName,
+                    proposer: previewText.innerText,
+                    unit: unitInput.value,
+                    email: emailInput.value,
+                    date: now.toISOString().split('T')[0],
+                    status: "Baru Terkirim",
+                    allowMultiple: currentProgMeta.allowMultiple
+                });
+                saveProposals();
+                nextStep(4);
+            }
+        }
+
+        function renderProposalList() {
+            const list = document.getElementById('proposal-list-container');
+            list.innerHTML = '';
+            [...proposals].reverse().forEach(p => {
+                const card = document.createElement('div');
+                card.className = "suggestion-item";
+                card.style.background = 'var(--background)';
+                card.style.padding = '16px';
+                card.style.borderRadius = 'var(--radius-md)';
+                card.style.border = '1px solid var(--border)';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.gap = '8px';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--primary); background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 4px;">${p.program}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">ID: #${p.id}</span>
+                    </div>
+                    <div style="font-weight: 600; font-size: 0.95rem; line-height: 1.4;">${p.title}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px;">
+                        <div style="font-size: 0.8rem; opacity: 0.8;">
+                            <strong>${p.proposer}</strong><br>
+                            ${p.date}
+                        </div>
+                        <span style="font-size: 0.75rem; font-weight: 600; color: #10b981;">● ${p.status}</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // Dynamic Custom Attributes Generation
+        function renderCustomAttributes() {
+            const container = document.getElementById('dynamic-attributes-container');
+            container.innerHTML = '';
+            
+            if (!currentProgMeta.attributes || currentProgMeta.attributes.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            container.innerHTML = `<h3 style="font-family:'Outfit'; font-size:1rem; color:var(--primary); margin-bottom:20px; display:flex; align-items:center; gap:8px;"><span class="material-symbols-outlined">description</span> Atribut Khusus Program</h3>`;
+            
+            currentProgMeta.attributes.forEach((attr, idx) => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                
+                let inputHtml = '';
+                const fieldId = `custom-field-${idx}`;
+                const requiredAttr = attr.required ? 'required data-required="true"' : '';
+                const validationAttr = attr.validation ? `pattern="${attr.validation}"` : '';
+                
+                if (attr.type === 'text' || attr.type === 'url' || attr.type === 'number') {
+                    inputHtml = `<input type="${attr.type === 'number' ? 'number' : 'text'}" id="${fieldId}" placeholder="${attr.label}" ${requiredAttr} ${validationAttr} oninput="validateCurrentStep()">`;
+                } else if (attr.type === 'longtext') {
+                    inputHtml = `<textarea id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none; min-height:100px;" placeholder="${attr.label}" ${requiredAttr} oninput="validateCurrentStep()"></textarea>`;
+                } else if (attr.type === 'dropdown') {
+                    inputHtml = `<select id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none;" ${requiredAttr} onchange="validateCurrentStep()">
+                        <option value="">-- Pilih ${attr.label} --</option>
+                        ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                    </select>`;
+                } else if (attr.type === 'radio' || attr.type === 'yes no') {
+                    const options = attr.type === 'yes no' ? ['Ya', 'Tidak'] : attr.options;
+                    inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; padding:8px 0;">
+                        ${options.map((o, oi) => `
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
+                                <input type="radio" name="${fieldId}" value="${o}" style="width:auto;" ${requiredAttr} onchange="validateCurrentStep()"> ${o}
+                            </label>
+                        `).join('')}
+                    </div>`;
+                } else if (attr.type === 'multiple options') {
+                    inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; padding:8px 0;">
+                        ${attr.options.map((o, oi) => `
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
+                                <input type="checkbox" name="${fieldId}" value="${o}" style="width:auto;" onchange="validateCurrentStep()"> ${o}
+                            </label>
+                        `).join('')}
+                    </div>`;
+                } else if (attr.type === 'formula') {
+                    inputHtml = `<div style="padding:12px; background:var(--background); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--primary); font-family:monospace; font-weight:700;">${attr.formula}</div>
+                                 <input type="hidden" id="${fieldId}" value="${attr.formula}">`;
+                }
+
+                group.innerHTML = `
+                    <label>${attr.label} ${attr.required ? '<span style="color:var(--error)">*</span>' : ''}</label>
+                    ${inputHtml}
+                    ${attr.desc ? `<div class="helper-text">${attr.desc}</div>` : ''}
+                `;
+                container.appendChild(group);
+            });
+        }
+
+        // Modified update for Step 2
+        const originalNextStep = nextStep;
+        nextStep = function(step) {
+            if (step === 2) {
+                renderCustomAttributes();
+                // If edit mode and customData exists, pre-fill
+                if (isEditMode && originalProposal && originalProposal.customData) {
+                    setTimeout(() => {
+                        currentProgMeta.attributes.forEach((attr, idx) => {
+                            const fieldId = `custom-field-${idx}`;
+                            const val = originalProposal.customData[attr.label];
+                            if (attr.type === 'radio' || attr.type === 'yes no') {
+                                const el = document.querySelector(`input[name="${fieldId}"][value="${val}"]`);
+                                if (el) el.checked = true;
+                            } else if (attr.type === 'multiple options') {
+                                const vals = Array.isArray(val) ? val : [val];
+                                vals.forEach(v => {
+                                    const el = document.querySelector(`input[name="${fieldId}"][value="${v}"]`);
+                                    if (el) el.checked = true;
+                                });
+                            } else {
+                                const el = document.getElementById(fieldId);
+                                if (el) el.value = val;
+                            }
+                        });
+                        validateCurrentStep();
+                    }, 50);
+                }
+            }
+            
+            if (step === 3) {
+                // Collect custom data for review
+                const revCustom = document.getElementById('rev-custom-data');
+                revCustom.innerHTML = '';
+                if (currentProgMeta.attributes) {
+                    currentProgMeta.attributes.forEach((attr, idx) => {
+                        const fieldId = `custom-field-${idx}`;
+                        let displayVal = '-';
+                        if (attr.type === 'radio' || attr.type === 'yes no') {
+                            const checked = document.querySelector(`input[name="${fieldId}"]:checked`);
+                            displayVal = checked ? checked.value : '-';
+                        } else if (attr.type === 'multiple options') {
+                            const checked = Array.from(document.querySelectorAll(`input[name="${fieldId}"]:checked`)).map(c => c.value);
+                            displayVal = checked.length > 0 ? checked.join(', ') : '-';
+                        } else {
+                            displayVal = document.getElementById(fieldId)?.value || '-';
+                        }
+                        
+                        revCustom.innerHTML += `
+                            <div class="review-item">
+                                <label style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px;">${attr.label}</label>
+                                <div style="font-weight: 500;">${displayVal}</div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            originalNextStep(step);
+        };
+
+        function validateCurrentStep() {
+            const step1Visible = document.getElementById('step-1').style.display !== 'none';
+            const step2Visible = document.getElementById('step-2').style.display !== 'none';
+            if (step1Visible) {
+                const isValid = fullnameInput.value.trim() && 
+                                emailInput.value.trim() && 
+                                emailInput.value.includes('@') && 
+                                unitInput.value.trim();
+                document.getElementById('btn-next-1').disabled = !isValid;
+            }
+            if (step2Visible) {
+                let isValid = titleInput.value.trim().length >= 4 && !isTitleForbidden;
+                
+                // Check Dynamic Fields
+                if (currentProgMeta.attributes) {
+                    currentProgMeta.attributes.forEach((attr, idx) => {
+                        if (!attr.required) return;
+                        const fieldId = `custom-field-${idx}`;
+                        let fieldVal = '';
+                        if (attr.type === 'radio' || attr.type === 'yes no') {
+                            const checked = document.querySelector(`input[name="${fieldId}"]:checked`);
+                            fieldVal = checked ? checked.value : '';
+                        } else if (attr.type === 'multiple options') {
+                            const checked = document.querySelectorAll(`input[name="${fieldId}"]:checked`);
+                            fieldVal = checked.length > 0 ? 'yes' : '';
+                        } else {
+                            fieldVal = document.getElementById(fieldId)?.value.trim() || '';
+                        }
+                        if (!fieldVal) isValid = false;
+                    });
+                }
+
+                document.getElementById('btn-next-2').disabled = !isValid;
+            }
+        }
+
+        const originalSubmitProposal = submitProposal;
+        submitProposal = function() {
+            // Collect custom data
+            const customData = {};
+            if (currentProgMeta.attributes) {
+                currentProgMeta.attributes.forEach((attr, idx) => {
+                    const fieldId = `custom-field-${idx}`;
+                    if (attr.type === 'radio' || attr.type === 'yes no') {
+                        const checked = document.querySelector(`input[name="${fieldId}"]:checked`);
+                        customData[attr.label] = checked ? checked.value : '';
+                    } else if (attr.type === 'multiple options') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${fieldId}"]:checked`)).map(c => c.value);
+                        customData[attr.label] = checked;
+                    } else {
+                        customData[attr.label] = document.getElementById(fieldId)?.value || '';
+                    }
+                });
+            }
+
+            if (isEditMode) {
+                const idx = proposals.findIndex(p => p.id == editId);
+                if (idx !== -1) {
+                    proposals[idx].customData = customData;
+                }
+            } else {
+                // The actual push is inside originalSubmitProposal, but we don't have direct access to its closure nicely
+                // So we'll let it run and then update the last item
+                originalSubmitProposal();
+                proposals[proposals.length-1].customData = customData;
+                saveProposals();
+                return;
+            }
+            originalSubmitProposal();
+        };
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('invalid');
+            });
+        });
+    </script>
+</body>
+</html>
