@@ -702,14 +702,14 @@
             background-color: white;
             transition: .3s;
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        input:checked + .slider {
+        input:checked+.slider {
             background-color: var(--primary);
         }
 
-        input:checked + .slider:before {
+        input:checked+.slider:before {
             transform: translateX(20px);
         }
 
@@ -733,7 +733,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
@@ -742,18 +742,18 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .modal-card {
             width: 100%;
             max-width: 600px;
             background: white;
             border-radius: var(--radius-xl);
             padding: 32px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
             transform: translateY(20px);
             transition: transform 0.3s cubic-bezier(0, 1, 0, 1);
         }
-        
+
         [data-theme="dark"] .modal-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -792,7 +792,7 @@
             background: var(--background);
             transition: border-color 0.2s;
         }
-        
+
         .f-input:focus {
             border-color: var(--primary);
         }
@@ -826,7 +826,7 @@
             overflow-y: auto;
             z-index: 100;
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .dropdown-list div {
@@ -836,7 +836,7 @@
         }
 
         .dropdown-list div:hover {
-            background: rgba(99,102,241,0.05);
+            background: rgba(99, 102, 241, 0.05);
             color: var(--primary);
         }
 
@@ -882,12 +882,22 @@
 <body data-theme="light">
 
     <nav class="glass">
-        <a href="index.html" class="logo">
+        <a href="index.html" class="logo"
+            style="text-decoration:none; display:flex; align-items:center; gap:12px; color:var(--text-main);">
             <div class="logo-icon">
                 <span class="material-symbols-outlined">account_balance_wallet</span>
             </div>
-            <span>Grants Portal</span>
+            <span style="font-weight:700; font-family:'Outfit'; font-size:1.1rem; letter-spacing:-0.02em;">Grants
+                Portal</span>
         </a>
+        <div class="nav-links" id="main-nav-links"
+            style="display:flex; align-items:center; gap:24px; margin-left:40px; flex:1;">
+            <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs"
+                style="text-decoration:none; color:inherit; font-weight:600; font-family:'Outfit'; font-size:0.9rem; border-bottom: 2px solid var(--primary); padding: 4px 0;">Program</a>
+            <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users"
+                style="text-decoration:none; color:var(--text-muted); font-weight:600; font-family:'Outfit'; font-size:0.9rem; padding: 4px 0;">User
+                & Blacklist</a>
+        </div>
         <div class="nav-actions">
             <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
                 <span class="material-symbols-outlined">dark_mode</span>
@@ -908,6 +918,33 @@
             </div>
         </div>
 
+        <!-- Global User Management View -->
+        <div id="global-users-view" style="display:none; animation:fadeIn 0.4s ease;">
+            <header class="hero" style="text-align:left; margin-bottom:40px;">
+                <h1 style="margin:0; font-size:2.5rem;">Pengelolaan User</h1>
+                <p style="margin:0;">Kelola akses sistem, daftar user aktif, dan kebijakan pencekalan (blacklist)
+                    global.</p>
+            </header>
+
+            <div class="settings-container"
+                style="background:rgba(255,255,255,0.4); backdrop-filter:blur(10px); border-radius: 20px; border:1px solid var(--border); overflow:hidden;">
+                <div class="settings-sidebar" style="width:240px; background:rgba(0,0,0,0.02);">
+                    <button class="side-tab active" onclick="switchGlobalUserSubTab('daftar-user')">
+                        <span class="material-symbols-outlined">group</span> Daftar User
+                    </button>
+                    <button class="side-tab" onclick="switchGlobalUserSubTab('blacklist-global')">
+                        <span class="material-symbols-outlined">block</span> Blacklist Global
+                    </button>
+                    <button class="side-tab" onclick="switchGlobalUserSubTab('log-akses')">
+                        <span class="material-symbols-outlined">description</span> Log Akses
+                    </button>
+                </div>
+                <div class="settings-content" id="global-user-content" style="padding:32px; background:white;">
+                    <!-- Sub content here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Program Detail Dashboard -->
         <div id="program-dashboard" style="display: none;">
             <div class="program-nav-wrapper">
@@ -917,11 +954,11 @@
                         title="Back to Dashboard">
                         <span class="material-symbols-outlined">arrow_back</span>
                     </a>
-                    <h2 id="current-program-name" style="font-family: 'Outfit'; font-size: 2rem;">Nama Program</h2>
+                    <h2 id="current-program-name" style="font-family: 'Outfit'; font-size: 2rem;">Nama program</h2>
                     <div style="flex-grow: 1;"></div>
                     <button class="btn-apply" id="btn-add-proposal-global">
                         <span class="material-symbols-outlined">add</span>
-                        Usulan Baru
+                        Usulan baru
                     </button>
                 </div>
 
@@ -953,81 +990,6 @@
                 </div>
             </div>
 
-            <!-- View Proposal Detail (Child View of Program Dashboard) -->
-            <div id="view-proposal-detail" class="view-content" style="display:none;">
-                <div class="header-action-row" style="margin-bottom: 24px;">
-                    <button class="back-btn" style="border:none; background:none; cursor:pointer;"
-                        onclick="switchTab('usulan')">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                        Kembali ke Daftar Usulan
-                    </button>
-                    <div id="detail-proposal-id" style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">
-                        ID: #0000</div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-                    <!-- Basic Info -->
-                    <div class="glass" style="padding: 24px; border-radius: var(--radius-xl);">
-                        <h3
-                            style="font-family:'Outfit'; margin-bottom: 24px; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                            <span class="material-symbols-outlined">info</span> Informasi Dasar
-                        </h3>
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div>
-                                <label
-                                    style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Judul
-                                    Usulan</label>
-                                <div id="det-title" style="font-weight:700; font-size:1.1rem; line-height:1.4;"></div>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                <div>
-                                    <label
-                                        style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Nama
-                                        Pengusul</label>
-                                    <div id="det-proposer" style="font-weight:600;"></div>
-                                </div>
-                                <div>
-                                    <label
-                                        style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Unit
-                                        Kerja</label>
-                                    <div id="det-unit" style="font-weight:600;"></div>
-                                </div>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                <div>
-                                    <label
-                                        style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Waktu
-                                        Pengajuan</label>
-                                    <div id="det-date" style="font-weight:600;"></div>
-                                </div>
-                                <div>
-                                    <label
-                                        style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Status
-                                        Saat Ini</label>
-                                    <div id="det-status" style="font-weight:700; color:var(--secondary);"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Attributes Form -->
-                    <div class="glass" style="padding: 24px; border-radius: var(--radius-xl);">
-                        <h3
-                            style="font-family:'Outfit'; margin-bottom: 24px; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                            <span class="material-symbols-outlined">edit_note</span> Detail & Atribut Khusus
-                        </h3>
-                        <div id="det-dynamic-form" class="settings-form">
-                            <!-- Injected dynamic fields -->
-                        </div>
-                        <div
-                            style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
-                            <button class="btn-apply" id="btn-save-proposal-detail">
-                                <span class="material-symbols-outlined">save</span> Simpan Perubahan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div id="view-periode" class="view-content" style="display: none;">
                 <div class="period-timeline" id="period-container">
@@ -1075,9 +1037,6 @@
                         <button class="side-tab" onclick="switchUserSubTab('reviewer')">
                             <span class="material-symbols-outlined">rate_review</span> Reviewer
                         </button>
-                        <button class="side-tab" onclick="switchUserSubTab('blacklist')">
-                            <span class="material-symbols-outlined">block</span> Blacklist
-                        </button>
                     </div>
                     <div class="settings-content" id="user-sub-content"></div>
                 </div>
@@ -1093,7 +1052,16 @@
                             <span class="material-symbols-outlined">reorder</span> Atribut
                         </button>
                         <button class="side-tab" onclick="switchSettingSubTab('kaitan')">
-                            <span class="material-symbols-outlined">link</span> Kaitan
+                            <span class="material-symbols-outlined">link</span> Integrasi
+                        </button>
+                        <button class="side-tab" onclick="switchSettingSubTab('status')">
+                            <span class="material-symbols-outlined">rule</span> Status usulan
+                        </button>
+                        <button class="side-tab" onclick="switchSettingSubTab('timeline')">
+                            <span class="material-symbols-outlined">timeline</span> Tahapan Program
+                        </button>
+                        <button class="side-tab" onclick="switchSettingSubTab('notif')">
+                            <span class="material-symbols-outlined">mail</span> E-mail & Notifikasi
                         </button>
                     </div>
 
@@ -1105,11 +1073,14 @@
         </div>
     </div>
 
-    <div id="modal-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target === this) closeModal()">
+    <div id="modal-overlay" class="modal-overlay" style="display:none;"
+        onclick="if(event.target === this) closeModal()">
         <div class="modal-card glass">
-            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <div class="modal-header"
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
                 <h3 id="modal-title" style="font-family:'Outfit';">Modal Title</h3>
-                <button class="btn-icon" onclick="closeModal()" style="border:none;"><span class="material-symbols-outlined">close</span></button>
+                <button class="btn-icon" onclick="closeModal()" style="border:none;"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div id="modal-body"></div>
         </div>
@@ -1160,13 +1131,16 @@
         ];
 
         let registeredUsers = [
-            { name: "Admin Utama", unit: "Pusat IT", role: "Admin" },
-            { name: "Siti Aminah", unit: "Fakultas Teknik", role: "Staf" },
-            { name: "Budi Santoso", unit: "Fakultas Ekonomi", role: "Dosen" },
-            { name: "Prof. Dr. Ir. Tech", unit: "Pusat Riset AI", role: "Reviewer" },
-            { name: "Dr. Maria U", unit: "Fakultas Kedokteran", role: "Dosen" },
-            { name: "Ani Wijaya", unit: "Fakultas Hukum", role: "Dosen" }
+            { id: 1, name: "Admin Utama", unit: "Pusat IT", role: "Admin", email: "admin@univ.ac.id" },
+            { id: 2, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Staf", email: "siti@univ.ac.id" },
+            { id: 3, name: "Budi Santoso", unit: "Fakultas Ekonomi", role: "Dosen", email: "budi@univ.ac.id" },
+            { id: 4, name: "Prof. Dr. Ir. Tech", unit: "Pusat Riset AI", role: "Reviewer", email: "tech@univ.ac.id" },
+            { id: 5, name: "Dr. Maria U", unit: "Fakultas Kedokteran", role: "Dosen", email: "maria@univ.ac.id" },
+            { id: 6, name: "Ani Wijaya", unit: "Fakultas Hukum", role: "Dosen", email: "ani@univ.ac.id" }
         ];
+
+        let currentUser = registeredUsers[0]; // MOCK AS ADMIN
+        let globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
 
         let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
 
@@ -1256,6 +1230,178 @@
             };
 
             switchTab(tab, false);
+        }
+
+        function init() {
+            renderDashboard();
+            checkAdminVisibility();
+
+            const params = new URLSearchParams(window.location.search);
+            const pId = params.get('p');
+            const tab = params.get('tab') || 'usulan';
+            if (pId) renderProgramDashboard(pId, tab);
+        }
+
+        function checkAdminVisibility() {
+            const navLinks = document.getElementById('main-nav-links');
+            if (currentUser.role !== 'Admin') {
+                navLinks.querySelector('#nav-users').style.display = 'none';
+            }
+        }
+
+        function switchMainView(view) {
+            document.getElementById('dashboard-view').style.display = view === 'program' ? 'block' : 'none';
+            document.getElementById('global-users-view').style.display = view === 'users' ? 'block' : 'none';
+            document.getElementById('program-dashboard').style.display = 'none';
+
+            // Active State
+            document.getElementById('nav-programs').style.borderBottom = view === 'program' ? '2px solid var(--primary)' : 'none';
+            document.getElementById('nav-programs').style.color = view === 'program' ? 'var(--text-main)' : 'var(--text-muted)';
+            document.getElementById('nav-users').style.borderBottom = view === 'users' ? '2px solid var(--primary)' : 'none';
+            document.getElementById('nav-users').style.color = view === 'users' ? 'var(--text-main)' : 'var(--text-muted)';
+
+            if (view === 'users') switchGlobalUserSubTab('daftar-user');
+        }
+
+        function switchGlobalUserSubTab(sub) {
+            const container = document.getElementById('global-user-content');
+            document.querySelectorAll('#global-users-view .side-tab').forEach(b => {
+                if (b.innerText.toLowerCase().includes(sub.replace('-', ' '))) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+
+            if (sub === 'daftar-user') {
+                container.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                        <h3 style="font-family:'Outfit'">Daftar Anggota Aktif</h3>
+                        <div style="display:flex; gap:12px;">
+                            <input type="text" placeholder="Cari nama atau email..." onkeyup="filterUserList(this)" style="padding:8px 16px; border-radius:10px; border:1px solid var(--border);">
+                            <button class="btn-primary" style="padding:0 20px; border-radius:10px; font-size:0.85rem;">Tambah User</button>
+                        </div>
+                    </div>
+                    <table class="data-table" style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="text-align:left; border-bottom:1px solid var(--border);">
+                                <th style="padding:12px;">Nama</th>
+                                <th>Unit</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${registeredUsers.map(u => `
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:16px 12px;">
+                                        <div style="font-weight:600;">${u.name}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">${u.email}</div>
+                                    </td>
+                                    <td>${u.unit}</td>
+                                    <td><span style="font-size:0.75rem; background:rgba(99,102,241,0.1); padding:4px 10px; border-radius:20px; color:var(--primary); font-weight:600;">${u.role}</span></td>
+                                    <td><span style="color:var(--secondary); font-size:1.5rem; line-height:0;">•</span> Aktif</td>
+                                    <td>
+                                        <button class="btn-icon"><span class="material-symbols-outlined">edit</span></button>
+                                        <button class="btn-icon" style="color:var(--error);"><span class="material-symbols-outlined">block</span></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (sub === 'blacklist-global') {
+                container.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px;">
+                        <div>
+                            <h3 style="font-family:'Outfit'">Blacklist Global</h3>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">User dalam daftar ini akan tercatat bermasalah pada SEMUA program.</p>
+                        </div>
+                        <button class="btn-apply" onclick="openGlobalBlacklistModal()" style="width:auto; padding:0 24px; border-radius:10px; background:var(--error);">Tambah Blacklist Global</button>
+                    </div>
+
+                    <div class="proposal-list" style="gap:16px;">
+                        ${globalBlacklist.length === 0 ? `
+                             <div style="text-align:center; padding:60px; color:var(--text-muted); border:2px dashed var(--border); border-radius:20px;">
+                                <span class="material-symbols-outlined" style="font-size:64px; margin-bottom:16px; opacity:0.2;">person_off</span>
+                                <h3>Belum ada Blacklist Global</h3>
+                                <p>Semua user memiliki status bersih di tingkat sistem.</p>
+                            </div>
+                        ` : globalBlacklist.map((b, idx) => `
+                            <div class="glass" style="display:flex; justify-content:space-between; align-items:center; padding:20px; border:1px solid var(--border); border-radius:16px; background:rgba(239,68,68,0.02);">
+                                <div style="display:flex; gap:20px; align-items:center;">
+                                    <div style="width:48px; height:48px; border-radius:50%; background:var(--error); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.2rem;">${b.user[0]}</div>
+                                    <div>
+                                        <div style="font-weight:700; color:var(--error); font-size:1.1rem;">${b.user}</div>
+                                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Ditempatkan pada ${b.date} • Oleh Admin Utama</div>
+                                        <div style="display:inline-block; margin-top:8px; padding:4px 12px; border-radius:8px; background:white; border:1px solid var(--border); font-size:0.85rem;">
+                                            <strong>Alasan:</strong> ${b.note}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn-icon" onclick="removeGlobalBlacklist(${idx})" style="color:var(--error); border-color:var(--error);"><span class="material-symbols-outlined">delete</span></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (sub === 'log-akses') {
+                container.innerHTML = `
+                    <h3 style="font-family:'Outfit'; margin-bottom:20px;">Log Aktivitas Sistem</h3>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        ${[1, 2, 3, 4, 5].map(i => `
+                            <div style="padding:12px; border-radius:8px; background:rgba(0,0,0,0.02); display:flex; justify-content:space-between; font-size:0.85rem;">
+                                <span><strong style="color:var(--primary)">Admin Utama</strong> mengubah status blacklist pada Budi Santoso</span>
+                                <span style="color:var(--text-muted);">26 Mar 2026, 16:45</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function openGlobalBlacklistModal() {
+            showModal('Tambah Blacklist Global', `
+                <div class="settings-form" style="padding:10px;">
+                    <p style="color:var(--error); font-size:0.85rem; margin-bottom:24px; padding:12px; background:rgba(239,68,68,0.05); border-radius:8px; border:1px solid rgba(239,68,68,0.2);">
+                        <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle;">warning</span>
+                        <strong>Perhatian:</strong> Blacklist Global akan mempengaruhi status user di seluruh program hibah yang ada di portal.
+                    </p>
+                    <div class="f-group">
+                        <label class="f-label">Cari Nama User</label>
+                        ${renderUserSearchSelect("", "Ketik nama user...")}
+                    </div>
+                    <div class="f-group" style="margin-top:20px;">
+                        <label class="f-label">Alasan Pelanggaran Sistem</label>
+                        <textarea id="global-blacklist-note" rows="4" class="f-input" placeholder="Contoh: Duplikasi identitas masif, Kecurangan data..."></textarea>
+                    </div>
+                    <div style="margin-top:32px; display:flex; gap:12px; justify-content:flex-end;">
+                        <button class="btn-icon" onclick="closeModal()" style="width:auto; padding:0 24px; border-radius:10px; border-color:var(--border);">Batal</button>
+                        <button class="btn-apply" onclick="saveGlobalBlacklist()" style="width:auto; padding:0 32px; border-radius:10px; background:var(--error);">SIMPAN BLACKLIST</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function saveGlobalBlacklist() {
+            const name = document.querySelector('.searchable-select input').value;
+            const note = document.getElementById('global-blacklist-note').value;
+            if (!name) { alert('Pilih user!'); return; }
+
+            globalBlacklist.push({
+                user: name,
+                note: note,
+                date: new Date().toLocaleDateString('id-ID')
+            });
+            localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
+            closeModal();
+            switchGlobalUserSubTab('blacklist-global');
+            showToast('Blacklist global berhasil diperbarui');
+        }
+
+        function removeGlobalBlacklist(idx) {
+            if (!confirm('Cabut status blacklist global user ini?')) return;
+            globalBlacklist.splice(idx, 1);
+            localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
+            switchGlobalUserSubTab('blacklist-global');
+            showToast('Status blacklist global dicabut');
         }
 
         function switchTab(tab, updateUrl = true) {
@@ -1363,15 +1509,15 @@
                                 </thead>
                                 <tbody id="blacklist-table-body">
                                     ${program.blacklist && program.blacklist.length > 0 ?
-                                        program.blacklist.map(item => `
+                        program.blacklist.map(item => `
                                             <tr>
                                                 <td>${item.name}</td>
                                                 <td>${item.reason || '-'}</td>
                                                 <td><button class="btn-icon" onclick="removeBlacklistUser('${item.name}')"><span class="material-symbols-outlined">delete</span></button></td>
                                             </tr>
                                         `).join('')
-                                        : `<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Tidak ada pengusul dalam daftar hitam.</td></tr>`
-                                    }
+                        : `<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Tidak ada pengusul dalam daftar hitam.</td></tr>`
+                    }
                                 </tbody>
                             </table>
                         </div>
@@ -1381,91 +1527,7 @@
             }
         }
 
-        function switchSettingSubTab(subTab) {
-            document.querySelectorAll('#view-setting .side-tab').forEach(b => b.classList.remove('active'));
-            document.querySelector(`#view-setting .side-tab[onclick*="${subTab}"]`).classList.add('active');
 
-            const contentContainer = document.getElementById('setting-sub-content');
-            contentContainer.innerHTML = '';
-
-            const program = programs.find(p => p.id == progId);
-            if (!program) return;
-
-            if (subTab === 'info') {
-                let infoHtml = `
-                    <div class="settings-section">
-                        <h3>Informasi Dasar Program</h3>
-                        <div class="form-group">
-                            <label for="setting-program-name">Nama Program</label>
-                            <input type="text" id="setting-program-name" value="${program.name}">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-program-desc">Deskripsi</label>
-                            <textarea id="setting-program-desc" rows="3">${program.desc}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-program-icon">Ikon (Material Symbols)</label>
-                            <input type="text" id="setting-program-icon" value="${program.icon || 'folder'}">
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Cari ikon di <a href="https://fonts.google.com/icons" target="_blank">Google Fonts</a></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-allow-multiple">Izinkan Multiple Usulan per Pengusul</label>
-                            <input type="checkbox" id="setting-allow-multiple" ${program.allowMultiple ? 'checked' : ''}>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveProgramInfo()">Simpan Perubahan</button>
-                    </div>
-                `;
-                contentContainer.innerHTML = infoHtml;
-            } else if (subTab === 'atribut') {
-                let attributesHtml = `
-                    <div class="settings-section">
-                        <h3>Atribut Usulan</h3>
-                        <p class="text-muted">Definisikan bidang-bidang tambahan yang harus diisi pengusul.</p>
-                        <div id="attributes-list">
-                            ${program.attributes && program.attributes.length > 0 ?
-                                program.attributes.map((attr, index) => `
-                                    <div class="attribute-item glass">
-                                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                                            <span style="font-weight:600;">${attr.label} (${attr.type})</span>
-                                            <div>
-                                                <button class="btn-icon" onclick="editAttribute(${index})"><span class="material-symbols-outlined">edit</span></button>
-                                                <button class="btn-icon" onclick="removeAttribute(${index})"><span class="material-symbols-outlined">delete</span></button>
-                                            </div>
-                                        </div>
-                                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${attr.desc || 'Tidak ada deskripsi.'}</div>
-                                    </div>
-                                `).join('')
-                                : '<p style="color:var(--text-muted); font-style:italic;">Belum ada atribut tambahan.</p>'
-                            }
-                        </div>
-                        <button class="btn btn-secondary" style="margin-top:24px;" onclick="openAddAttributeModal()">Tambah Atribut Baru</button>
-                    </div>
-                `;
-                contentContainer.innerHTML = attributesHtml;
-            } else if (subTab === 'kaitan') {
-                let kaitanHtml = `
-                    <div class="settings-section">
-                        <h3>Kaitan Program</h3>
-                        <p class="text-muted">Konfigurasi integrasi dan kaitan dengan sistem lain atau program terkait.</p>
-                        <div class="form-group">
-                            <label for="setting-api-endpoint">API Endpoint (Opsional)</label>
-                            <input type="text" id="setting-api-endpoint" value="${program.apiEndpoint || ''}" placeholder="URL API untuk integrasi">
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Contoh: <code>https://api.example.com/grants/program-id</code></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-related-programs">Program Terkait</label>
-                            <div class="chip-container" id="related-programs-chips">
-                                ${program.relatedPrograms ? program.relatedPrograms.map(rp => `<span class="chip">${rp} <span class="material-symbols-outlined chip-close" onclick="removeRelatedProgram('${rp}')">close</span></span>`).join('') : ''}
-                                <input type="text" id="add-related-program-input" placeholder="Tambah Program Terkait..." onkeydown="if(event.key==='Enter') addRelatedProgram(this.value)">
-                            </div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Nama program lain yang relevan.</div>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveProgramKaitan()">Simpan Perubahan</button>
-                    </div>
-                `;
-                contentContainer.innerHTML = kaitanHtml;
-            }
-        }
 
         function renderUsulanTab() {
             const container = document.getElementById('proposal-list-container');
@@ -1488,10 +1550,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Judul Usulan</th>
+                            <th>Judul usulan</th>
                             <th>Pengusul</th>
-                            <th>Unit Kerja</th>
-                            <th>Waktu Pengajuan</th>
+                            <th>Unit kerja</th>
+                            <th>Waktu pengajuan</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -1499,7 +1561,7 @@
                     <tbody>
             `;
 
-            filtered.reverse().forEach(p => {
+            [...filtered].reverse().forEach(p => {
                 tableHtml += `
                     <tr>
                         <td style="font-weight: 600; max-width: 300px;">${p.title}</td>
@@ -1520,10 +1582,15 @@
                                 ` : ''}
                             </div>
                         </td>
-                        <td>
-                            <button class="btn-icon" onclick="showProposalDetails(${p.id})" title="Lihat Detail">
-                                <span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
-                            </button>
+                        <td style="white-space:nowrap;">
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-icon" onclick="window.location.href='proposal.html?id=${p.id}'" title="Lihat Detail & Edit">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+                                </button>
+                                <button class="btn-icon" onclick="deleteProposal('${p.id}')" title="Hapus Usulan" style="color:var(--error); border-color:var(--error); opacity:0.6;">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">delete</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1534,115 +1601,20 @@
         }
 
         function showProposalDetails(id) {
-            const proposal = proposals.find(p => p.id == id);
-            if (!proposal) return;
+            window.location.href = `proposal.html?id=${id}`;
+        }
 
-            const program = programs.find(p => p.name == proposal.program);
-            if (!program) return;
+        function deleteProposal(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus usulan ini secara permanen?')) return;
 
-            // Mock Current User Role (for visibility test)
-            const currentUserRole = "Pengusul";
-
-            // Update Basic Info
-            document.getElementById('det-title').innerText = proposal.title;
-            document.getElementById('det-proposer').innerText = proposal.proposer;
-            document.getElementById('det-unit').innerText = proposal.unit;
-            document.getElementById('det-date').innerText = proposal.date;
-            document.getElementById('det-status').innerText = proposal.status;
-            document.getElementById('detail-proposal-id').innerText = `ID: #${proposal.id}`;
-
-            // Blacklist Warning in Detail
-            const existingWarning = document.getElementById('blacklist-detail-warning');
-            if (existingWarning) existingWarning.remove();
-
-            if (proposal.isBlacklisted) {
-                const warningDiv = document.createElement('div');
-                warningDiv.id = 'blacklist-detail-warning';
-                warningDiv.className = 'glass';
-                warningDiv.style = "background:rgba(239,68,68,0.05); padding:16px; border:1px solid var(--error); border-radius:12px; margin-bottom:24px; display:flex; gap:16px; align-items:flex-start;";
-                warningDiv.innerHTML = `
-                    <span class="material-symbols-outlined" style="color:var(--error); font-size:32px;">report</span>
-                    <div>
-                        <div style="font-weight:700; color:var(--error); font-size:0.9rem;">PERINGATAN: PENGUSUL DALAM DAFTAR HITAM</div>
-                        <div style="font-size:0.85rem; color:var(--text-main); margin-top:4px;">
-                            User ini terdeteksi dalam daftar cekal program saat usulan ini dikirimkan.
-                        </div>
-                        <div style="margin-top:8px; font-size:0.8rem; background:white; padding:8px 12px; border-radius:8px; border:1px solid rgba(239,68,68,0.2);">
-                            <strong>Alasan Cekal:</strong> ${proposal.blacklistNote || 'Tidak ada catatan khusus.'}
-                        </div>
-                    </div>
-                `;
-                document.getElementById('det-dynamic-form').parentElement.prepend(warningDiv);
+            const idx = proposals.findIndex(p => String(p.id) === String(id));
+            if (idx !== -1) {
+                proposals.splice(idx, 1);
+                localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+                alert('Peringatan: Usulan telah dihapus secara permanen dari sistem.');
+                renderUsulanTab();
+                showToast('Usulan berhasil dihapus');
             }
-            const formContainer = document.getElementById('det-dynamic-form');
-            formContainer.innerHTML = '';
-
-            if (program.attributes) {
-                program.attributes.forEach((attr, idx) => {
-                    // Check Role Visibility
-                    if (attr.hideFor && attr.hideFor.includes(currentUserRole)) return;
-
-                    const fieldId = `det-attr-${idx}`;
-                    const val = (proposal.customData && proposal.customData[attr.label]) || '';
-
-                    let inputHtml = '';
-                    const req = attr.required ? 'required' : '';
-                    const pattern = attr.validation ? `pattern="${attr.validation}"` : '';
-
-                    if (attr.type === 'longtext html' || attr.type === 'longtext') {
-                        inputHtml = `<textarea id="${fieldId}" rows="3" ${req}>${val}</textarea>`;
-                    } else if (attr.type === 'dropdown') {
-                        inputHtml = `<select id="${fieldId}" ${req}>
-                            <option value="">-- Pilih ${attr.label} --</option>
-                            ${attr.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
-                        </select>`;
-                    } else if (attr.type === 'yes no') {
-                        inputHtml = `<select id="${fieldId}">
-                            <option value="Ya" ${val === 'Ya' ? 'selected' : ''}>Ya</option>
-                            <option value="Tidak" ${val === 'Tidak' ? 'selected' : ''}>Tidak</option>
-                        </select>`;
-                    } else if (attr.type === 'multiple options') {
-                        const currentVals = Array.isArray(val) ? val : [val];
-                        inputHtml = `<div class="chip-container">
-                            ${attr.options.map(o => `
-                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; padding:4px 8px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
-                                    <input type="checkbox" name="${fieldId}" value="${o}" ${currentVals.includes(o) ? 'checked' : ''} style="width:auto;"> ${o}
-                                </label>
-                            `).join('')}
-                        </div>`;
-                    } else if (attr.type === 'radio') {
-                        inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px;">
-                            ${attr.options.map(o => `
-                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; cursor:pointer;">
-                                    <input type="radio" name="${fieldId}" value="${o}" ${val === o ? 'checked' : ''} style="width:auto;"> ${o}
-                                </label>
-                            `).join('')}
-                        </div>`;
-                    } else if (attr.type === 'formula') {
-                        inputHtml = `<div style="padding:12px; background:rgba(99,102,241,0.05); border:1px solid var(--border); border-radius:8px; font-family:monospace; color:var(--primary); font-weight:700;">
-                                        ${attr.formula.replace('{Anggaran}', (proposal.customData && proposal.customData['Anggaran yang Diajukan (IDR)']) || '0')}
-                                     </div>`;
-                    } else {
-                        inputHtml = `<input type="${attr.type}" id="${fieldId}" value="${val}" ${req} ${pattern}>`;
-                    }
-
-                    formContainer.innerHTML += `
-                        <div class="form-group">
-                            <label>${attr.label} ${attr.required ? '<span style="color:var(--error)">*</span>' : ''}</label>
-                            ${inputHtml}
-                            ${attr.desc ? `<div style="font-size:0.75rem; color:var(--text-muted);">${attr.desc}</div>` : ''}
-                        </div>
-                    `;
-                });
-            } else {
-                formContainer.innerHTML = '<p style="color:var(--text-muted); font-style:italic;">Tidak ada atribut tambahan untuk program ini.</p>';
-            }
-
-            // Save Action
-            document.getElementById('btn-save-proposal-detail').onclick = () => saveProposalDetail(id);
-
-            // Switch view
-            switchView('proposal-detail');
         }
 
         function saveProposalDetail(id) {
@@ -1672,15 +1644,12 @@
             proposal.customData = customData;
             localStorage.setItem('grants_proposals', JSON.stringify(proposals));
 
-            alert('Data usulan berhasil diperbarui!');
+            showToast('Data usulan berhasil diperbarui!');
             switchTab('usulan');
         }
 
         function switchView(viewName) {
             document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
-            if (viewName === 'proposal-detail') {
-                document.getElementById('view-proposal-detail').style.display = 'block';
-            }
         }
 
         function renderPeriodeTab() {
@@ -1688,23 +1657,26 @@
             const program = programs.find(p => p.id == progId);
             const filtered = proposals.filter(p => p.program === program.name);
 
-            container.innerHTML = `
-                <div class="period-card glass period-active">
-                    <h3 style="font-family:'Outfit'">Pendaftaran Usulan</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">1 Jan 2026 - 31 Mar 2026</p>
-                    <div style="font-size:0.9rem; font-weight:600; color:var(--primary)">${filtered.length} Usulan Masuk</div>
-                </div>
-                <div class="period-card glass">
-                    <h3 style="font-family:'Outfit'">Review Substansi</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">1 Apr 2026 - 30 Apr 2026</p>
-                    <div style="font-size:0.9rem; color:var(--text-muted)">Menunggu Tahapan Dimulai</div>
-                </div>
-                <div class="period-card glass">
-                    <h3 style="font-family:'Outfit'">Penetapan Pemenang</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">15 Mei 2026</p>
-                    <div style="font-size:0.9rem; color:var(--text-muted)">Menunggu Tahapan Dimulai</div>
-                </div>
-            `;
+            const timeline = program.timeline || [
+                { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
+                { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
+                { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
+            ];
+
+            container.innerHTML = timeline.map((stage, idx) => {
+                const isActive = stage.status === 'Active';
+                // Try to count proposals if the stage label matches a status
+                const count = filtered.filter(p => p.status === stage.label).length;
+                const displayCount = count > 0 ? `${count} Usulan` : (isActive ? `${filtered.length} Usulan Masuk` : 'Menunggu Tahapan');
+
+                return `
+                    <div class="period-card glass ${isActive ? 'period-active' : ''}">
+                        <h3 style="font-family:'Outfit'">${stage.label}</h3>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">${stage.start} - ${stage.end}</p>
+                        <div style="font-size:0.9rem; ${isActive ? 'font-weight:600; color:var(--primary)' : 'color:var(--text-muted)'}">${displayCount}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderAnalisisTab() {
@@ -1764,7 +1736,7 @@
         function renderSearchableAttrSelect(program, onSelectStr = "") {
             return `
                 <div class="searchable-select" style="font-size: 0.8rem;">
-                    <input type="text" placeholder="Cari atribut..." onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.75rem;">
+                    <input type="text" placeholder="Cari atribut..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.75rem;">
                     <div class="dropdown-list">
                         ${(program.attributes || []).map(a => `<div onclick="selectGeneric(this, '${a.label}'); ${onSelectStr}">${a.label}</div>`).join('')}
                     </div>
@@ -1775,7 +1747,7 @@
         function renderUserSearchSelect(onSelectStr = "", placeholder = "Cari user...") {
             return `
                 <div class="searchable-select" style="max-width:300px;">
-                    <input type="text" placeholder="${placeholder}" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.8rem;">
+                    <input type="text" placeholder="${placeholder}" onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.8rem;">
                     <div class="dropdown-list">
                         ${registeredUsers.map(u => `<div onclick="selectGeneric(this, '${u.name}'); ${onSelectStr}">${u.name} (${u.unit})</div>`).join('')}
                     </div>
@@ -1804,13 +1776,13 @@
                         <h3 style="font-family:'Outfit'; margin-bottom:24px;">Informasi & Batasan</h3>
                         <div class="settings-form">
                             <div class="form-group">
-                                <label>Nama Program</label>
+                                <label>Nama program</label>
                                 <input type="text" value="${program.name}">
                             </div>
                             <div class="toggle-row" style="border:none;">
                                 <div>
-                                    <div style="font-weight:600;">Izinkan Judul Sama pada Program Lain</div>
-                                    <div style="font-size:0.8rem; color:var(--text-muted);">Pengusul boleh menggunakan judul yang sama di hibah berbeda</div>
+                                    <div style="font-size:0.9rem; font-weight:600;">Izinkan judul usulan digunakan pada program lain</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted);">Pengusul boleh menggunakan judul yang sama di program berbeda</div>
                                 </div>
                                 <label class="switch">
                                     <input type="checkbox" onchange="toggleConfigCard(this, 'duplicate-exclusion-card')" ${program.allowMultiple ? 'checked' : ''} id="set-allow-multiple">
@@ -1819,15 +1791,15 @@
                             </div>
                             <div id="duplicate-exclusion-card" class="collapsible-card ${program.allowMultiple ? 'expanded' : ''}" style="margin-top:0; padding-top:0;">
                                 <div style="background:rgba(99,102,241,0.03); padding:16px; border-radius:12px; border:1px solid var(--border);">
-                                    <label class="f-label" style="font-size:0.75rem; color:var(--error); letter-spacing:0;">JUDUL TIDAK BOLEH SAMA DENGAN PROGRAM BERIKUT:</label>
+                                    <label class="f-label" style="font-size:0.75rem; color:var(--error); letter-spacing:0;">Judul usulan TIDAK BOLEH DIGUNAKAN pada program berikut:</label>
                                     <div class="chip-container" style="margin-bottom:12px;">
                                         ${(program.excludeDuplication || []).map(pid => {
-                                            const pName = programs.find(p => p.id == pid)?.name || pid;
-                                            return `<div class="chip" style="background:rgba(239,68,68,0.1); color:var(--error);">${pName} <span class="material-symbols-outlined remove" onclick="updateExclusion('${pid}', false)">close</span></div>`;
-                                        }).join('')}
+                    const pName = programs.find(p => p.id == pid)?.name || pid;
+                    return `<div class="chip" style="background:rgba(239,68,68,0.1); color:var(--error);">${pName} <span class="material-symbols-outlined remove" onclick="updateExclusion('${pid}', false)">close</span></div>`;
+                }).join('')}
                                     </div>
                                     <div class="searchable-select" style="max-width:100%;">
-                                        <input type="text" placeholder="Pilih program untuk dilarang duplikasi..." onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.8rem; background:white;">
+                                        <input type="text" placeholder="Pilih program untuk dilarang duplikasi judul ..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.8rem; background:white;">
                                         <div class="dropdown-list">
                                             ${programs.filter(p => p.id != progId && !(program.excludeDuplication || []).includes(p.id)).map(p => `
                                                 <div onclick="updateExclusion('${p.id}', true)">${p.name}</div>
@@ -1841,17 +1813,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Maksimal Usulan per Pengusul</label>
+                                <label>Maksimal usulan per pengusul</label>
                                 <input type="number" id="set-max-sub" value="1">
                             </div>
                             <div class="form-group">
-                                <label>Maksimal Dana Diterima per Pengusul (Total)</label>
+                                <label>Maksimal dana diterima per pengusul (Total)</label>
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <span style="font-weight:600;">Rp</span>
                                     <input type="text" id="set-max-funds" value="100.000.000" style="flex:1;">
                                 </div>
                             </div>
-                            <button class="btn-apply" onclick="saveInfoSettings()" style="margin-top:12px; width:fit-content;">Simpan Perubahan</button>
+                            <button class="btn-apply" onclick="saveInfoSettings()" style="margin-top:12px; width:fit-content;">Simpan perubahan</button>
                         </div>
                     </div>
                 `;
@@ -1868,7 +1840,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
                             <h3 style="font-family:'Outfit';">Kustomisasi & Tata Letak Atribut</h3>
                             <button class="btn-apply" onclick="openAttrModal()" style="padding: 8px 16px; font-size:0.85rem;">
-                                <span class="material-symbols-outlined" style="font-size:18px">add_box</span> Atribut Baru
+                                <span class="material-symbols-outlined" style="font-size:18px">add_box</span> Atribut baru
                             </button>
                         </div>
                         
@@ -1915,16 +1887,183 @@
                         </div>
                     </div>
                 `;
+            } else if (sub === 'status') {
+                const programStatuses = program.statuses || [
+                    { label: "Baru Terkirim", color: "#6366f1" },
+                    { label: "Review Internal", color: "#f59e0b" },
+                    { label: "Diterima Lokasi", color: "#10b981" },
+                    { label: "Perlu Perbaikan", color: "#ef4444" },
+                    { label: "Ditolak", color: "#1e293b" }
+                ];
+
+                container.innerHTML = `
+                    <div class="glass config-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="font-family:'Outfit';">Alur & Status Usulan</h3>
+                            <div style="display:flex; gap:12px;">
+                                <button class="btn-icon" onclick="resetStatuses()" style="color:var(--text-muted); border:1px solid var(--border); padding:0 12px; height:36px; border-radius:10px; font-size:0.75rem; font-weight:600; width:auto; gap:6px;">
+                                    <span class="material-symbols-outlined" style="font-size:18px">refresh</span> Reset Alur
+                                </button>
+                                <button class="btn-apply" onclick="addStatus()" style="padding: 8px 16px; font-size:0.85rem; height:36px;">
+                                    <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Tambah Status
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-muted" style="margin-bottom:24px; font-size:0.85rem;">Tentukan status khusus untuk program ini. Status dengan formula pemicu akan berubah otomatis saat data prasyarat terpenuhi.</p>
+                        
+                        <div id="status-list-container" style="display:flex; flex-direction:column; gap:16px;">
+                            ${programStatuses.map((s, idx) => `
+                                <div class="glass" 
+                                     draggable="true"
+                                     ondragstart="onStatusDragStart(event, ${idx})"
+                                     ondragover="event.preventDefault()"
+                                     ondrop="onStatusDrop(event, ${idx})"
+                                     style="padding:20px; border-radius:16px; border:1px solid var(--border); display:flex; flex-direction:column; gap:16px; cursor:default;">
+                                    <div style="display:flex; align-items:center; gap:16px;">
+                                        <div style="color:var(--text-muted); cursor:grab;"><span class="material-symbols-outlined" style="font-size:20px">drag_indicator</span></div>
+                                        <div style="width:24px; height:24px; border-radius:50%; background:${s.color || '#6366f1'}; border:4px solid white; box-shadow:0 0 0 1px var(--border);"></div>
+                                        <div style="flex:1;">
+                                            <input type="text" value="${s.label}" placeholder="Label Status" class="f-input" style="font-weight:700; border:none; padding:4px 0; background:transparent;" onchange="updateStatusData(${idx}, 'label', this.value)">
+                                        </div>
+                                        <input type="color" value="${s.color || '#6366f1'}" style="width:40px; height:32px; padding:2px; border:none; background:transparent; cursor:pointer;" onchange="updateStatusData(${idx}, 'color', this.value)">
+                                        <button class="btn-icon" onclick="deleteStatus(${idx})" style="color:var(--error); border:none;"><span class="material-symbols-outlined">delete</span></button>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:10px; border:1px dashed var(--border);">
+                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">AUTO-TRIGGER FORMULA (OPSIONAL)</label>
+                                        <input type="text" value="${s.trigger || ''}" placeholder="Contoh: {Total Skor} > 80" class="f-input" style="font-size:0.8rem; padding:8px; font-family:monospace;" onchange="updateStatusData(${idx}, 'trigger', this.value)">
+                                        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">Satu status yang terpenuhi formulanya akan menjadi status otomatis bagi usulan ini.</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                            <button class="btn-apply" onclick="saveStatusSettings()">Simpan Konfigurasi Status</button>
+                        </div>
+                    </div>
+                `;
+            } else if (sub === 'notif') {
+                const notifs = program.notifications || {
+                    submission: {
+                        subject: "Usulan Hibah Telah Diterima: {Judul}",
+                        body: "Halo {Nama},\n\nTerima kasih telah mengirimkan usulan hibah berjudul '{Judul}'. Usulan Anda saat ini sedang dalam tahap awal peninjauan.\n\nSalam,\nTim Hibah ${program.name}"
+                    },
+                    statusChange: {
+                        subject: "Pembaruan Status Usulan: {Judul}",
+                        body: "Halo {Nama},\n\nKami ingin memberitahukan bahwa usulan Anda berjudul '{Judul}' telah berubah status menjadi: {Status}.\n\nSilakan masuk ke sistem untuk melihat detail lengkapnya."
+                    }
+                };
+
+                container.innerHTML = `
+                    <div class="glass config-card">
+                        <h3 style="font-family:'Outfit'; margin-bottom:24px;">Kerangka E-mail & Notifikasi</h3>
+                        <p class="text-muted" style="margin-bottom:32px; font-size:0.85rem;">Konfigurasikan pesan otomatis yang akan dikirimkan kepada pengusul saat terjadi peristiwa penting.</p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:40px;">
+                            <!-- Submission Notification -->
+                            <div class="glass" style="padding:24px; border-radius:16px; border:1px solid var(--border);">
+                                <div style="font-weight:700; color:var(--primary); font-size:0.8rem; margin-bottom:20px; text-transform:uppercase;">SAAT USULAN BARU TERKIRIM</div>
+                                <div class="form-group">
+                                    <label>Subjek E-mail</label>
+                                    <input type="text" value="${notifs.submission.subject}" onchange="updateNotifData('submission', 'subject', this.value)" class="f-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Isi Pesan</label>
+                                    <textarea rows="6" onchange="updateNotifData('submission', 'body', this.value)" class="f-input">${notifs.submission.body}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Status Change Notification -->
+                            <div class="glass" style="padding:24px; border-radius:16px; border:1px solid var(--border);">
+                                <div style="font-weight:700; color:var(--primary); font-size:0.8rem; margin-bottom:20px; text-transform:uppercase;">SAAT STATUS USULAN BERUBAH</div>
+                                <div class="form-group">
+                                    <label>Subjek E-mail</label>
+                                    <input type="text" value="${notifs.statusChange.subject}" onchange="updateNotifData('statusChange', 'subject', this.value)" class="f-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Isi Pesan</label>
+                                    <textarea rows="6" onchange="updateNotifData('statusChange', 'body', this.value)" class="f-input">${notifs.statusChange.body}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background:rgba(99,102,241,0.05); padding:16px; border-radius:12px; margin-top:32px; font-size:0.75rem; color:var(--text-muted); line-height:1.5;">
+                            <div style="font-weight:700; margin-bottom:6px;">Placeholders:</div>
+                            Gunakan variabel berikut untuk data dinamis:<br>
+                            <code>{Judul}</code> : Judul Usulan • <code>{Nama}</code> : Nama Pengusul • <code>{Status}</code> : Status Terbaru
+                        </div>
+
+                        <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                            <button class="btn-apply" onclick="saveNotifSettings()">Simpan kerangka notifikasi</button>
+                        </div>
+                    </div>
+                `;
+            } else if (sub === 'timeline') {
+                const timeline = program.timeline || [
+                    { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
+                    { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
+                    { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
+                ];
+
+                container.innerHTML = `
+                    <div class="glass config-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                            <h3 style="font-family:'Outfit';">Tahapan & Lini Masa</h3>
+                            <button class="btn-apply" onclick="addTimelineStage()" style="padding: 8px 16px; font-size:0.85rem;">
+                                <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Tambah Tahapan
+                            </button>
+                        </div>
+                        <p class="text-muted" style="margin-bottom:32px; font-size:0.85rem;">Atur durasi dan label tahapan program. Tahapan ini akan muncul sebagai alur waktu di dashboard utama.</p>
+                        
+                        <div id="timeline-list-container" style="display:flex; flex-direction:column; gap:16px;">
+                            ${timeline.map((stage, idx) => `
+                                <div class="glass" style="padding:20px; border-radius:16px; border:1px solid var(--border); display:flex; flex-direction:column; gap:16px;">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <div style="flex:1;">
+                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; display:block;">NAMA TAHAPAN</label>
+                                            <input type="text" value="${stage.label}" placeholder="Contoh: Seleksi Berkas" class="f-input" style="font-weight:700;" onchange="updateTimelineData(${idx}, 'label', this.value)">
+                                        </div>
+                                        <div style="width:120px;">
+                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; display:block;">STATUS</label>
+                                            <select class="f-input" onchange="updateTimelineData(${idx}, 'status', this.value)" style="font-size:0.8rem;">
+                                                <option value="Waiting" ${stage.status === 'Waiting' ? 'selected' : ''}>Menunggu</option>
+                                                <option value="Active" ${stage.status === 'Active' ? 'selected' : ''}>Sedang Jalan</option>
+                                                <option value="Finished" ${stage.status === 'Finished' ? 'selected' : ''}>Selesai</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn-icon" onclick="deleteTimelineStage(${idx})" style="color:var(--error); border:none; margin-top:20px;"><span class="material-symbols-outlined">delete</span></button>
+                                    </div>
+                                    <div class="f-row">
+                                        <div>
+                                            <label style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">Mulai</label>
+                                            <input type="date" value="${stage.start}" class="f-input" onchange="updateTimelineData(${idx}, 'start', this.value)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">Berakhir</label>
+                                            <input type="date" value="${stage.end}" class="f-input" onchange="updateTimelineData(${idx}, 'end', this.value)">
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                            <button class="btn-apply" onclick="saveTimelineSettings()">Simpan Lini Masa Program</button>
+                        </div>
+                    </div>
+                `;
             } else if (sub === 'kaitan') {
                 container.innerHTML = `
                     <div class="glass config-card">
-                        <h3 style="font-family:'Outfit'; margin-bottom:24px;">Kaitan Data & Integrasi</h3>
+                        <h3 style="font-family:'Outfit'; margin-bottom:24px;">Integrasi</h3>
                         <div class="settings-form">
                             <!-- ScimagoJR Sync -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+                                <div style="font-weight:700; font-size:0.75rem; color:var(--primary); letter-spacing:0.05em;">SCIMAGOJR LOOKUP</div>
+                            </div>
                             <div class="toggle-row" style="border:none;">
                                 <div>
-                                    <div style="font-weight:600;">Sync ScimagoJR Quartiles</div>
-                                    <div style="font-size:0.8rem; color:var(--text-muted);">Sinkronisasi otomatis peringkat jurnal pengusul</div>
+                                    <div style="font-weight:600; font-size:0.9rem;">Kuartil ScimagoJR</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted);">Sinkronisasi otomatis peringkat Scopus jurnal usulan</div>
                                 </div>
                                 <label class="switch">
                                     <input type="checkbox" onchange="toggleConfigCard(this, 'scimago-config-card')">
@@ -1934,11 +2073,11 @@
                             <div id="scimago-config-card" class="collapsible-card">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                     <div class="form-group">
-                                        <label style="font-size: 0.7rem;">Atribut Rujukan (ISSN/Judul)</label>
+                                        <label style="font-size: 0.7rem;">Atribut rujukan (ISSN/Judul)</label>
                                         ${renderSearchableAttrSelect(program)}
                                     </div>
                                     <div class="form-group">
-                                        <label style="font-size: 0.7rem;">Atribut Target (Hasil Quartile)</label>
+                                        <label style="font-size: 0.7rem;">Atribut target (Hasil kuartil)</label>
                                         ${renderSearchableAttrSelect(program)}
                                     </div>
                                 </div>
@@ -1955,7 +2094,7 @@
                                 <div class="integration-block" id="block-sheet-initial">
                                     <div class="toggle-row" style="border:none; padding:12px 0;">
                                         <div>
-                                            <div style="font-weight:600; font-size:0.9rem;">Lookup Data dari Spreadsheet</div>
+                                            <div style="font-weight:600; font-size:0.9rem;">Pencarian data dari Spreadsheet</div>
                                             <div style="font-size:0.8rem; color:var(--text-muted);">Cari data tambahan melalui URL Google Sheets</div>
                                         </div>
                                         <label class="switch">
@@ -1969,7 +2108,7 @@
                                             <input type="url" placeholder="https://docs.google.com/spreadsheets/d/..." style="font-size:0.85rem;">
                                         </div>
                                         <div style="margin-top:12px;">
-                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT (MULTI-MAPPING)</label>
+                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT</label>
                                             <div id="sheet-mapping-list-initial" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
                                                 <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
                                                     <input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">
@@ -1993,7 +2132,7 @@
                                 <div class="integration-block" id="block-prog-initial">
                                     <div class="toggle-row" style="border:none; padding:12px 0;">
                                         <div>
-                                            <div style="font-weight:600; font-size:0.9rem;">Relasi Data Program Lain</div>
+                                            <div style="font-weight:600; font-size:0.9rem;">Relasi data dari program lain</div>
                                             <div style="font-size:0.8rem; color:var(--text-muted);">Ambil nilai dari riwayat pengusul di program lain</div>
                                         </div>
                                         <label class="switch">
@@ -2003,9 +2142,9 @@
                                     </div>
                                 <div id="prog-initial-card" class="collapsible-card">
                                     <div class="form-group">
-                                        <label>Pilih Program Sumber</label>
+                                        <label>Pilih program yang dijadikan sumber</label>
                                         <div class="searchable-select">
-                                            <input type="text" placeholder="Cari program..." onkeyup="filterPrograms(this)">
+                                            <input type="text" placeholder="Cari program..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)">
                                             <div class="dropdown-list">
                                                 ${programs.filter(p => p.id != progId).map(p => `<div onclick="selectProgram(this, '${p.id}')">${p.name}</div>`).join('')}
                                             </div>
@@ -2013,7 +2152,7 @@
                                         </div>
                                     </div>
                                         <div style="margin-top:12px;">
-                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT RELASI</label>
+                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT</label>
                                             <div id="prog-mapping-list-initial" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
                                                 <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
                                                     <select style="font-size:0.75rem; padding:4px 8px;"><option>Atribut Sumber</option></select>
@@ -2028,11 +2167,14 @@
                             
                             <hr style="border:none; border-top:1px solid var(--border); margin: 24px 0;">
 
-                            <!-- Ekspor Atribut sebagai User Aset -->
+                            <!-- Ekspor atribut sebagai aset pengguna -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                                <div style="font-weight:700; font-size:0.75rem; color:var(--primary); letter-spacing:0.05em;">ASSET EXPORT</div>
+                            </div>
                             <div class="toggle-row" style="border:none;">
                                 <div>
-                                    <div style="font-weight:600;">Ekspor Atribut sebagai User Aset</div>
-                                    <div style="font-size:0.8rem; color:var(--text-muted);">Permanenkan data atribut ke dalam profil aset pengusul</div>
+                                    <div style="font-size:0.9rem; font-weight:600;">Ekspor atribut sebagai aset pengguna</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted);">Permanenkan data atribut ke dalam profil aset pengguna</div>
                                 </div>
                                 <label class="switch">
                                     <input type="checkbox" onchange="toggleConfigCard(this, 'asset-config-card')">
@@ -2041,7 +2183,7 @@
                             </div>
                             <div id="asset-config-card" class="collapsible-card">
                                 <div class="form-group">
-                                    <label>Pilih Atribut untuk Diekspor</label>
+                                    <label>Pilih atribut untuk diekspor</label>
                                     <div class="chip-container" style="margin-top:8px;">
                                         ${(program.attributes || []).map(a => `
                                             <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; background:rgba(255,255,255,0.4); padding:4px 10px; border-radius:15px; border:1px solid var(--border); cursor:pointer;">
@@ -2109,6 +2251,115 @@
             switchSettingSubTab('atribut');
         }
 
+        function addStatus() {
+            const program = programs.find(p => p.id == progId);
+            if (!program.statuses) {
+                program.statuses = [
+                    { label: "Baru Terkirim", color: "#6366f1" },
+                    { label: "Review Internal", color: "#f59e0b" },
+                    { label: "Diterima Lokasi", color: "#10b981" },
+                    { label: "Perlu Perbaikan", color: "#ef4444" },
+                    { label: "Ditolak", color: "#1e293b" }
+                ];
+            }
+            program.statuses.push({ label: "Status Baru", color: "#6366f1", trigger: "" });
+            switchSettingSubTab('status');
+        }
+
+        function updateStatusData(idx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            if (!program.statuses) return;
+            program.statuses[idx][key] = val;
+            // No save here to avoid too many writes, user clicks Save at bottom
+        }
+
+        function deleteStatus(idx) {
+            if (!confirm("Hapus status ini dari alur program?")) return;
+            const program = programs.find(p => p.id == progId);
+            program.statuses.splice(idx, 1);
+            switchSettingSubTab('status');
+        }
+
+        function saveStatusSettings() {
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            showToast("Konfigurasi status berhasil disimpan!");
+        }
+
+        function resetStatuses() {
+            if (!confirm("Reset alur status ke pengaturan awal? Semua formula otomatis yang telah dibuat akan dihapus.")) return;
+            const program = programs.find(p => p.id == progId);
+            program.statuses = [
+                { label: "Baru Terkirim", color: "#6366f1" },
+                { label: "Review Internal", color: "#f59e0b" },
+                { label: "Diterima Lokasi", color: "#10b981" },
+                { label: "Perlu Perbaikan", color: "#ef4444" },
+                { label: "Ditolak", color: "#1e293b" }
+            ];
+            switchSettingSubTab('status');
+        }
+
+        function onStatusDragStart(e, idx) {
+            draggedIdx = idx;
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function onStatusDrop(e, targetIdx) {
+            e.preventDefault();
+            if (draggedIdx === -1 || draggedIdx === targetIdx) return;
+
+            const program = programs.find(p => p.id == progId);
+            if (!program.statuses) return;
+
+            const item = program.statuses.splice(draggedIdx, 1)[0];
+            program.statuses.splice(targetIdx, 0, item);
+
+            switchSettingSubTab('status');
+        }
+
+        function updateNotifData(type, key, val) {
+            const program = programs.find(p => p.id == progId);
+            if (!program.notifications) {
+                program.notifications = {
+                    submission: { subject: "", body: "" },
+                    statusChange: { subject: "", body: "" }
+                };
+            }
+            program.notifications[type][key] = val;
+        }
+
+        function saveNotifSettings() {
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            showToast("Templat notifikasi berhasil diperbarui!");
+        }
+
+        function updateTimelineData(idx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            if (!program.timeline) program.timeline = [];
+            program.timeline[idx][key] = val;
+        }
+
+        function addTimelineStage() {
+            const program = programs.find(p => p.id == progId);
+            if (!program.timeline) program.timeline = [
+                { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
+                { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
+                { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
+            ];
+            program.timeline.push({ label: "Tahapan Baru", start: "2026-01-01", end: "2026-01-01", status: "Waiting" });
+            switchSettingSubTab('timeline');
+        }
+
+        function deleteTimelineStage(idx) {
+            const program = programs.find(p => p.id == progId);
+            program.timeline.splice(idx, 1);
+            switchSettingSubTab('timeline');
+        }
+
+        function saveTimelineSettings() {
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            showToast("Lini masa program berhasil diperbarui!");
+        }
+
         function toggleConfigCard(checkbox, cardId) {
             const card = document.getElementById(cardId);
             if (checkbox.checked) {
@@ -2124,9 +2375,9 @@
             const row = document.createElement('div');
             row.className = "mapping-row";
             row.style = "display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;";
-            
+
             let sourceHtml = '';
-            if(containerId.includes('sheet')) {
+            if (containerId.includes('sheet')) {
                 sourceHtml = `<input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">`;
             } else {
                 sourceHtml = `<select style="font-size:0.75rem; padding:4px 8px;"><option>Atribut Sumber</option></select>`;
@@ -2147,17 +2398,17 @@
             const container = document.getElementById(containerId);
             const program = programs.find(p => p.id == progId);
             const iden = Math.random().toString(36).substr(2, 5);
-            
+
             const block = document.createElement('div');
             block.className = 'integration-block';
             block.style = "margin-top:16px; border-top:1px dashed var(--border); padding-top:16px;";
-            
-            if(type === 'sheet') {
+
+            if (type === 'sheet') {
                 block.innerHTML = `
                     <div class="toggle-row" style="border:none; padding:8px 0;">
                         <div>
-                            <div style="font-weight:600; font-size:0.9rem;">Secondary Spreadsheet Lookup</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Tautan spreadsheet tambahan untuk referensi data</div>
+                            <div style="font-weight:600; font-size:0.9rem;">Pencarian tambahan data dari Spreadsheet</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Cari data tambahan melalui URL Google Sheets</div>
                         </div>
                         <div style="display:flex; align-items:center; gap:12px;">
                             <label class="switch">
@@ -2173,15 +2424,15 @@
                             <input type="url" placeholder="https://docs.google.com/spreadsheets/d/..." style="font-size:0.85rem;">
                         </div>
                         <div style="margin-top:12px;">
-                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT</label>
-                            <div id="list-${iden}" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
-                                    <input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">
-                                    ${renderSearchableAttrSelect(program)}
-                                    <button class="btn-icon" onclick="addMappingRow('list-${iden}')" style="width:28px; height:28px;"><span class="material-symbols-outlined" style="font-size:16px">add</span></button>
-                                </div>
-                            </div>
-                        </div>
+                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT</label>
+                                            <div id="sheet-mapping-list-${iden}" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                                                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
+                                                    <input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">
+                                                    ${renderSearchableAttrSelect(program)}
+                                                    <button class="btn-icon" onclick="addMappingRow('sheet-mapping-list-${iden}')" style="width:28px; height:28px;"><span class="material-symbols-outlined" style="font-size:16px">add</span></button>
+                                                </div>
+                                            </div>
+                                        </div>
                     </div>
                 `;
             } else {
@@ -2203,9 +2454,9 @@
                         <div class="form-group">
                             <label>Pilih Program Sumber</label>
                             <div class="searchable-select">
-                                <input type="text" placeholder="Cari program..." onkeyup="filterGeneric(this)">
+                                <input type="text" placeholder="Cari program..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)">
                                 <div class="dropdown-list">
-                                    ${programs.filter(p => p.id != progId).map(p => `<div onclick="selectGeneric(this, '${p.id}')">${p.name}</div>`).join('')}
+                                    ${programs.filter(p => p.id != progId).map(p => `<div onclick="selectProgram(this, '${p.id}')">${p.name}</div>`).join('')}
                                 </div>
                                 <input type="hidden" class="val-target">
                             </div>
@@ -2242,15 +2493,30 @@
             input.value = el.innerText;
             // Add value to dataset so callbacks can use it
             el.dataset.val = val;
-            
+
             // Hide list
             el.parentElement.style.display = 'none';
-            setTimeout(() => { 
-                el.parentElement.style.display = ''; 
+            setTimeout(() => {
+                el.parentElement.style.display = '';
                 // Trigger callback if data-val is used in dynamic calls
                 const hiddenInput = container.querySelector('.val-target');
                 if (hiddenInput) hiddenInput.value = val;
             }, 100);
+        }
+
+        function selectProgram(el, targetId) {
+            selectGeneric(el, targetId);
+            const program = programs.find(p => p.id == targetId);
+            if (!program) return;
+
+            // Trigger mapping update if we are in an integration block
+            const block = el.closest('.integration-block');
+            const selectList = block.querySelectorAll('select');
+
+            const optionsHtml = (program.attributes || []).map(a => `<option value="${a.label}">${a.label}</option>`).join('');
+            selectList.forEach(sel => {
+                sel.innerHTML = `<option value="">Atribut Sumber</option>` + optionsHtml;
+            });
         }
 
         function showModal(title, contentHtml) {
@@ -2270,45 +2536,30 @@
         function updateTeam(userName, role, isAdd) {
             const program = programs.find(p => p.id == progId);
             if (!program.team) program.team = { pic: [], staff: [] };
-            
+
             const list = program.team[role];
             if (isAdd) {
                 if (!list.includes(userName)) list.push(userName);
             } else {
                 program.team[role] = list.filter(u => u !== userName);
             }
-            
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('pengelola');
-        }
 
-        function renderUserSearchSelect(callback, placeholder = "Klik untuk mencari...") {
-            return `
-                <div class="searchable-select" onclick="event.stopPropagation()">
-                    <input type="text" placeholder="${placeholder}" onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" class="f-input">
-                    <div class="dropdown-list">
-                        ${registeredUsers.map(u => `
-                            <div onclick="${callback}; this.parentElement.style.display='none'; this.parentElement.previousElementSibling.value='${u.name}'" data-val="${u.name}">
-                                <strong>${u.name}</strong> • ${u.unit}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            switchUserSubTab('pengelola');
         }
 
         function updateReviewer(userName, isAdd) {
             const program = programs.find(p => p.id == progId);
             if (!program.reviewers) program.reviewers = [];
-            
+
             if (isAdd) {
                 if (!program.reviewers.includes(userName)) program.reviewers.push(userName);
             } else {
-            program.reviewers = program.reviewers.filter(u => u !== userName);
+                program.reviewers = program.reviewers.filter(u => u !== userName);
             }
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('reviewer');
+            switchUserSubTab('reviewer');
         }
 
         let editingAttrIdx = -1;
@@ -2316,7 +2567,7 @@
             editingAttrIdx = idx;
             const program = programs.find(p => p.id == progId);
             const attr = idx >= 0 ? program.attributes[idx] : { label: '', type: 'text', group: '', required: false, desc: '' };
-            
+
             showModal(idx >= 0 ? 'Edit Atribut' : 'Tambah Atribut Baru', `
                 <div class="settings-form" style="max-height:70vh; overflow-y:auto; padding-right:8px;">
                     <div class="f-group">
@@ -2336,6 +2587,8 @@
                                     <option value="dropdown" ${attr.type === 'dropdown' ? 'selected' : ''}>Pilihan (Dropdown)</option>
                                     <option value="multiple options" ${attr.type === 'multiple options' ? 'selected' : ''}>Pilihan (Checkbox)</option>
                                     <option value="radio" ${attr.type === 'radio' ? 'selected' : ''}>Pilihan (Radio)</option>
+                                    <option value="date" ${attr.type === 'date' ? 'selected' : ''}>Kalender (Tanggal)</option>
+                                    <option value="time" ${attr.type === 'time' ? 'selected' : ''}>Waktu (Jam)</option>
                                     <option value="url" ${attr.type === 'url' ? 'selected' : ''}>Link URL</option>
                                     <option value="formula" ${attr.type === 'formula' ? 'selected' : ''}>Formula (Kalkulasi)</option>
                                 </select>
@@ -2371,7 +2624,7 @@
                         </div>
                     </div>
 
-                    <div class="f-group" id="options-group" style="display:${['dropdown','radio','multiple options'].includes(attr.type) ? 'block' : 'none'}; background:rgba(99,102,241,0.03); padding:16px; border-radius:12px; border:1px dashed var(--border);">
+                    <div class="f-group" id="options-group" style="display:${['dropdown', 'radio', 'multiple options'].includes(attr.type) ? 'block' : 'none'}; background:rgba(99,102,241,0.03); padding:16px; border-radius:12px; border:1px dashed var(--border);">
                         <label class="f-label" style="color:var(--primary);">Daftar Pilihan</label>
                         <textarea id="attr-options" rows="3" placeholder="Opsi 1\nOpsi 2\nOpsi 3" class="f-input" style="font-family:inherit;">${(attr.options || []).join('\n')}</textarea>
                         <div style="font-size:0.7rem; color:var(--text-muted); margin-top:8px;">Gunakan baris baru untuk memisahkan pilihan.</div>
@@ -2396,7 +2649,7 @@
             const program = programs.find(p => p.id == progId);
             const rawOptions = document.getElementById('attr-options').value;
             const options = rawOptions ? rawOptions.split(/[\n]/).map(o => o.trim()).filter(o => o) : [];
-            
+
             const newAttr = {
                 label: document.getElementById('attr-label').value,
                 type: document.getElementById('attr-type').value,
@@ -2492,8 +2745,8 @@
                         <h3 style="font-family:'Outfit'; margin-bottom:24px;">Reviewer Internal</h3>
                         <div class="proposal-list" style="gap:12px;">
                             ${(program.reviewers || []).map(rev => {
-                                const user = registeredUsers.find(u => u.name === rev) || { unit: 'Unknown' };
-                                return `
+                    const user = registeredUsers.find(u => u.name === rev) || { unit: 'Unknown' };
+                    return `
                                     <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius: var(--radius-md);">
                                         <div>
                                             <div style="font-weight:600;">${rev}</div>
@@ -2502,7 +2755,7 @@
                                         <button class="btn-icon" onclick="updateReviewer('${rev}', false)" style="color:var(--error); border-color:var(--error); opacity:0.6;"><span class="material-symbols-outlined">delete</span></button>
                                     </div>
                                 `;
-                            }).join('')}
+                }).join('')}
                             <div style="margin-top:20px; padding-top:20px; border-top:1px dashed var(--border);">
                                 <label style="display:block; margin-bottom:12px; font-size:0.85rem; font-weight:600;">Tambah Reviewer Baru</label>
                                 ${renderUserSearchSelect("updateReviewer(this.dataset.val, true)", "Cari reviewer dari database...")}
@@ -2555,14 +2808,14 @@
         function updateTeam(userName, role, isAdd) {
             const program = programs.find(p => p.id == progId);
             if (!program.team) program.team = { pic: [], staff: [] };
-            
+
             const list = program.team[role];
             if (isAdd) {
                 if (!list.includes(userName)) list.push(userName);
             } else {
                 program.team[role] = list.filter(u => u !== userName);
             }
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchUserSubTab('pengelola');
         }
@@ -2570,13 +2823,13 @@
         function updateReviewer(userName, isAdd) {
             const program = programs.find(p => p.id == progId);
             if (!program.reviewers) program.reviewers = [];
-            
+
             if (isAdd) {
                 if (!program.reviewers.includes(userName)) program.reviewers.push(userName);
             } else {
                 program.reviewers = program.reviewers.filter(u => u !== userName);
             }
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchUserSubTab('reviewer');
         }
@@ -2602,17 +2855,17 @@
             const program = programs.find(p => p.id == progId);
             const target = idx + dir;
             if (target < 0 || target >= program.attributes.length) return;
-            
+
             const temp = program.attributes[idx];
             program.attributes[idx] = program.attributes[target];
             program.attributes[target] = temp;
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchSettingSubTab('atribut');
         }
 
         function deleteAttr(idx) {
-            if(!confirm('Hapus atribut ini?')) return;
+            if (!confirm('Hapus atribut ini?')) return;
             const program = programs.find(p => p.id == progId);
             program.attributes.splice(idx, 1);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
@@ -2631,11 +2884,11 @@
         function onAttrDrop(e, targetIdx) {
             e.preventDefault();
             if (draggedIdx === -1 || draggedIdx === targetIdx) return;
-            
+
             const program = programs.find(p => p.id == progId);
             const item = program.attributes.splice(draggedIdx, 1)[0];
             program.attributes.splice(targetIdx, 0, item);
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchSettingSubTab('atribut');
         }
@@ -2654,7 +2907,7 @@
             // Reorder the flat list so all items of draggedGroup move before all items of targetGroupName
             const others = program.attributes.filter(a => (a.group || 'Tanpa Grup') !== draggedGroup);
             const items = program.attributes.filter(a => (a.group || 'Tanpa Grup') === draggedGroup);
-            
+
             // Find target insertion point
             const targetIdx = others.findIndex(a => (a.group || 'Tanpa Grup') === targetGroupName);
             others.splice(targetIdx, 0, ...items);
@@ -2665,7 +2918,7 @@
         }
 
         function updateAttrTypeUI(type) {
-            document.getElementById('options-group').style.display = ['dropdown','radio','multiple options'].includes(type) ? 'block' : 'none';
+            document.getElementById('options-group').style.display = ['dropdown', 'radio', 'multiple options'].includes(type) ? 'block' : 'none';
             document.getElementById('formula-group').style.display = (type === 'formula') ? 'block' : 'none';
         }
 
@@ -2682,13 +2935,13 @@
         function updateExclusion(targetId, isAdd) {
             const program = programs.find(p => p.id == progId);
             if (!program.excludeDuplication) program.excludeDuplication = [];
-            
+
             if (isAdd) {
                 if (!program.excludeDuplication.includes(targetId)) program.excludeDuplication.push(targetId);
             } else {
                 program.excludeDuplication = program.excludeDuplication.filter(id => id != targetId);
             }
-            
+
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchSettingSubTab('info');
         }

@@ -897,33 +897,37 @@
             const nameVal = fullnameInput.value.toLowerCase().trim();
             const blacklistCard = document.getElementById('blacklist-warning-info');
             const blacklistNote = document.getElementById('blacklist-display-note');
+            const newContactCard = document.getElementById('new-contact-info');
             
             if (!emailVal && !nameVal) {
-                infoCard.style.display = 'none';
+                newContactCard.style.display = 'none';
                 blacklistCard.style.display = 'none';
                 return;
             }
 
             // Check Blacklist logic
-            const blacklisted = (currentProgMeta.blacklist || []).find(b => 
+            const globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
+            
+            const blacklistedProgram = (currentProgMeta.blacklist || []).find(b => 
                 b.user.toLowerCase() === nameVal || (b.user.toLowerCase() === emailVal)
             );
 
+            const blacklistedGlobal = globalBlacklist.find(b => 
+                b.user.toLowerCase() === nameVal || (b.user.toLowerCase() === emailVal)
+            );
+
+            const blacklisted = blacklistedProgram || blacklistedGlobal;
+
             if (blacklisted) {
                 blacklistCard.style.display = 'flex';
-                blacklistNote.innerHTML = `<strong>Catatan Cekal:</strong> ${blacklisted.note}<br><span style="font-size:0.75rem; opacity:0.8;">Berlaku s/d: ${blacklisted.end || 'Selamanya'}</span>`;
+                blacklistNote.innerHTML = `<strong>${blacklistedGlobal ? '[GLOBAL] ' : ''}Detail Kendala:</strong> ${blacklisted.note || 'User diblacklist dari pendaftaran.'}`;
+                newContactCard.style.display = 'none';
             } else {
                 blacklistCard.style.display = 'none';
-            }
-
-            const exists = contacts.some(c =>
-                (emailVal && c.email.toLowerCase() === emailVal) ||
-                (nameVal && c.fullname.toLowerCase() === nameVal)
-            );
-            if (!exists && (emailVal.length > 5 || nameVal.length > 3)) {
-                infoCard.style.display = 'flex';
-            } else {
-                infoCard.style.display = 'none';
+                const exists = registeredUsers.some(u => 
+                    u.name.toLowerCase() === nameVal || (u.email && u.email.toLowerCase() === emailVal)
+                );
+                newContactCard.style.display = exists ? 'none' : 'flex';
             }
         }
 
@@ -1076,8 +1080,8 @@
                 const requiredAttr = attr.required ? 'required data-required="true"' : '';
                 const validationAttr = attr.validation ? `pattern="${attr.validation}"` : '';
                 
-                if (attr.type === 'text' || attr.type === 'url' || attr.type === 'number') {
-                    inputHtml = `<input type="${attr.type === 'number' ? 'number' : 'text'}" id="${fieldId}" placeholder="${attr.label}" ${requiredAttr} ${validationAttr} oninput="validateCurrentStep()">`;
+                if (attr.type === 'text' || attr.type === 'url' || attr.type === 'number' || attr.type === 'date' || attr.type === 'time') {
+                    inputHtml = `<input type="${attr.type}" id="${fieldId}" placeholder="${attr.label}" ${requiredAttr} ${validationAttr} oninput="validateCurrentStep()">`;
                 } else if (attr.type === 'longtext') {
                     inputHtml = `<textarea id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none; min-height:100px;" placeholder="${attr.label}" ${requiredAttr} oninput="validateCurrentStep()"></textarea>`;
                 } else if (attr.type === 'dropdown') {

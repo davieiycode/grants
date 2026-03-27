@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Usulan | Grants Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-md: 12px;
+            --radius-xl: 24px;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        nav {
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .detail-card {
+            padding: 32px;
+            border-radius: var(--radius-xl);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .settings-form select,
+        .settings-form input,
+        .settings-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-apply {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-apply:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .badge-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .group-container {
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .group-header {
+            position: absolute;
+            top: -12px;
+            left: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: var(--text-main);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transform: translateY(100px);
+            transition: 0.3s;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        #toast.show {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><span class="material-symbols-outlined">account_balance_wallet</span></div>
+            <span style="font-weight:700; font-family:'Outfit'; font-size:1.1rem;">Grants Portal</span>
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="header-row">
+            <a href="index.html" class="back-btn" id="nav-back-link">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Kembali ke Dashboard
+            </a>
+            <div id="proposal-id-tag"
+                style="font-weight:700; color:var(--text-muted); background:var(--border); padding:4px 12px; border-radius:8px; font-size:0.85rem;">
+                ID: #0000</div>
+        </div>
+
+        <div id="blacklist-banner" style="display:none; margin-bottom:32px;"></div>
+
+        <div class="card-grid">
+            <!-- Left: Basic Info -->
+            <div class="glass detail-card">
+                <h3 class="card-title">
+                    <span class="material-symbols-outlined">description</span>
+                    Informasi Utama
+                </h3>
+                <div class="info-group">
+                    <span class="info-label">Judul Usulan</span>
+                    <div class="info-value" id="disp-title" style="font-size:1.25rem; line-height:1.4;">Memuat...</div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="info-group">
+                        <span class="info-label">Nama Pengusul</span>
+                        <div class="info-value" id="disp-proposer">-</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Unit / Fakultas</span>
+                        <div class="info-value" id="disp-unit">-</div>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="info-group">
+                        <span class="info-label">Waktu Pengajuan</span>
+                        <div class="info-value" id="disp-date">-</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Status Saat Ini</span>
+                        <div id="disp-status-container">
+                            <span class="badge-status" id="disp-status"
+                                style="background:rgba(16,185,129,0.1); color:var(--secondary);">Baru Terkirim</span>
+                        </div>
+                    </div>
+                </div>
+                <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
+                <div class="form-group">
+                    <label>Ubah Status Usulan</label>
+                    <select id="update-status" onchange="updateStatusBadge(); enableSave()">
+                        <!-- Options injected by JS -->
+                    </select>
+                    <div id="auto-status-hint" style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; font-style:italic;"></div>
+                </div>
+            </div>
+
+            <!-- Right: Dynamic Attributes -->
+            <div class="glass detail-card">
+                <h3 class="card-title">
+                    <span class="material-symbols-outlined">edit_note</span>
+                    Data Terkait Program
+                </h3>
+                <div id="dynamic-form-container" class="settings-form">
+                    <!-- Fields injected -->
+                </div>
+                <div style="margin-top:40px; display:flex; justify-content:flex-end;">
+                    <button id="btn-save" class="btn-apply" onclick="saveChanges()"
+                        style="opacity:0.6; pointer-events:none;">
+                        <span class="material-symbols-outlined">save</span>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Berhasil diperbarui!</div>
+
+    <script>
+        const proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
+            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Diterima", allowMultiple: false },
+            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Sedang Direview", allowMultiple: true },
+            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Selesai", allowMultiple: false }
+        ];
+        const programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
+            {
+                id: '1',
+                name: "Grants 2025",
+                desc: "Program hibah kompetitif untuk inovasi teknologi masa depan.",
+                icon: "rocket_launch",
+                color: "#6366f1",
+                allowMultiple: true,
+                attributes: [
+                    { label: "Nominal Dana (IDR)", type: "number", required: true, desc: "Batas maksimal 100jt" },
+                    { label: "Durasi Proyek (Bulan)", type: "number", required: true },
+                    { label: "Bidang Fokus", type: "dropdown", options: ["AI/ML", "Green Tech", "Biotech"], required: true },
+                    { label: "Abstrak Pendek", type: "longtext", required: true }
+                ]
+            },
+            {
+                id: '2',
+                name: "Riset Unggulan",
+                desc: "Penelitian mendalam untuk pengembangan ilmu pengetahuan.",
+                icon: "biotech",
+                color: "#10b981",
+                allowMultiple: true,
+                attributes: [
+                    { label: "Metodologi", type: "longtext", required: true },
+                    { label: "Target Luaran", type: "dropdown", options: ["Jurnal Q1", "Paten", "Prototipe"], required: true }
+                ]
+            },
+            {
+                id: '3',
+                name: "Abdimas 2024",
+                desc: "Program pengabdian masyarakat untuk peningkatan ekonomi lokal.",
+                icon: "group",
+                color: "#f59e0b",
+                allowMultiple: false,
+                attributes: [
+                    { label: "Lokasi Pengabdian (Kecamatan/Desa)", type: "text", required: true },
+                    { label: "Jumlah Beneficiary (Penerima Manfaat)", type: "number", required: true },
+                    { label: "Uraian Masalah Mitra", type: "longtext", required: true }
+                ]
+            }
+        ];
+        const urlParams = new URLSearchParams(window.location.search);
+        const proposalId = urlParams.get('id');
+
+        let currentProposal = null;
+        let currentProgram = null;
+
+        function init() {
+            if (!proposalId) {
+                location.href = 'index.html';
+                return;
+            }
+
+            // Sync with newest storage data
+            const freshProposals = JSON.parse(localStorage.getItem('grants_proposals')) || proposals;
+            currentProposal = freshProposals.find(p => String(p.id) === String(proposalId));
+
+            if (!currentProposal) {
+                alert('Galat: Usulan dengan ID #' + proposalId + ' tidak ditemukan.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const freshPrograms = JSON.parse(localStorage.getItem('grants_programs_meta')) || programs;
+
+            // Match program with high tolerance
+            currentProgram = freshPrograms.find(pg =>
+                pg.name.trim().toLowerCase() === currentProposal.program.trim().toLowerCase()
+            );
+
+            if (!currentProgram) {
+                console.error("Program metadata missing for study:", currentProposal.program);
+                alert("Peringatan: Metadata untuk program '" + currentProposal.program + "' tidak ditemukan. Beberapa fitur mungkin tidak lengkap.");
+            }
+
+            // Render basic info
+            document.getElementById('proposal-id-tag').innerText = `ID: #${currentProposal.id}`;
+            document.getElementById('disp-title').innerText = currentProposal.title;
+            document.getElementById('disp-proposer').innerText = currentProposal.proposer;
+            document.getElementById('disp-unit').innerText = currentProposal.unit;
+            document.getElementById('disp-date').innerText = currentProposal.date;
+            
+            // Render specific status options
+            renderStatusOptions();
+
+            // Check for initial auto-status hint
+            checkAutoStatus(false);
+
+            // Update Back Link to original program dashboard if possible
+            if (currentProgram && currentProgram.id) {
+                document.getElementById('nav-back-link').href = `index.html?p=${currentProgram.id}&tab=usulan`;
+            }
+
+            // Check Blacklist status
+            checkBlacklist();
+
+            // Render dynamic form
+            renderAttributes();
+        }
+
+        function renderStatusOptions() {
+            const select = document.getElementById('update-status');
+            const defaultStatuses = [
+                { label: "Baru Terkirim", color: "#6366f1" },
+                { label: "Review Internal", color: "#f59e0b" },
+                { label: "Diterima Lokasi", color: "#10b981" },
+                { label: "Perlu Perbaikan", color: "#ef4444" },
+                { label: "Ditolak", color: "#1e293b" }
+            ];
+
+            const programStatuses = (currentProgram && currentProgram.statuses && currentProgram.statuses.length > 0) 
+                ? currentProgram.statuses 
+                : defaultStatuses;
+
+            select.innerHTML = programStatuses.map(s => `
+                <option value="${s.label}" data-color="${s.color || '#6366f1'}">${s.label}</option>
+            `).join('');
+
+            // Restore current status
+            select.value = currentProposal.status;
+            updateStatusBadge();
+        }
+
+        function updateStatusBadge() {
+            const select = document.getElementById('update-status');
+            const opt = select.options[select.selectedIndex];
+            const color = opt ? opt.dataset.color : '#6366f1';
+            
+            const badge = document.getElementById('disp-status');
+            badge.innerText = select.value;
+            badge.style.background = `${color}15`;
+            badge.style.color = color;
+        }
+
+        function checkAutoStatus(applyToSelect = true) {
+            if (!currentProgram || !currentProgram.statuses) return;
+            
+            const hint = document.getElementById('auto-status-hint');
+            hint.innerText = '';
+
+            const customData = {};
+            // Gather current input values
+            if (currentProgram.attributes) {
+                currentProgram.attributes.forEach((attr, idx) => {
+                    const el = document.getElementById(`attr-${idx}`);
+                    if (el) {
+                        customData[attr.label] = el.value;
+                    } else {
+                        // For radios/checkboxes (not yet updated in currentProposal)
+                        const radio = document.querySelector(`input[name="attr-${idx}"]:checked`);
+                        if(radio) customData[attr.label] = radio.value;
+                    }
+                });
+            }
+
+            // Also check currentProposal's existing data as fallback
+            const dataToEval = { ...currentProposal.customData, ...customData };
+            
+            for (const s of currentProgram.statuses) {
+                if (s.trigger) {
+                    try {
+                        let expression = s.trigger;
+                        for (const key in dataToEval) {
+                            const val = isNaN(dataToEval[key]) ? `'${dataToEval[key]}'` : dataToEval[key];
+                            expression = expression.replace(new RegExp(`{${key}}`, 'g'), val || 0);
+                        }
+                        
+                        // Security check: only allow basic comparisons
+                        if (eval(expression)) {
+                            hint.innerText = `Catatan: Aturan "${s.trigger}" terpenuhi. Status disarankan: ${s.label}`;
+                            if (applyToSelect && document.getElementById('update-status').value !== s.label) {
+                                document.getElementById('update-status').value = s.label;
+                                updateStatusBadge();
+                                enableSave();
+                            }
+                            break;
+                        }
+                    } catch (e) { console.warn("Trigger eval error:", e); }
+                }
+            }
+        }
+
+        function checkBlacklist() {
+            const banner = document.getElementById('blacklist-banner');
+            if (currentProposal.isBlacklisted) {
+                banner.style.display = 'block';
+                banner.innerHTML = `
+                    <div class="glass" style="background:rgba(239,68,68,0.05); padding:24px; border:1px solid var(--error); border-radius:20px; display:flex; gap:20px; align-items:flex-start;">
+                        <span class="material-symbols-outlined" style="color:var(--error); font-size:40px;">report</span>
+                        <div>
+                            <div style="font-weight:700; color:var(--error); font-size:1rem; text-transform:uppercase;">Peringatan: Pengusul Bermasalah (Daftar Hitam)</div>
+                            <p style="font-size:0.9rem; color:var(--text-main); margin-top:8px;">User ini terdeteksi dalam daftar cekal saat mengirimkan usulan ini.</p>
+                            <div style="margin-top:12px; padding:12px; background:white; border-radius:12px; border:1px solid rgba(239,68,68,0.2); font-size:0.85rem;">
+                                <strong>Alasan:</strong> ${currentProposal.blacklistNote || 'Tidak ada catatan khusus.'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderAttributes() {
+            const container = document.getElementById('dynamic-form-container');
+            container.innerHTML = '';
+
+            if (!currentProgram || !currentProgram.attributes) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-style:italic;">Tidak ada atribut tambahan untuk program ini.</p>';
+                return;
+            }
+
+            // Grouping logic
+            const groups = {};
+            currentProgram.attributes.forEach((attr, idx) => {
+                const groupName = (attr.group || 'Informasi Tambahan').trim();
+                if (!groups[groupName]) groups[groupName] = [];
+                groups[groupName].push({ ...attr, originalIdx: idx });
+            });
+
+            Object.keys(groups).forEach(groupName => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-container';
+                groupDiv.innerHTML = `<div class="group-header">${groupName}</div>`;
+
+                groups[groupName].forEach(attr => {
+                    const val = (currentProposal.customData && currentProposal.customData[attr.label]) || '';
+                    const fieldId = `attr-${attr.originalIdx}`;
+
+                    let inputHtml = '';
+                    if (attr.type === 'longtext' || attr.type === 'longtext html') {
+                        inputHtml = `<textarea id="${fieldId}" rows="4" onchange="enableSave()">${val}</textarea>`;
+                    } else if (attr.type === 'dropdown') {
+                        inputHtml = `<select id="${fieldId}" onchange="enableSave()">
+                            <option value="">-- Pilih --</option>
+                            ${attr.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
+                        </select>`;
+                    } else if (attr.type === 'yes no') {
+                        inputHtml = `<select id="${fieldId}" onchange="enableSave()">
+                            <option value="Ya" ${val === 'Ya' ? 'selected' : ''}>Ya</option>
+                            <option value="Tidak" ${val === 'Tidak' ? 'selected' : ''}>Tidak</option>
+                        </select>`;
+                    } else if (attr.type === 'radio') {
+                        inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
+                            ${attr.options.map(o => `
+                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; cursor:pointer;">
+                                    <input type="radio" name="${fieldId}" value="${o}" ${val === o ? 'checked' : ''} onchange="enableSave()" style="width:auto;"> ${o}
+                                </label>
+                            `).join('')}
+                        </div>`;
+                    } else if (attr.type === 'multiple options') {
+                        const currentVals = Array.isArray(val) ? val : [val];
+                        inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;">
+                            ${attr.options.map(o => `
+                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; padding:6px 12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
+                                    <input type="checkbox" name="${fieldId}" value="${o}" ${currentVals.includes(o) ? 'checked' : ''} onchange="enableSave()" style="width:auto;"> ${o}
+                                </label>
+                            `).join('')}
+                        </div>`;
+                    } else if (attr.type === 'formula') {
+                        const budgetVal = (currentProposal.customData && currentProposal.customData['Anggaran yang Diajukan (IDR)']) || '0';
+                        inputHtml = `<div style="padding:12px; background:rgba(99,102,241,0.05); border:1px solid var(--border); border-radius:12px; font-family:monospace; color:var(--primary); font-weight:700; margin-top:8px;">
+                            ${attr.formula.replace('{Anggaran}', budgetVal)}
+                        </div>`;
+                    } else {
+                        inputHtml = `<input type="${attr.type}" id="${fieldId}" value="${val}" onchange="enableSave()">`;
+                    }
+
+                    groupDiv.innerHTML += `
+                        <div class="form-group">
+                            <label style="font-size:0.85rem; color:var(--text-main); font-weight:600;">${attr.label}</label>
+                            ${inputHtml}
+                            ${attr.desc ? `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">${attr.desc}</div>` : ''}
+                        </div>
+                    `;
+                });
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function enableSave() {
+            const btn = document.getElementById('btn-save');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'all';
+        }
+
+        function saveChanges() {
+            // First check if any auto-triggers apply before final save
+            checkAutoStatus(true);
+
+            const newStatus = document.getElementById('update-status').value;
+            currentProposal.status = newStatus;
+
+            const customData = currentProposal.customData || {};
+            if (currentProgram && currentProgram.attributes) {
+                currentProgram.attributes.forEach((attr, idx) => {
+                    const fieldId = `attr-${idx}`;
+
+                    if (attr.type === 'radio') {
+                        const checked = document.querySelector(`input[name="${fieldId}"]:checked`);
+                        customData[attr.label] = checked ? checked.value : '';
+                    } else if (attr.type === 'multiple options') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${fieldId}"]:checked`)).map(c => c.value);
+                        customData[attr.label] = checked;
+                    } else {
+                        const el = document.getElementById(fieldId);
+                        if (el) customData[attr.label] = el.value;
+                    }
+                });
+            }
+            currentProposal.customData = customData;
+
+            // Save back to storage
+            const idx = proposals.findIndex(p => String(p.id) === String(proposalId));
+            proposals[idx] = currentProposal;
+            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+
+            showToast();
+
+            // Reset UI
+            document.getElementById('btn-save').style.opacity = '0.6';
+            document.getElementById('btn-save').style.pointerEvents = 'none';
+            document.getElementById('disp-status').innerText = newStatus;
+        }
+
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
