@@ -1125,6 +1125,20 @@
                 } else if (attr.type === 'formula') {
                     inputHtml = `<div style="padding:12px; background:var(--background); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--primary); font-family:monospace; font-weight:700;">${attr.formula}</div>
                                  <input type="hidden" id="${fieldId}" value="${attr.formula}">`;
+                } else if (attr.type === 'file') {
+                    inputHtml = `
+                        <div id="file-cont-${idx}" class="file-preview" style="margin-top:8px; padding:16px; border:2px dashed var(--border); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:space-between; background:white;">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <span class="material-symbols-outlined" style="color:var(--text-muted); font-size:32px;">cloud_upload</span>
+                                <div>
+                                    <div style="font-weight:600; font-size:0.9rem; color:var(--text-main);">Unggah Berkas</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">Format PDF, DOCX, JPG (Maks 10MB)</div>
+                                </div>
+                            </div>
+                            <button onclick="triggerFileUpload('file-cont-${idx}')" type="button" class="btn-primary" style="padding:8px 16px; font-size:0.8rem; width:auto; border-radius:10px;">Pilih Berkas</button>
+                        </div>
+                        <input type="hidden" id="${fieldId}" value="" ${requiredAttr} onchange="validateCurrentStep()">
+                    `;
                 }
 
                 group.innerHTML = `
@@ -1195,6 +1209,27 @@
             }
             originalNextStep(step);
         };
+
+        function triggerFileUpload(containerId) {
+            const filename = prompt("Simulasi: Pilih file proposal (misal: proposal_hibah.pdf):", "proposal.pdf");
+            if (filename) {
+                const cont = document.getElementById(containerId);
+                cont.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span class="material-symbols-outlined" style="color:var(--secondary); font-size:32px;">check_circle</span>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem; color:var(--text-main);">${filename}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Siap diunggah</div>
+                        </div>
+                    </div>
+                    <button onclick="triggerFileUpload('${containerId}')" type="button" style="background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer;">Ubah</button>
+                `;
+                const input = cont.nextElementSibling;
+                input.value = filename;
+                input.dispatchEvent(new Event('change'));
+                validateCurrentStep();
+            }
+        }
 
         function validateCurrentStep() {
             const step1Visible = document.getElementById('step-1').style.display !== 'none';

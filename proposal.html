@@ -449,7 +449,185 @@
                 currentUser = user;
                 localStorage.setItem('grants_activeUser', JSON.stringify(currentUser));
                 renderAttributes();
+                renderReviews();
             }
+        }
+
+        function switchMainTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.color = 'var(--text-muted)';
+                b.style.borderBottom = 'none';
+            });
+            btn.classList.add('active');
+            btn.style.color = 'var(--primary)';
+            btn.style.borderBottom = '3px solid var(--primary)';
+
+            document.getElementById('main-tab-detail').style.display = tab === 'detail' ? 'block' : 'none';
+            document.getElementById('main-tab-review').style.display = tab === 'review' ? 'block' : 'none';
+        }
+
+        function closeModal() {
+            const over = document.getElementById('modal-overlay');
+            over.classList.remove('show');
+            setTimeout(() => over.style.display = 'none', 300);
+        }
+
+        function showModal(title, body) {
+            const over = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = body;
+            over.style.display = 'flex';
+            setTimeout(() => over.classList.add('show'), 10);
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviews-history-container');
+            if (!container) return;
+            const reviews = currentProposal.reviews || [];
+
+            if (reviews.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">Belum ada hasil review untuk usulan ini.</div>`;
+            } else {
+                container.innerHTML = reviews.map((rev, idx) => {
+                    const totalScore = rev.items.reduce((sum, i) => {
+                        const val = parseFloat(i.value) || 0;
+                        const weight = parseFloat(i.weight) || 0;
+                        return sum + (val * (weight / 100));
+                    }, 0);
+
+                    return `
+                        <div class="review-card glass">
+                            <div class="reviewer-name">${rev.reviewer}</div>
+                            <div class="review-meta">${rev.period} • ${rev.date}</div>
+                            ${totalScore > 0 ? `<div class="review-score-badge">${totalScore.toFixed(1)}</div>` : ''}
+                            
+                            <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+                                ${rev.items.map(item => `
+                                    <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border); padding-bottom:4px;">
+                                        <span style="color:var(--text-muted)">${item.label}</span>
+                                        <span style="font-weight:600;">
+                                            ${item.type === 'file' ? (item.value ? `<a href="#" onclick="alert('Buka file: ${item.value}')" style="color:var(--primary); text-decoration:none;">Lihat Berkas</a>` : '-') : item.value || '-'}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${(currentUser.role === 'Admin' || currentUser.name === rev.reviewer) ? `
+                                <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+                                    <button onclick="deleteReview(${idx})" style="background:none; border:none; color:var(--error); font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                                        <span class="material-symbols-outlined" style="font-size:14px">delete</span> Hapus Review
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Only Admin & Reviewer can add
+            const btnAdd = document.getElementById('btn-add-review');
+            if (btnAdd) {
+                btnAdd.style.display = (currentUser.role === 'Admin' || currentUser.role === 'Reviewer') ? 'flex' : 'none';
+            }
+        }
+
+        function openAddReviewModal() {
+            const template = currentProgram.reviewTemplate || [
+                { label: "Kesesuaian dengan Skema", type: "number", weight: 30 },
+                { label: "Kualitas Rekam Jejak", type: "number", weight: 30 },
+                { label: "Kualitas Usulan", type: "number", weight: 40 },
+                { label: "Komentars", type: "longtext" }
+            ];
+
+            const periodOptions = (currentProgram.periods || []).map(p => `<option value="${p.name}">${p.name}</option>`).join('') || '<option value="Default">Periode Default</option>';
+
+            const body = `
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>Pilih Periode/Gelombang</label>
+                        <select id="rev-period" class="f-input">${periodOptions}</select>
+                    </div>
+                    <hr style="margin:24px 0; border:none; border-top:1px solid var(--border);">
+                    <div id="rev-template-fields">
+                        ${template.map((t, idx) => `
+                            <div class="form-group">
+                                <label>${t.label} ${t.weight ? `(Bobot ${t.weight}%)` : ''}</label>
+                                ${t.type === 'number' ? `<input type="number" id="rev-val-${idx}" placeholder="0 - ${t.max || 100}" class="f-input" data-label="${t.label}" data-type="${t.type}" data-weight="${t.weight || 0}">` :
+                                   t.type === 'file' ? `
+                                        <div id="file-cont-${idx}" class="file-preview">
+                                            <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
+                                            <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem;">Pilih Berkas</button>
+                                        </div>
+                                        <input type="hidden" id="rev-val-${idx}" data-label="${t.label}" data-type="${t.type}">
+                                   ` : 
+                                   `<textarea id="rev-val-${idx}" rows="3" class="f-input" data-label="${t.label}" data-type="${t.type}"></textarea>`
+                                }
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                        <button class="btn-apply" onclick="saveReview()">Simpan Penilaian</button>
+                    </div>
+                </div>
+            `;
+            showModal('Tambah Penilaian Baru', body);
+        }
+
+        function triggerFileUpload(containerId) {
+            // Simulation
+            const filename = prompt("Simulasi: Masukkan nama berkas (misal: review_teknis.pdf):", "hasil_reviu.pdf");
+            if (filename) {
+                const cont = document.getElementById(containerId);
+                cont.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="material-symbols-outlined" style="color:var(--primary); font-size:18px;">description</span>
+                        <span style="font-size:0.85rem; font-weight:600;">${filename}</span>
+                    </div>
+                    <button onclick="triggerFileUpload('${containerId}')" style="background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer;">Ubah</button>
+                `;
+                const input = cont.nextElementSibling;
+                input.value = filename;
+            }
+        }
+
+        function saveReview() {
+            const items = [];
+            document.querySelectorAll('[id^="rev-val-"]').forEach(el => {
+                items.push({
+                    label: el.dataset.label,
+                    type: el.dataset.type,
+                    value: el.value,
+                    weight: el.dataset.weight || 0
+                });
+            });
+
+            const newReview = {
+                reviewer: currentUser.name,
+                period: document.getElementById('rev-period').value,
+                date: new Date().toLocaleDateString('id-ID'),
+                items: items
+            };
+
+            if (!currentProposal.reviews) currentProposal.reviews = [];
+            currentProposal.reviews.push(newReview);
+
+            // Save to storage
+            const pIdx = proposals.findIndex(p => String(p.id) === String(proposalId));
+            proposals[pIdx] = currentProposal;
+            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+
+            closeModal();
+            renderReviews();
+            showToast('Penilaian berhasil disimpan!');
+        }
+
+        function deleteReview(idx) {
+            if (!confirm('Hapus penilaian ini?')) return;
+            currentProposal.reviews.splice(idx, 1);
+            const pIdx = proposals.findIndex(p => String(p.id) === String(proposalId));
+            proposals[pIdx] = currentProposal;
+            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+            renderReviews();
         }
 
         function userCanView(attr) {
@@ -706,6 +884,25 @@
                         inputHtml = `<div style="padding:12px; background:rgba(99,102,241,0.05); border:1px solid var(--border); border-radius:12px; font-family:monospace; color:var(--primary); font-weight:700; margin-top:8px;">
                             ${attr.formula.replace('{Anggaran}', budgetVal)}
                         </div>`;
+                    } else if (attr.type === 'file') {
+                        inputHtml = `
+                            <div id="file-cont-${attr.originalIdx}" class="file-preview">
+                                ${val ? `
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span class="material-symbols-outlined" style="color:var(--primary); font-size:18px;">description</span>
+                                        <span style="font-size:0.85rem; font-weight:600;">${val}</span>
+                                    </div>
+                                    <div style="display:flex; gap:8px;">
+                                        ${canEdit ? `<button onclick="triggerFileUpload('file-cont-${attr.originalIdx}')" style="background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer;">Ubah</button>` : ''}
+                                        <button onclick="alert('Simulasi: Membuka file ${val}')" style="background:none; border:none; color:var(--secondary); font-size:0.75rem; cursor:pointer;">Lihat</button>
+                                    </div>
+                                ` : `
+                                    <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
+                                    ${canEdit ? `<button onclick="triggerFileUpload('file-cont-${attr.originalIdx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem;">Pilih Berkas</button>` : ''}
+                                `}
+                            </div>
+                            <input type="hidden" id="${fieldId}" value="${val}">
+                        `;
                     } else {
                         inputHtml = `<input type="${attr.type}" id="${fieldId}" value="${val}" onchange="enableSave()" ${disabledStr}>`;
                     }
@@ -738,6 +935,7 @@
             const customData = currentProposal.customData || {};
             if (currentProgram && currentProgram.attributes) {
                 currentProgram.attributes.forEach((attr, idx) => {
+                    if (!userCanEdit(attr)) return;
                     const fieldId = `attr-${idx}`;
 
                     if (attr.type === 'radio') {
@@ -774,6 +972,7 @@
         }
 
         init();
+        renderReviews();
     </script>
 </body>
 
