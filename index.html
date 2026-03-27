@@ -1063,6 +1063,9 @@
                         <button class="side-tab" onclick="switchSettingSubTab('notif')">
                             <span class="material-symbols-outlined">mail</span> E-mail & Notifikasi
                         </button>
+                        <button class="side-tab" onclick="switchSettingSubTab('review')">
+                            <span class="material-symbols-outlined">rate_review</span> Formulir Review
+                        </button>
                     </div>
 
                     <div class="settings-content" id="setting-sub-content">
@@ -1657,26 +1660,41 @@
             const program = programs.find(p => p.id == progId);
             const filtered = proposals.filter(p => p.program === program.name);
 
-            const timeline = program.timeline || [
-                { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
-                { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
-                { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
-            ];
+            let periods = program.periods;
+            if (!periods && program.timeline) {
+                // Backward compatibility migration
+                periods = [{
+                    name: "Periode Default",
+                    timeline: program.timeline
+                }];
+                program.periods = periods;
+            }
 
-            container.innerHTML = timeline.map((stage, idx) => {
-                const isActive = stage.status === 'Active';
-                // Try to count proposals if the stage label matches a status
-                const count = filtered.filter(p => p.status === stage.label).length;
-                const displayCount = count > 0 ? `${count} Usulan` : (isActive ? `${filtered.length} Usulan Masuk` : 'Menunggu Tahapan');
+            if (!periods || periods.length === 0) {
+                container.innerHTML = '<p class="text-muted">Belum ada periode yang diset.</p>';
+                return;
+            }
 
-                return `
-                    <div class="period-card glass ${isActive ? 'period-active' : ''}">
-                        <h3 style="font-family:'Outfit'">${stage.label}</h3>
-                        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">${stage.start} - ${stage.end}</p>
-                        <div style="font-size:0.9rem; ${isActive ? 'font-weight:600; color:var(--primary)' : 'color:var(--text-muted)'}">${displayCount}</div>
+            container.innerHTML = periods.map(per => `
+                <div style="margin-bottom:40px;">
+                    <h3 style="font-family:'Outfit'; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                        <span class="material-symbols-outlined" style="color:var(--primary);">event</span> ${per.name}
+                    </h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:16px;">
+                        ${(per.timeline || []).map(stage => {
+                            const isActive = stage.status === 'Active';
+                            const count = filtered.filter(p => p.status === stage.label).length;
+                            const displayCount = count > 0 ? (count + " Usulan") : (isActive ? (filtered.length + " Usulan Masuk") : 'Menunggu Tahapan');
+
+                            return '<div class="period-card glass ' + (isActive ? 'period-active' : '') + '" style="width:300px;">' +
+                                '<h4 style="font-family:Outfit; margin:0 0 8px 0;">' + stage.label + '</h4>' +
+                                '<p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">' + stage.start + ' - ' + stage.end + '</p>' +
+                                '<div style="font-size:0.9rem; ' + (isActive ? 'font-weight:600; color:var(--primary)' : 'color:var(--text-muted)') + '">' + displayCount + '</div>' +
+                                '</div>';
+                        }).join('')}
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
         function renderAnalisisTab() {
@@ -1998,56 +2016,127 @@
                     </div>
                 `;
             } else if (sub === 'timeline') {
-                const timeline = program.timeline || [
-                    { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
-                    { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
-                    { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
-                ];
+                let periods = program.periods;
+                if (!periods && program.timeline) {
+                    periods = [{ name: "Periode Default", timeline: program.timeline }];
+                    program.periods = periods;
+                }
+                if (!periods) periods = [{ name: "Periode 1", timeline: [] }];
+                program.periods = periods;
 
                 container.innerHTML = `
                     <div class="glass config-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                            <h3 style="font-family:'Outfit';">Tahapan & Lini Masa</h3>
-                            <button class="btn-apply" onclick="addTimelineStage()" style="padding: 8px 16px; font-size:0.85rem;">
-                                <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Tambah Tahapan
+                            <h3 style="font-family:'Outfit';">Periode & Lini Masa</h3>
+                            <button class="btn-apply" onclick="addPeriod()" style="padding: 8px 16px; font-size:0.85rem;">
+                                <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Tambah Periode
                             </button>
                         </div>
-                        <p class="text-muted" style="margin-bottom:32px; font-size:0.85rem;">Atur durasi dan label tahapan program. Tahapan ini akan muncul sebagai alur waktu di dashboard utama.</p>
+                        <p class="text-muted" style="margin-bottom:32px; font-size:0.85rem;">Kelola gelombang periode program dan tahapan lini masa pada masing-masing periode.</p>
                         
-                        <div id="timeline-list-container" style="display:flex; flex-direction:column; gap:16px;">
-                            ${timeline.map((stage, idx) => `
-                                <div class="glass" style="padding:20px; border-radius:16px; border:1px solid var(--border); display:flex; flex-direction:column; gap:16px;">
-                                    <div style="display:flex; align-items:center; gap:12px;">
-                                        <div style="flex:1;">
-                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; display:block;">NAMA TAHAPAN</label>
-                                            <input type="text" value="${stage.label}" placeholder="Contoh: Seleksi Berkas" class="f-input" style="font-weight:700;" onchange="updateTimelineData(${idx}, 'label', this.value)">
+                        <div id="timeline-list-container" style="display:flex; flex-direction:column; gap:32px;">
+                            ${periods.map((period, pIdx) => `
+                                <div style="border: 1px solid var(--border); border-radius:16px; padding:24px; background:rgba(255,255,255,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                                        <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                                            <span class="material-symbols-outlined" style="color:var(--text-muted);">event</span>
+                                            <input type="text" value="${period.name}" class="f-input" style="font-weight:700; font-size:1.1rem; border:none; background:transparent; max-width:300px; padding:4px 0;" onchange="updatePeriodData(${pIdx}, 'name', this.value)" placeholder="Nama Periode">
                                         </div>
-                                        <div style="width:120px;">
-                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; display:block;">STATUS</label>
-                                            <select class="f-input" onchange="updateTimelineData(${idx}, 'status', this.value)" style="font-size:0.8rem;">
-                                                <option value="Waiting" ${stage.status === 'Waiting' ? 'selected' : ''}>Menunggu</option>
-                                                <option value="Active" ${stage.status === 'Active' ? 'selected' : ''}>Sedang Jalan</option>
-                                                <option value="Finished" ${stage.status === 'Finished' ? 'selected' : ''}>Selesai</option>
-                                            </select>
+                                        <div style="display:flex; gap:12px;">
+                                            <button class="btn-icon" onclick="addTimelineStage(${pIdx})" style="width:auto; padding:0 12px; font-size:0.75rem; border-radius:8px;"><span class="material-symbols-outlined" style="font-size:16px">add</span> Tahapan Baru</button>
+                                            <button class="btn-icon" onclick="deletePeriod(${pIdx})" style="color:var(--error); border-color:var(--error); opacity:0.6;"><span class="material-symbols-outlined">delete</span></button>
                                         </div>
-                                        <button class="btn-icon" onclick="deleteTimelineStage(${idx})" style="color:var(--error); border:none; margin-top:20px;"><span class="material-symbols-outlined">delete</span></button>
                                     </div>
-                                    <div class="f-row">
-                                        <div>
-                                            <label style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">Mulai</label>
-                                            <input type="date" value="${stage.start}" class="f-input" onchange="updateTimelineData(${idx}, 'start', this.value)">
-                                        </div>
-                                        <div>
-                                            <label style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">Berakhir</label>
-                                            <input type="date" value="${stage.end}" class="f-input" onchange="updateTimelineData(${idx}, 'end', this.value)">
-                                        </div>
+                                    <div style="display:flex; flex-direction:column; gap:16px;">
+                                        ${(period.timeline || []).map((stage, sIdx) => `
+                                            <div class="glass" style="padding:20px; border-radius:12px; border:1px solid var(--border); display:flex; gap:16px; align-items:center;">
+                                                <div style="flex:1;">
+                                                    <input type="text" value="${stage.label}" placeholder="Label Tahapan" class="f-input" style="font-weight:700;" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'label', this.value)">
+                                                </div>
+                                                <div style="width:120px;">
+                                                    <select class="f-input" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'status', this.value)" style="font-size:0.8rem;">
+                                                        <option value="Waiting" ${stage.status === 'Waiting' ? 'selected' : ''}>Menunggu</option>
+                                                        <option value="Active" ${stage.status === 'Active' ? 'selected' : ''}>Sedang Jalan</option>
+                                                        <option value="Finished" ${stage.status === 'Finished' ? 'selected' : ''}>Selesai</option>
+                                                    </select>
+                                                </div>
+                                                <div style="width:140px;">
+                                                    <input type="date" value="${stage.start}" class="f-input" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'start', this.value)">
+                                                </div>
+                                                <div style="width:140px;">
+                                                    <input type="date" value="${stage.end}" class="f-input" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'end', this.value)">
+                                                </div>
+                                                <button class="btn-icon" onclick="deleteTimelineStage(${pIdx}, ${sIdx})" style="color:var(--error); border:none;"><span class="material-symbols-outlined">delete</span></button>
+                                            </div>
+                                        `).join('')}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
+                        
+                        <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                            <button class="btn-apply" onclick="saveTimelineSettings()">Simpan Periode & Lini Masa</button>
+                        </div>
+                    </div>
+                `;
+            } else if (sub === 'review') {
+                const template = program.reviewTemplate || [
+                    { label: "Kesesuaian dengan Skema", type: "number", max: 100, weight: 30 },
+                    { label: "Kualitas Rekam Jejak", type: "number", max: 100, weight: 30 },
+                    { label: "Kualitas Usulan", type: "number", max: 100, weight: 40 },
+                    { label: "Komentar Reviewer", type: "longtext" }
+                ];
+                program.reviewTemplate = template;
+
+                container.innerHTML = `
+                    <div class="glass config-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                            <h3 style="font-family:'Outfit';">Templat Penilaian (Review)</h3>
+                            <button class="btn-apply" onclick="addReviewIndicator()" style="padding: 8px 16px; font-size:0.85rem;">
+                                <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Tambah Indikator
+                            </button>
+                        </div>
+                        <p class="text-muted" style="margin-bottom:32px; font-size:0.85rem;">Tentukan kriteria apa saja yang harus dinilai oleh Reviewer. Anda bisa menentukan bobot (%) dan tipe data (Angka/Skor atau Komentar Teks).</p>
+                        
+                        <div id="review-template-container" style="display:flex; flex-direction:column; gap:16px;">
+                            ${template.map((ind, idx) => `
+                                <div class="glass" style="padding:20px; border-radius:16px; border:1px solid var(--border); display:flex; gap:16px; align-items:center;">
+                                    <div style="flex:2;">
+                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">LABEL KRITERIA</label>
+                                        <input type="text" value="${ind.label}" class="f-input" onchange="updateReviewInd(${idx}, 'label', this.value)" placeholder="Misal: Mutu Penelitian">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">TIPE</label>
+                                        <select class="f-input" onchange="updateReviewInd(${idx}, 'type', this.value)">
+                                            <option value="number" ${ind.type === 'number' ? 'selected' : ''}>Skor (Angka)</option>
+                                            <option value="longtext" ${ind.type === 'longtext' ? 'selected' : ''}>Komentar (Teks)</option>
+                                            <option value="file" ${ind.type === 'file' ? 'selected' : ''}>Unggahan Berkas</option>
+                                        </select>
+                                    </div>
+                                    ${ind.type === 'number' ? `
+                                        <div style="width:80px;">
+                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BOBOT (%)</label>
+                                            <input type="number" value="${ind.weight || 0}" class="f-input" onchange="updateReviewInd(${idx}, 'weight', this.value)">
+                                        </div>
+                                        <div style="width:80px;">
+                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">MAX SKOR</label>
+                                            <input type="number" value="${ind.max || 100}" class="f-input" onchange="updateReviewInd(${idx}, 'max', this.value)">
+                                        </div>
+                                    ` : '<div style="flex:1;"></div>'}
+                                    <button class="btn-icon" onclick="deleteReviewInd(${idx})" style="color:var(--error); border:none; margin-top:16px;"><span class="material-symbols-outlined">delete</span></button>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div style="margin-top:32px; padding:16px; background:rgba(99,102,241,0.05); border-radius:12px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+                            <span>Total Bobot: <strong id="total-weight-display">${template.reduce((sum, i) => sum + (parseInt(i.weight) || 0), 0)}%</strong></span>
+                            <span style="color:${template.reduce((sum, i) => sum + (parseInt(i.weight) || 0), 0) === 100 ? 'var(--secondary)' : 'var(--error)'}; font-weight:700;">
+                                ${template.reduce((sum, i) => sum + (parseInt(i.weight) || 0), 0) === 100 ? '✓ Bobot Sesuai' : '⚠ Total bobot harus 100%'}
+                            </span>
+                        </div>
 
                         <div style="margin-top:32px; display:flex; justify-content:flex-end;">
-                            <button class="btn-apply" onclick="saveTimelineSettings()">Simpan Lini Masa Program</button>
+                            <button class="btn-apply" onclick="saveReviewSettings()">Simpan Templat Review</button>
                         </div>
                     </div>
                 `;
@@ -2332,27 +2421,67 @@
             showToast("Templat notifikasi berhasil diperbarui!");
         }
 
-        function updateTimelineData(idx, key, val) {
+        function addPeriod() {
             const program = programs.find(p => p.id == progId);
-            if (!program.timeline) program.timeline = [];
-            program.timeline[idx][key] = val;
-        }
-
-        function addTimelineStage() {
-            const program = programs.find(p => p.id == progId);
-            if (!program.timeline) program.timeline = [
-                { label: "Pendaftaran Usulan", start: "2026-01-01", end: "2026-03-31", status: "Active" },
-                { label: "Review Substansi", start: "2026-04-01", end: "2026-04-30", status: "Waiting" },
-                { label: "Penetapan Pemenang", start: "2026-05-15", end: "2026-05-15", status: "Waiting" }
-            ];
-            program.timeline.push({ label: "Tahapan Baru", start: "2026-01-01", end: "2026-01-01", status: "Waiting" });
+            if (!program.periods) program.periods = [];
+            program.periods.push({ name: "Periode Baru", timeline: [] });
             switchSettingSubTab('timeline');
         }
 
-        function deleteTimelineStage(idx) {
+        function deletePeriod(pIdx) {
+            if(!confirm("Yakin ingin menghapus periode ini?")) return;
             const program = programs.find(p => p.id == progId);
-            program.timeline.splice(idx, 1);
+            program.periods.splice(pIdx, 1);
             switchSettingSubTab('timeline');
+        }
+
+        function updatePeriodData(pIdx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            program.periods[pIdx][key] = val;
+        }
+
+        function updateTimelineData(pIdx, sIdx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            if(program.periods[pIdx] && program.periods[pIdx].timeline[sIdx]) {
+                program.periods[pIdx].timeline[sIdx][key] = val;
+            }
+        }
+
+        function addTimelineStage(pIdx) {
+            const program = programs.find(p => p.id == progId);
+            if (!program.periods[pIdx].timeline) program.periods[pIdx].timeline = [];
+            program.periods[pIdx].timeline.push({ label: "Tahapan Baru", start: "2026-01-01", end: "2026-01-01", status: "Waiting" });
+            switchSettingSubTab('timeline');
+        }
+
+        function deleteTimelineStage(pIdx, sIdx) {
+            const program = programs.find(p => p.id == progId);
+            program.periods[pIdx].timeline.splice(sIdx, 1);
+            switchSettingSubTab('timeline');
+        }
+
+        function addReviewIndicator() {
+            const program = programs.find(p => p.id == progId);
+            if (!program.reviewTemplate) program.reviewTemplate = [];
+            program.reviewTemplate.push({ label: "Indikator Baru", type: "number", weight: 0, max: 100 });
+            switchSettingSubTab('review');
+        }
+
+        function updateReviewInd(idx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            program.reviewTemplate[idx][key] = val;
+            if (key === 'type' || key === 'weight') switchSettingSubTab('review');
+        }
+
+        function deleteReviewInd(idx) {
+            const program = programs.find(p => p.id == progId);
+            program.reviewTemplate.splice(idx, 1);
+            switchSettingSubTab('review');
+        }
+
+        function saveReviewSettings() {
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            showToast("Templat review berhasil disimpan!");
         }
 
         function saveTimelineSettings() {
@@ -2567,6 +2696,9 @@
             editingAttrIdx = idx;
             const program = programs.find(p => p.id == progId);
             const attr = idx >= 0 ? program.attributes[idx] : { label: '', type: 'text', group: '', required: false, desc: '' };
+            const allRoles = ['Admin', 'Manager', 'Reviewer', 'Staf', 'Dosen', 'Pengusul'];
+            const viewRoles = attr.viewRoles || allRoles;
+            const editRoles = attr.editRoles || allRoles;
 
             showModal(idx >= 0 ? 'Edit Atribut' : 'Tambah Atribut Baru', `
                 <div class="settings-form" style="max-height:70vh; overflow-y:auto; padding-right:8px;">
@@ -2590,6 +2722,7 @@
                                     <option value="date" ${attr.type === 'date' ? 'selected' : ''}>Kalender (Tanggal)</option>
                                     <option value="time" ${attr.type === 'time' ? 'selected' : ''}>Waktu (Jam)</option>
                                     <option value="url" ${attr.type === 'url' ? 'selected' : ''}>Link URL</option>
+                                    <option value="file" ${attr.type === 'file' ? 'selected' : ''}>Unggah Berkas (PDF/Img)</option>
                                     <option value="formula" ${attr.type === 'formula' ? 'selected' : ''}>Formula (Kalkulasi)</option>
                                 </select>
                             </div>
@@ -2605,6 +2738,36 @@
                     <div class="f-group">
                         <label class="f-label">Grup & Organisasi</label>
                         <input type="text" id="attr-group" value="${attr.group || ''}" placeholder="Nama Kelompok (misal: Identitas Usulan)" class="f-input">
+                    </div>
+
+                    <div class="f-group" style="background:rgba(255,165,0,0.05); padding:16px; border-radius:12px; border:1px solid rgba(255,165,0,0.2);">
+                        <label class="f-label" style="color:var(--text-main);">Hak Akses & Visibilitas (Berperan pada Role)</label>
+                        <div class="f-row">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <label style="font-size:0.75rem; color:var(--text-muted); margin:0;">Role yang Bisa Melihat</label>
+                                    <div style="font-size:0.65rem; color:var(--primary); font-weight:600;">
+                                        <span style="cursor:pointer;" onclick="document.querySelectorAll('input[name=&quot;attr-view-role&quot;]').forEach(cb => cb.checked = true)">Semua</span> &bull; 
+                                        <span style="cursor:pointer;" onclick="document.querySelectorAll('input[name=&quot;attr-view-role&quot;]').forEach(cb => cb.checked = false)">Hapus</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                    ${allRoles.map(r => `<label style="display:flex; align-items:center; gap:6px; font-size:0.75rem;"><input type="checkbox" name="attr-view-role" value="${r}" ${viewRoles.includes(r) ? 'checked' : ''}> ${r}</label>`).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <label style="font-size:0.75rem; color:var(--text-muted); margin:0;">Role yang Bisa Mengedit</label>
+                                    <div style="font-size:0.65rem; color:var(--primary); font-weight:600;">
+                                        <span style="cursor:pointer;" onclick="document.querySelectorAll('input[name=&quot;attr-edit-role&quot;]').forEach(cb => cb.checked = true)">Semua</span> &bull; 
+                                        <span style="cursor:pointer;" onclick="document.querySelectorAll('input[name=&quot;attr-edit-role&quot;]').forEach(cb => cb.checked = false)">Hapus</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                    ${allRoles.map(r => `<label style="display:flex; align-items:center; gap:6px; font-size:0.75rem;"><input type="checkbox" name="attr-edit-role" value="${r}" ${editRoles.includes(r) ? 'checked' : ''}> ${r}</label>`).join('')}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="f-group">
@@ -2650,6 +2813,9 @@
             const rawOptions = document.getElementById('attr-options').value;
             const options = rawOptions ? rawOptions.split(/[\n]/).map(o => o.trim()).filter(o => o) : [];
 
+            const viewRoles = Array.from(document.querySelectorAll('input[name="attr-view-role"]:checked')).map(cb => cb.value);
+            const editRoles = Array.from(document.querySelectorAll('input[name="attr-edit-role"]:checked')).map(cb => cb.value);
+
             const newAttr = {
                 label: document.getElementById('attr-label').value,
                 type: document.getElementById('attr-type').value,
@@ -2658,7 +2824,9 @@
                 required: document.getElementById('attr-required').checked,
                 validation: document.getElementById('attr-validation').value,
                 options: options,
-                formula: document.getElementById('attr-formula').value
+                formula: document.getElementById('attr-formula').value,
+                viewRoles: viewRoles,
+                editRoles: editRoles
             };
 
             if (editingAttrIdx >= 0) {

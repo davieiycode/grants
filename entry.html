@@ -924,8 +924,8 @@
                 newContactCard.style.display = 'none';
             } else {
                 blacklistCard.style.display = 'none';
-                const exists = registeredUsers.some(u => 
-                    u.name.toLowerCase() === nameVal || (u.email && u.email.toLowerCase() === emailVal)
+                const exists = contacts.some(u => 
+                    u.fullname.toLowerCase() === nameVal || (u.email && u.email.toLowerCase() === emailVal)
                 );
                 newContactCard.style.display = exists ? 'none' : 'flex';
             }
@@ -1072,20 +1072,36 @@
             container.innerHTML = `<h3 style="font-family:'Outfit'; font-size:1rem; color:var(--primary); margin-bottom:20px; display:flex; align-items:center; gap:8px;"><span class="material-symbols-outlined">description</span> Atribut Khusus Program</h3>`;
             
             currentProgMeta.attributes.forEach((attr, idx) => {
+                let roles = ['Pengusul'];
+                const typedName = document.getElementById('p-name') ? document.getElementById('p-name').value.trim().toLowerCase() : '';
+                if (typedName) {
+                    const user = contacts.find(c => c.fullname.toLowerCase().includes(typedName) || typedName.includes(c.fullname.toLowerCase()));
+                    if (user && user.role) roles.push(user.role);
+                }
+
+                if (attr.viewRoles && attr.viewRoles.length > 0 && !attr.viewRoles.some(r => roles.includes(r))) return;
+
+                let canEdit = true;
+                if (attr.editRoles && attr.editRoles.length > 0) {
+                    canEdit = attr.editRoles.some(r => roles.includes(r));
+                }
+
                 const group = document.createElement('div');
                 group.className = 'form-group';
+                if (!canEdit) group.style.opacity = '0.8';
                 
                 let inputHtml = '';
                 const fieldId = `custom-field-${idx}`;
-                const requiredAttr = attr.required ? 'required data-required="true"' : '';
+                const disabledStr = canEdit ? '' : 'disabled';
+                const requiredAttr = (attr.required && canEdit) ? 'required data-required="true"' : '';
                 const validationAttr = attr.validation ? `pattern="${attr.validation}"` : '';
                 
                 if (attr.type === 'text' || attr.type === 'url' || attr.type === 'number' || attr.type === 'date' || attr.type === 'time') {
-                    inputHtml = `<input type="${attr.type}" id="${fieldId}" placeholder="${attr.label}" ${requiredAttr} ${validationAttr} oninput="validateCurrentStep()">`;
+                    inputHtml = `<input type="${attr.type}" id="${fieldId}" placeholder="${attr.label}" ${requiredAttr} ${validationAttr} ${disabledStr} oninput="validateCurrentStep()">`;
                 } else if (attr.type === 'longtext') {
-                    inputHtml = `<textarea id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none; min-height:100px;" placeholder="${attr.label}" ${requiredAttr} oninput="validateCurrentStep()"></textarea>`;
+                    inputHtml = `<textarea id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none; min-height:100px;" placeholder="${attr.label}" ${requiredAttr} ${disabledStr} oninput="validateCurrentStep()"></textarea>`;
                 } else if (attr.type === 'dropdown') {
-                    inputHtml = `<select id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none;" ${requiredAttr} onchange="validateCurrentStep()">
+                    inputHtml = `<select id="${fieldId}" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--background); color:var(--text-main); font-size:1rem; outline:none;" ${requiredAttr} ${disabledStr} onchange="validateCurrentStep()">
                         <option value="">-- Pilih ${attr.label} --</option>
                         ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
                     </select>`;
@@ -1093,16 +1109,16 @@
                     const options = attr.type === 'yes no' ? ['Ya', 'Tidak'] : attr.options;
                     inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; padding:8px 0;">
                         ${options.map((o, oi) => `
-                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
-                                <input type="radio" name="${fieldId}" value="${o}" style="width:auto;" ${requiredAttr} onchange="validateCurrentStep()"> ${o}
+                            <label style="display:flex; align-items:center; gap:8px; cursor:${canEdit ? 'pointer' : 'default'}; font-weight:400;">
+                                <input type="radio" name="${fieldId}" value="${o}" style="width:auto;" ${requiredAttr} ${disabledStr} onchange="validateCurrentStep()"> ${o}
                             </label>
                         `).join('')}
                     </div>`;
                 } else if (attr.type === 'multiple options') {
                     inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; padding:8px 0;">
                         ${attr.options.map((o, oi) => `
-                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
-                                <input type="checkbox" name="${fieldId}" value="${o}" style="width:auto;" onchange="validateCurrentStep()"> ${o}
+                            <label style="display:flex; align-items:center; gap:8px; cursor:${canEdit ? 'pointer' : 'default'}; font-weight:400;">
+                                <input type="checkbox" name="${fieldId}" value="${o}" style="width:auto;" ${disabledStr} onchange="validateCurrentStep()"> ${o}
                             </label>
                         `).join('')}
                     </div>`;
@@ -1112,7 +1128,7 @@
                 }
 
                 group.innerHTML = `
-                    <label>${attr.label} ${attr.required ? '<span style="color:var(--error)">*</span>' : ''}</label>
+                    <label>${attr.label} ${attr.required && canEdit ? '<span style="color:var(--error)">*</span>' : ''} ${canEdit ? '' : '<span style="font-size:0.65rem; color:var(--text-muted); font-weight:400; background:var(--background); padding:2px 6px; border-radius:4px; margin-left:8px; border:1px solid var(--border);">Hanya Lihat</span>'}</label>
                     ${inputHtml}
                     ${attr.desc ? `<div class="helper-text">${attr.desc}</div>` : ''}
                 `;

@@ -107,8 +107,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
+            grid-template-columns: 1fr 1fr; gap: 32px;
         }
 
         .detail-card {
@@ -239,6 +238,19 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Review Styles */
+        .tab-btn:hover { color: var(--primary) !important; }
+        .review-card { padding:24px; border-radius:16px; border:1px solid var(--border); background:white; position:relative; }
+        .review-card .reviewer-name { font-weight:700; font-size:1rem; margin-bottom:4px; }
+        .review-card .review-meta { font-size:0.8rem; color:var(--text-muted); margin-bottom:16px; }
+        .review-score-badge { position:absolute; top:24px; right:24px; background:rgba(99,102,241,0.1); color:var(--primary); padding:4px 12px; border-radius:8px; font-weight:700; font-size:1.1rem; }
+        
+        #modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; z-index:1000; opacity:0; transition:0.3s; padding:20px; }
+        #modal-overlay.show { opacity:1; }
+        .modal-content { background:white; width:100%; max-width:600px; border-radius:24px; padding:32px; transform:translateY(20px); transition:0.3s; max-height:90vh; overflow-y:auto; }
+        #modal-overlay.show .modal-content { transform:translateY(0); }
+        .file-preview { margin-top:12px; padding:12px; border:1px dashed var(--border); border-radius:12px; display:flex; align-items:center; justify-content:space-between; background:rgba(99,102,241,0.02); }
     </style>
 </head>
 
@@ -248,6 +260,11 @@
             <div class="logo-icon"><span class="material-symbols-outlined">account_balance_wallet</span></div>
             <span style="font-weight:700; font-family:'Outfit'; font-size:1.1rem;">Grants Portal</span>
         </a>
+        <div style="display:flex; align-items:center; gap:16px;">
+            <span style="font-size:0.85rem; color:var(--text-muted);">Simulasi Login:</span>
+            <select id="mock-login" onchange="changeMockUser()" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.85rem; outline:none;">
+            </select>
+        </div>
     </nav>
 
     <div class="container">
@@ -307,23 +324,55 @@
                 </div>
             </div>
 
-            <!-- Right: Dynamic Attributes -->
+            <!-- Right: Dynamic Attributes & Reviews -->
             <div class="glass detail-card">
-                <h3 class="card-title">
-                    <span class="material-symbols-outlined">edit_note</span>
-                    Data Terkait Program
-                </h3>
-                <div id="dynamic-form-container" class="settings-form">
-                    <!-- Fields injected -->
+                <div style="display:flex; border-bottom:1px solid var(--border); margin:-32px -32px 32px -32px; padding:0 32px; margin-bottom:32px;">
+                    <button class="tab-btn active" onclick="switchMainTab('detail', this)" style="padding:20px 24px; border:none; background:none; font-family:'Outfit'; font-weight:700; color:var(--primary); cursor:pointer; border-bottom:3px solid var(--primary); font-size:1rem; transition:0.3s;">Detail Usulan</button>
+                    <button class="tab-btn" onclick="switchMainTab('review', this)" style="padding:20px 24px; border:none; background:none; font-family:'Outfit'; font-weight:700; color:var(--text-muted); cursor:pointer; font-size:1rem; transition:0.3s;">Hasil Review & Penilaian</button>
                 </div>
-                <div style="margin-top:40px; display:flex; justify-content:flex-end;">
-                    <button id="btn-save" class="btn-apply" onclick="saveChanges()"
-                        style="opacity:0.6; pointer-events:none;">
-                        <span class="material-symbols-outlined">save</span>
-                        Simpan Perubahan
-                    </button>
+
+                <div id="main-tab-detail">
+                    <h3 class="card-title">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        Data Terkait Program
+                    </h3>
+                    <div id="dynamic-form-container" class="settings-form">
+                        <!-- Fields injected -->
+                    </div>
+                    <div style="margin-top:40px; display:flex; justify-content:flex-end;">
+                        <button id="btn-save" class="btn-apply" onclick="saveChanges()"
+                            style="opacity:0.6; pointer-events:none;">
+                            <span class="material-symbols-outlined">save</span>
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+
+                <div id="main-tab-review" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                        <h3 class="card-title" style="margin:0;">
+                            <span class="material-symbols-outlined">rate_review</span>
+                            Daftar Penilaian
+                        </h3>
+                        <button class="btn-apply" id="btn-add-review" onclick="openAddReviewModal()" style="font-size:0.85rem; padding:8px 16px;">
+                            <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> Tambah Review
+                        </button>
+                    </div>
+                    <div id="reviews-history-container" style="display:flex; flex-direction:column; gap:20px;">
+                        <!-- Review cards injected -->
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <h2 id="modal-title" style="font-family:'Outfit'; font-size:1.5rem;">Tambah Penilaian</h2>
+                <button onclick="closeModal()" style="background:none; border:none; cursor:pointer; color:var(--text-muted);"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="modal-body"></div>
         </div>
     </div>
 
@@ -379,10 +428,62 @@
         const urlParams = new URLSearchParams(window.location.search);
         const proposalId = urlParams.get('id');
 
+        const registeredUsers = [
+            { id: 1, name: "Admin Utama", unit: "Pusat IT", role: "Admin", email: "admin@univ.ac.id" },
+            { id: 2, name: "Manager Hibah", unit: "Direktorat Inovasi", role: "Manager", email: "manager@univ.ac.id" },
+            { id: 3, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Staf", email: "siti@univ.ac.id" },
+            { id: 4, name: "Dr. Budi Santoso", unit: "Fakultas Sains", role: "Dosen", email: "budi@univ.ac.id" },
+            { id: 5, name: "Prof. Rahmat Hidayat", unit: "Fakultas Kedokteran", role: "Reviewer", email: "rahmat@univ.ac.id" },
+            { id: 6, name: "Pengusul Luar", unit: "Umum", role: "Pengusul", email: "tamu@univ.ac.id" }
+        ];
+
+        let currentUser = localStorage.getItem('grants_activeUser') ? JSON.parse(localStorage.getItem('grants_activeUser')) : registeredUsers[0];
+
         let currentProposal = null;
         let currentProgram = null;
 
+        function changeMockUser() {
+            const select = document.getElementById('mock-login');
+            const user = registeredUsers.find(u => u.name === select.value);
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('grants_activeUser', JSON.stringify(currentUser));
+                renderAttributes();
+            }
+        }
+
+        function userCanView(attr) {
+            if (!attr.viewRoles || attr.viewRoles.length === 0) return true;
+            let roles = [currentUser.role];
+            if (currentProposal && currentProposal.proposer) {
+                const proposerClean = currentProposal.proposer.trim().toLowerCase();
+                const currNameClean = currentUser.name.replace('Dr. ', '').replace('Prof. ', '').trim().toLowerCase();
+                if (proposerClean.includes(currNameClean) || currNameClean.includes(proposerClean)) {
+                    roles.push('Pengusul');
+                }
+            }
+            return attr.viewRoles.some(r => roles.includes(r));
+        }
+
+        function userCanEdit(attr) {
+            if (!attr.editRoles || attr.editRoles.length === 0) return true;
+            let roles = [currentUser.role];
+            if (currentProposal && currentProposal.proposer) {
+                const proposerClean = currentProposal.proposer.trim().toLowerCase();
+                const currNameClean = currentUser.name.replace('Dr. ', '').replace('Prof. ', '').trim().toLowerCase();
+                if (proposerClean.includes(currNameClean) || currNameClean.includes(proposerClean)) {
+                    roles.push('Pengusul');
+                }
+            }
+            return attr.editRoles.some(r => roles.includes(r));
+        }
+
         function init() {
+            const mockSelect = document.getElementById('mock-login');
+            if (mockSelect) {
+                mockSelect.innerHTML = registeredUsers.map(u => `<option value="${u.name}" ${u.name === currentUser.name ? 'selected' : ''}>${u.name} (${u.role})</option>`).join('');
+            }
+
             if (!proposalId) {
                 location.href = 'index.html';
                 return;
@@ -545,13 +646,19 @@
                 return;
             }
 
-            // Grouping logic
+            // Grouping logic & filter view permission
             const groups = {};
             currentProgram.attributes.forEach((attr, idx) => {
+                if (!userCanView(attr)) return;
                 const groupName = (attr.group || 'Informasi Tambahan').trim();
                 if (!groups[groupName]) groups[groupName] = [];
                 groups[groupName].push({ ...attr, originalIdx: idx });
             });
+
+            if (Object.keys(groups).length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-style:italic; font-size:0.85rem;">Tidak ada atribut yang dapat dilihat oleh role Anda.</p>';
+                return;
+            }
 
             Object.keys(groups).forEach(groupName => {
                 const groupDiv = document.createElement('div');
@@ -561,25 +668,27 @@
                 groups[groupName].forEach(attr => {
                     const val = (currentProposal.customData && currentProposal.customData[attr.label]) || '';
                     const fieldId = `attr-${attr.originalIdx}`;
+                    const canEdit = userCanEdit(attr);
+                    const disabledStr = canEdit ? '' : 'disabled';
 
                     let inputHtml = '';
                     if (attr.type === 'longtext' || attr.type === 'longtext html') {
-                        inputHtml = `<textarea id="${fieldId}" rows="4" onchange="enableSave()">${val}</textarea>`;
+                        inputHtml = `<textarea id="${fieldId}" rows="4" onchange="enableSave()" ${disabledStr}>${val}</textarea>`;
                     } else if (attr.type === 'dropdown') {
-                        inputHtml = `<select id="${fieldId}" onchange="enableSave()">
+                        inputHtml = `<select id="${fieldId}" onchange="enableSave()" ${disabledStr}>
                             <option value="">-- Pilih --</option>
                             ${attr.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
                         </select>`;
                     } else if (attr.type === 'yes no') {
-                        inputHtml = `<select id="${fieldId}" onchange="enableSave()">
+                        inputHtml = `<select id="${fieldId}" onchange="enableSave()" ${disabledStr}>
                             <option value="Ya" ${val === 'Ya' ? 'selected' : ''}>Ya</option>
                             <option value="Tidak" ${val === 'Tidak' ? 'selected' : ''}>Tidak</option>
                         </select>`;
                     } else if (attr.type === 'radio') {
                         inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
                             ${attr.options.map(o => `
-                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; cursor:pointer;">
-                                    <input type="radio" name="${fieldId}" value="${o}" ${val === o ? 'checked' : ''} onchange="enableSave()" style="width:auto;"> ${o}
+                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; cursor:${canEdit ? 'pointer' : 'default'}; opacity:${canEdit ? '1' : '0.7'};">
+                                    <input type="radio" name="${fieldId}" value="${o}" ${val === o ? 'checked' : ''} onchange="enableSave()" style="width:auto;" ${disabledStr}> ${o}
                                 </label>
                             `).join('')}
                         </div>`;
@@ -587,8 +696,8 @@
                         const currentVals = Array.isArray(val) ? val : [val];
                         inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;">
                             ${attr.options.map(o => `
-                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; padding:6px 12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
-                                    <input type="checkbox" name="${fieldId}" value="${o}" ${currentVals.includes(o) ? 'checked' : ''} onchange="enableSave()" style="width:auto;"> ${o}
+                                <label style="display:flex; align-items:center; gap:8px; font-weight:400; padding:6px 12px; border:1px solid var(--border); border-radius:8px; cursor:${canEdit ? 'pointer' : 'default'}; opacity:${canEdit ? '1' : '0.7'};">
+                                    <input type="checkbox" name="${fieldId}" value="${o}" ${currentVals.includes(o) ? 'checked' : ''} onchange="enableSave()" style="width:auto;" ${disabledStr}> ${o}
                                 </label>
                             `).join('')}
                         </div>`;
@@ -598,12 +707,12 @@
                             ${attr.formula.replace('{Anggaran}', budgetVal)}
                         </div>`;
                     } else {
-                        inputHtml = `<input type="${attr.type}" id="${fieldId}" value="${val}" onchange="enableSave()">`;
+                        inputHtml = `<input type="${attr.type}" id="${fieldId}" value="${val}" onchange="enableSave()" ${disabledStr}>`;
                     }
 
                     groupDiv.innerHTML += `
-                        <div class="form-group">
-                            <label style="font-size:0.85rem; color:var(--text-main); font-weight:600;">${attr.label}</label>
+                        <div class="form-group" style="${canEdit ? '' : 'opacity:0.8;'}">
+                            <label style="font-size:0.85rem; color:var(--text-main); font-weight:600;">${attr.label} ${canEdit ? '' : '<span style="font-size:0.65rem; color:var(--text-muted); font-weight:400; background:var(--background); padding:2px 6px; border-radius:4px; margin-left:8px; border:1px solid var(--border);">Hanya Lihat</span>'}</label>
                             ${inputHtml}
                             ${attr.desc ? `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">${attr.desc}</div>` : ''}
                         </div>
