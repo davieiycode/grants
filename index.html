@@ -2108,11 +2108,24 @@
                                     <div style="flex:1;">
                                         <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">TIPE</label>
                                         <select class="f-input" onchange="updateReviewInd(${idx}, 'type', this.value)">
+                                            <option value="text" ${ind.type === 'text' ? 'selected' : ''}>Teks Pendek</option>
+                                            <option value="longtext" ${ind.type === 'longtext' ? 'selected' : ''}>Teks Panjang</option>
                                             <option value="number" ${ind.type === 'number' ? 'selected' : ''}>Skor (Angka)</option>
-                                            <option value="longtext" ${ind.type === 'longtext' ? 'selected' : ''}>Komentar (Teks)</option>
+                                            <option value="yes no" ${ind.type === 'yes no' ? 'selected' : ''}>Ya / Tidak</option>
+                                            <option value="dropdown" ${ind.type === 'dropdown' ? 'selected' : ''}>Dropdown</option>
+                                            <option value="multiple options" ${ind.type === 'multiple options' ? 'selected' : ''}>Checkbox</option>
+                                            <option value="radio" ${ind.type === 'radio' ? 'selected' : ''}>Radio</option>
+                                            <option value="date" ${ind.type === 'date' ? 'selected' : ''}>Tanggal</option>
+                                            <option value="url" ${ind.type === 'url' ? 'selected' : ''}>URL</option>
                                             <option value="file" ${ind.type === 'file' ? 'selected' : ''}>Unggahan Berkas</option>
                                         </select>
                                     </div>
+                                    ${['dropdown', 'radio', 'multiple options'].includes(ind.type) ? `
+                                        <div style="flex:1.5;">
+                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">PILIHAN (PISAH DGN KOMA)</label>
+                                            <input type="text" value="${(ind.options || []).join(', ')}" class="f-input" onchange="updateReviewInd(${idx}, 'options', this.value.split(',').map(s=>s.trim()))">
+                                        </div>
+                                    ` : ''}
                                     ${ind.type === 'number' ? `
                                         <div style="width:80px;">
                                             <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BOBOT (%)</label>
@@ -3000,6 +3013,28 @@
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchUserSubTab('reviewer');
+        }
+
+        function addReviewIndicator() {
+            const program = programs.find(p => p.id == progId);
+            if (!program.reviewTemplate) program.reviewTemplate = [];
+            program.reviewTemplate.push({ label: "Kriteria Baru", type: "number", weight: 0, max: 100 });
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            switchSettingSubTab('review');
+        }
+
+        function updateReviewInd(idx, key, val) {
+            const program = programs.find(p => p.id == progId);
+            program.reviewTemplate[idx][key] = val;
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            if (key === 'type' || key === 'options') switchSettingSubTab('review');
+        }
+
+        function deleteReviewInd(idx) {
+            const program = programs.find(p => p.id == progId);
+            program.reviewTemplate.splice(idx, 1);
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            switchSettingSubTab('review');
         }
 
         function saveBlacklist() {

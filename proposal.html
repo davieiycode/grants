@@ -549,21 +549,54 @@
                     </div>
                     <hr style="margin:24px 0; border:none; border-top:1px solid var(--border);">
                     <div id="rev-template-fields">
-                        ${template.map((t, idx) => `
-                            <div class="form-group">
-                                <label>${t.label} ${t.weight ? `(Bobot ${t.weight}%)` : ''}</label>
-                                ${t.type === 'number' ? `<input type="number" id="rev-val-${idx}" placeholder="0 - ${t.max || 100}" class="f-input" data-label="${t.label}" data-type="${t.type}" data-weight="${t.weight || 0}">` :
-                                   t.type === 'file' ? `
-                                        <div id="file-cont-${idx}" class="file-preview">
-                                            <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
-                                            <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem;">Pilih Berkas</button>
-                                        </div>
-                                        <input type="hidden" id="rev-val-${idx}" data-label="${t.label}" data-type="${t.type}">
-                                   ` : 
-                                   `<textarea id="rev-val-${idx}" rows="3" class="f-input" data-label="${t.label}" data-type="${t.type}"></textarea>`
-                                }
-                            </div>
-                        `).join('')}
+                        ${template.map((t, idx) => {
+                            const fieldId = `rev-val-${idx}`;
+                            let inputHtml = "";
+                            if (t.type === 'number') {
+                                inputHtml = `<input type="number" id="${fieldId}" placeholder="0 - ${t.max || 100}" class="f-input" data-label="${t.label}" data-type="${t.type}" data-weight="${t.weight || 0}">`;
+                            } else if (t.type === 'file') {
+                                inputHtml = `
+                                    <div id="file-cont-${idx}" class="file-preview">
+                                        <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
+                                        <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem;">Pilih Berkas</button>
+                                    </div>
+                                    <input type="hidden" id="${fieldId}" data-label="${t.label}" data-type="${t.type}">
+                                `;
+                            } else if (t.type === 'dropdown') {
+                                inputHtml = `<select id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">
+                                    <option value="">-- Pilih --</option>
+                                    ${(t.options || []).map(o => `<option value="${o}">${o}</option>`).join('')}
+                                </select>`;
+                            } else if (t.type === 'yes no' || t.type === 'radio') {
+                                const opts = t.type === 'yes no' ? ['Ya', 'Tidak'] : (t.options || []);
+                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
+                                    ${opts.map(o => `
+                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                                            <input type="radio" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:auto;"> ${o}
+                                        </label>
+                                    `).join('')}
+                                </div>`;
+                            } else if (t.type === 'multiple options') {
+                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
+                                    ${(t.options || []).map(o => `
+                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                                            <input type="checkbox" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:auto;"> ${o}
+                                        </label>
+                                    `).join('')}
+                                </div>`;
+                            } else if (t.type === 'longtext') {
+                                inputHtml = `<textarea id="${fieldId}" rows="3" class="f-input" data-label="${t.label}" data-type="${t.type}"></textarea>`;
+                            } else {
+                                inputHtml = `<input type="${t.type === 'text' ? 'text' : t.type}" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">`;
+                            }
+
+                            return `
+                                <div class="form-group">
+                                    <label>${t.label} ${t.weight ? `(Bobot ${t.weight}%)` : ''}</label>
+                                    ${inputHtml}
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                     <div style="margin-top:32px; display:flex; justify-content:flex-end;">
                         <button class="btn-apply" onclick="saveReview()">Simpan Penilaian</button>
@@ -591,13 +624,29 @@
         }
 
         function saveReview() {
+            const template = currentProgram.reviewTemplate || [];
             const items = [];
-            document.querySelectorAll('[id^="rev-val-"]').forEach(el => {
+            
+            template.forEach((t, idx) => {
+                const fieldId = `rev-val-${idx}`;
+                let value = "";
+
+                if (t.type === 'yes no' || t.type === 'radio') {
+                    const checked = document.querySelector(`input[name="${fieldId}"]:checked`);
+                    value = checked ? checked.value : "";
+                } else if (t.type === 'multiple options') {
+                    const checked = Array.from(document.querySelectorAll(`input[name="${fieldId}"]:checked`)).map(c => c.value);
+                    value = checked;
+                } else {
+                    const el = document.getElementById(fieldId);
+                    value = el ? el.value : "";
+                }
+
                 items.push({
-                    label: el.dataset.label,
-                    type: el.dataset.type,
-                    value: el.value,
-                    weight: el.dataset.weight || 0
+                    label: t.label,
+                    type: t.type,
+                    value: value,
+                    weight: t.weight || 0
                 });
             });
 
