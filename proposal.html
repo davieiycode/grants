@@ -351,19 +351,109 @@
         .dropdown-item div:first-child { font-weight: 700; color: var(--text-main); }
         .dropdown-item div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
+        /* TOAST */
         #toast {
-            position: fixed; bottom: 32px; right: 32px;
+            position: fixed; bottom: 24px; right: 24px;
             background: var(--text-main); color: white;
-            padding: 16px 28px; border-radius: 16px;
-            z-index: 3000; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            transform: translateY(120px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 14px 24px; border-radius: 14px;
+            z-index: 3000; box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+            transform: translateY(100px); transition: 0.35s cubic-bezier(0.175,0.885,0.32,1.2);
+            font-weight: 600; font-size: 0.9rem;
         }
         #toast.show { transform: translateY(0); }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #e0deda; border-radius: 10px; }
 
-        @media (max-width: 1000px) { .card-grid { grid-template-columns: 1fr; } }
+        /* ===================
+           RESPONSIVE — TABLET (<= 1000px)
+        =================== */
+        @media (max-width: 1000px) {
+            .card-grid { grid-template-columns: 1fr; }
+            .detail-card { height: auto; }
+            .container { padding: 32px 20px 60px; }
+        }
+
+        /* ===================
+           RESPONSIVE — MOBILE (<= 640px)
+        =================== */
+        @media (max-width: 640px) {
+            nav { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+            nav .logo span:not(.material-symbols-outlined) { font-size: 1rem; }
+            nav select { font-size: 0.8rem; padding: 5px 10px; }
+
+            .container { padding: 16px 12px 56px; }
+
+            .header-row { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 20px; }
+            .back-btn { font-size: 0.85rem; padding: 6px 12px; }
+
+            .detail-card { padding: 20px; border-radius: var(--radius-lg); }
+            .card-title { font-size: 1rem; margin-bottom: 16px; }
+
+            .info-group { margin-bottom: 18px; }
+            .info-value { font-size: 0.92rem; }
+
+            /* Status badge stacks nicely */
+            #disp-status-container { margin-top: 4px; }
+
+            /* Tab header scrolls on mobile */
+            .detail-card > div[style*="display:flex"][style*="border-bottom"] {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .tab-btn { padding: 10px 14px; font-size: 0.85rem; white-space: nowrap; }
+
+            /* Review cards */
+            .review-card { padding: 18px 16px; }
+            .review-score-badge { position: static; display: inline-block; margin-bottom: 12px; font-size: 1rem; padding: 6px 14px; }
+
+            /* Modal fills from bottom */
+            #modal-overlay {
+                align-items: flex-end;
+                padding: 0;
+            }
+            .modal-content {
+                border-radius: 20px 20px 0 0;
+                padding: 24px 16px;
+                max-height: 92vh;
+                max-width: 100%;
+            }
+
+            /* Form grid becomes single column on mobile */
+            .form-group [style*="grid-template-columns: 1fr 1fr"],
+            .form-group div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Kelola status section */
+            .f-input { padding: 12px 14px; font-size: 0.88rem; }
+
+            .btn-apply { padding: 12px 20px; font-size: 0.88rem; }
+            .btn-icon { width: 38px; height: 38px; }
+
+            /* Right side tab content */
+            #main-tab-detail, #main-tab-review { padding: 20px 16px; }
+
+            #btn-add-review { font-size: 0.82rem; padding: 8px 14px; }
+
+            .group-container { padding: 28px 18px; margin-bottom: 24px; }
+            .group-header { left: 16px; font-size: 0.65rem; padding: 3px 14px; }
+
+            /* Save button full width on mobile */
+            #btn-save { width: 100%; }
+
+            #toast { bottom: 16px; right: 12px; left: 12px; text-align: center; }
+        }
+
+        /* ===================
+           RESPONSIVE — SMALL MOBILE (<= 380px)
+        =================== */
+        @media (max-width: 380px) {
+            .detail-card { padding: 16px 12px; }
+            .card-title { font-size: 0.92rem; }
+            .tab-btn { font-size: 0.78rem; padding: 8px 10px; }
+        }
 
     </style>
 </head>
