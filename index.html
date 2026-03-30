@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -16,7 +16,7 @@
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
-            --primary-soft: rgba(79,70,229,0.08);
+            --primary-soft: rgba(79, 70, 229, 0.08);
             --secondary: #059669;
             --background: #fbf9f6;
             --surface: #ffffff;
@@ -25,12 +25,12 @@
             --border: #e3e1db;
             --paper-edge: #edeae4;
             --error: #dc2626;
-            --shadow-paper: 0 2px 16px rgba(0,0,0,0.04);
-            --shadow-float: 0 16px 40px -8px rgba(0,0,0,0.10);
+            --shadow-paper: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-float: 0 16px 40px -8px rgba(0, 0, 0, 0.10);
             --radius-md: 12px;
             --radius-lg: 18px;
             --radius-xl: 24px;
-            --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+            --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
         }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
         body{font-family:'Inter',sans-serif;background:var(--background);color:var(--text-main);line-height:1.6;min-height:100vh;overflow-x:hidden;}
@@ -102,49 +102,80 @@
         tr:last-child td{border-bottom:none;}
         tr:hover td{background:#fdfcfb;}
         /* FORMS */
-        label{font-weight:600;font-size:0.875rem;color:var(--text-main);}
-        input,select,textarea{font-family:inherit;font-size:0.9rem;}
-        .f-input,select.f-input,textarea.f-input{width:100%;padding:12px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:#fafaf8;color:var(--text-main);font-family:inherit;font-size:0.9rem;outline:none;transition:var(--transition);}
-        .f-input:focus{background:white;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,0.1);}
-        .form-group{display:flex;flex-direction:column;gap:8px;}
-        .settings-form{display:flex;flex-direction:column;gap:18px;}
-        .f-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-        .f-group{margin-bottom:18px;}
-        .f-label{display:block;font-size:0.78rem;font-weight:800;color:var(--text-muted);margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase;}
-        .empty-state{text-align:center;padding:60px 24px;color:var(--text-muted);}
-        .empty-icon{font-size:52px;margin-bottom:14px;opacity:0.2;display:block;}
-        /* SETTINGS */
-        .settings-container{display:grid;grid-template-columns:210px 1fr;gap:28px;min-height:400px;}
-        .settings-sidebar{display:flex;flex-direction:column;gap:6px;}
-        .side-tab{padding:12px 16px;border-radius:11px;border:none;background:transparent;color:var(--text-muted);font-weight:700;font-size:0.875rem;text-align:left;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:10px;font-family:inherit;}
-        .side-tab:hover{background:#f1efeb;color:var(--text-main);}
-        .side-tab.active{background:var(--text-main);color:white;}
-        .config-card{background:var(--surface);border:1px solid var(--paper-edge);padding:28px;border-radius:var(--radius-xl);margin-bottom:20px;box-shadow:var(--shadow-paper);}
-        .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--paper-edge);}
-        .toggle-row:last-child{border-bottom:none;}
-        .chip-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-        .chip{padding:4px 12px;background:var(--primary-soft);color:var(--primary);border-radius:20px;font-size:0.8rem;font-weight:600;display:flex;align-items:center;gap:6px;}
-        .chip .remove{cursor:pointer;}
-        /* TOGGLE SWITCH */
-        .switch{position:relative;display:inline-block;width:44px;height:24px;}
-        .switch input{opacity:0;width:0;height:0;}
-        .slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:34px;transition:.3s;}
-        .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;}
-        input:checked+.slider{background:var(--primary);}
-        input:checked+.slider:before{transform:translateX(20px);}
-        /* COLLAPSIBLES */
-        .collapsible-card{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
-        .collapsible-card.expanded{max-height:3000px;margin-top:12px;padding:16px;}
-        /* MODALS */
-        #modal-overlay,.modal-overlay{position:fixed;inset:0;background:rgba(26,28,30,0.45);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.25s;padding:0;}
-        #modal-overlay.show,.modal-overlay.show{opacity:1;pointer-events:all;}
-        #modal-overlay .modal-content,.modal-card{width:100%;max-width:600px;background:white;border-radius:20px 20px 0 0;padding:32px 28px;box-shadow:0 -6px 40px rgba(0,0,0,0.12);transform:translateY(32px);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);max-height:90vh;overflow-y:auto;border:1px solid var(--paper-edge);}
-        #modal-overlay.show .modal-content,.modal-overlay.show .modal-card{transform:translateY(0);}
-        /* DROPDOWNS */
-        .searchable-select{position:relative;width:100%;}
-        .dropdown-list{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:220px;overflow-y:auto;z-index:1100;background:white;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-float);padding:6px;display:none;}
-        .dropdown-list div,.dropdown-item{padding:10px 14px;cursor:pointer;border-radius:9px;font-size:0.88rem;transition:background 0.15s;}
-        .dropdown-list div:hover,.dropdown-item:hover{background:#f3f4f6;color:var(--primary);}
+        label { font-weight: 700; font-size: 0.85rem; color: var(--text-main); margin-bottom: 6px; display: block; }
+        input, select, textarea { font-family: inherit; font-size: 0.9rem; }
+        
+        .f-input, select.f-input, textarea.f-input { 
+            width: 100%; padding: 12px 16px; border-radius: var(--radius-md); 
+            border: 1px solid var(--border); background: #fafafa; color: var(--text-main); 
+            outline: none; transition: var(--transition); appearance: none;
+        }
+        .f-input:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        textarea.f-input { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+        /* CUSTOM RADIO & CHECKBOX (Paper Style) */
+        input[type="radio"], input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px; border: 2px solid var(--border);
+            border-radius: 4px; background: white; cursor: pointer;
+            position: relative; transition: var(--transition); vertical-align: middle;
+        }
+        input[type="radio"] { border-radius: 50%; }
+        input[type="radio"]:checked, input[type="checkbox"]:checked {
+            background: var(--primary); border-color: var(--primary);
+        }
+        input[type="radio"]:checked::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 6px; height: 6px; background: white; border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="checkbox"]:checked::after {
+            content: 'check'; font-family: 'Material Symbols Outlined';
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; font-size: 14px; font-weight: bold;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px; }
+        .f-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .f-group { margin-bottom: 18px; }
+        .f-label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+        
+        /* MODALS & DIALOGS */
+        #modal-overlay, .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(4px); display: none; align-items: center; 
+            justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.3s;
+            padding: 20px;
+        }
+        #modal-overlay.show, .modal-overlay.show { opacity: 1; display: flex; }
+        
+        .modal-content, .modal-card { 
+            width: 100%; max-width: 640px; background: white; border-radius: var(--radius-xl); 
+            padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); 
+            max-height: 90vh; overflow-y: auto; border: 1px solid var(--paper-edge);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            scrollbar-width: thin;
+        }
+        #modal-overlay.show .modal-content, .modal-overlay.show .modal-card { transform: translateY(0); }
+
+        /* DROPDOWNS & SEARCHABLE SELECT */
+        .searchable-select { position: relative; width: 100%; }
+        .dropdown-list { 
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0; 
+            max-height: 250px; overflow-y: auto; z-index: 2100; background: white; 
+            border: 1px solid var(--border); border-radius: 16px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 8px; display: none;
+            animation: slideDown 0.2s ease;
+        }
+        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+        .dropdown-item { padding: 12px 16px; cursor: pointer; border-radius: 10px; font-size: 0.9rem; transition: var(--transition); color: var(--text-main); }
+        .dropdown-item:hover { background: #f3f4f6; color: var(--primary); }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: #e2e1dc; border-radius: 10px; border: 2px solid white; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1cfc7; }
+
         /* PROGRAM NAV WRAPPER */
         .program-nav-wrapper{margin-bottom:20px;}
         .header-top-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
@@ -1269,14 +1300,14 @@
 
             showModal(isEdit ? 'Ubah Transaksi' : 'Transaksi Baru', `
                 <div class="settings-form" style="padding:10px;">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                        <div class="form-group">
-                            <label>Nama Transaksi</label>
-                            <input type="text" id="tx-title" value="${data.title}" placeholder="Contoh: Honor Reviewer">
+                    <div class="f-row">
+                        <div class="f-group">
+                            <label class="f-label">Nama Transaksi</label>
+                            <input type="text" id="tx-title" class="f-input" value="${data.title}" placeholder="Contoh: Honor Reviewer">
                         </div>
-                        <div class="form-group">
-                            <label>Periode Tahapan</label>
-                            <select id="tx-period">
+                        <div class="f-group">
+                            <label class="f-label">Periode Tahapan</label>
+                            <select id="tx-period" class="f-input">
                                 <option value="">-- Tanpa Periode --</option>
                                 ${programPeriods.map(p => `
                                     <option value="${p.label}" ${data.linkedPeriod === p.label ? 'selected' : ''}>${p.label}</option>
@@ -1285,10 +1316,11 @@
                         </div>
                     </div>
                     
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px;">
-                        <div class="form-group">
-                            <label>Usulan Terkait (${linkedIds.length} Terpilih)</label>
-                            <div style="max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-md); padding:8px 12px; background:var(--background);">
+                    <div class="f-row" style="margin-top:20px;">
+                        <div class="f-group">
+                            <label class="f-label">Usulan Terkait (${linkedIds.length} Terpilih)</label>
+                            <input type="text" placeholder="Cari Judul / Pengusul..." class="f-input" style="padding:8px 12px; font-size:0.8rem; margin-bottom:12px; height:34px;" onkeyup="filterLinkedProposals(this)">
+                            <div id="linked-proposals-list" style="max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-md); padding:8px 12px; background:var(--background);">
                                 ${programProposals.length === 0 ? '<div style="font-size:0.85rem; color:var(--text-muted); padding:8px 0;">Belum ada usulan masuk.</div>' : 
                                     programProposals.map(p => `
                                         <label style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.03); cursor:pointer;">
@@ -1302,9 +1334,9 @@
                                 }
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Catatan Tambahan</label>
-                            <textarea id="tx-notes" style="height:115px; resize:none;" placeholder="Catatan internal transaksi...">${data.notes || ''}</textarea>
+                        <div class="f-group">
+                            <label class="f-label">Catatan Tambahan</label>
+                            <textarea class="f-input" id="tx-notes" style="height:115px; resize:none;" placeholder="Catatan internal transaksi...">${data.notes || ''}</textarea>
                             
                             <label style="margin-top:16px;">Dokumen Pendukung (Invoice/Bukti)</label>
                             <div id="finance-file-cont" style="display:flex; align-items:center; gap:12px; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; background:white;">
@@ -1316,26 +1348,26 @@
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:24px;">
-                        <div class="form-group">
-                            <label>Kategori</label>
-                            <select id="tx-cat">
+                    <div class="f-row" style="margin-top:24px;">
+                        <div class="f-group">
+                            <label class="f-label">Kategori</label>
+                            <select id="tx-cat" class="f-input">
                                 <option value="Budgeting" ${data.cat === 'Budgeting' ? 'selected' : ''}>Budgeting</option>
                                 <option value="Payout" ${data.cat === 'Payout' ? 'selected' : ''}>Payout</option>
                                 <option value="Operational" ${data.cat === 'Operational' ? 'selected' : ''}>Operational</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Tanggal</label>
-                            <input type="date" id="tx-date" value="${data.date}">
+                        <div class="f-group">
+                            <label class="f-label">Tanggal</label>
+                            <input type="date" id="tx-date" value="${data.date}" class="f-input">
                         </div>
-                        <div class="form-group">
-                            <label>Jumlah (Rp)</label>
-                            <input type="text" id="tx-amount" value="${data.amount}" placeholder="Contoh: 10.000.000">
+                        <div class="f-group">
+                            <label class="f-label">Jumlah (Rp)</label>
+                            <input type="text" id="tx-amount" value="${data.amount}" placeholder="Contoh: 10.000.000" class="f-input">
                         </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="tx-status">
+                        <div class="f-group">
+                            <label class="f-label">Status</label>
+                            <select id="tx-status" class="f-input">
                                 <option value="Pending" ${data.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="Approved" ${data.status === 'Approved' ? 'selected' : ''}>Approved</option>
                                 <option value="Completed" ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
@@ -1415,7 +1447,7 @@
                 <div class="searchable-select" style="font-size: 0.8rem;">
                     <input type="text" placeholder="Cari atribut..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.75rem;">
                     <div class="dropdown-list">
-                        ${(program.attributes || []).map(a => `<div onclick="selectGeneric(this, '${a.label}'); ${onSelectStr}">${a.label}</div>`).join('')}
+                        ${(program.attributes || []).map(a => `<div class="dropdown-item" onclick="selectGeneric(this, '${a.label}'); ${onSelectStr}">${a.label}</div>`).join('')}
                     </div>
                 </div>
             `;
@@ -1426,7 +1458,10 @@
                 <div class="searchable-select" style="max-width:300px;">
                     <input type="text" placeholder="${placeholder}" onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" style="padding: 6px 10px; font-size: 0.8rem;">
                     <div class="dropdown-list">
-                        ${registeredUsers.map(u => `<div onclick="selectGeneric(this, '${u.name}'); ${onSelectStr}">${u.name} (${u.unit})</div>`).join('')}
+                        ${registeredUsers.map(u => `<div class="dropdown-item" onclick="selectGeneric(this, '${u.name}'); ${onSelectStr}">
+                            <div style="font-weight:700;">${u.name}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${u.unit}</div>
+                        </div>`).join('')}
                     </div>
                 </div>
             `;
@@ -1454,7 +1489,7 @@
                         <div class="settings-form">
                             <div class="form-group">
                                 <label>Nama program</label>
-                                <input type="text" value="${program.name}">
+                                <input type="text" value="${program.name}" class="f-input">
                             </div>
                             <div class="toggle-row" style="border:none;">
                                 <div>
@@ -1491,13 +1526,13 @@
                             </div>
                             <div class="form-group">
                                 <label>Maksimal usulan per pengusul</label>
-                                <input type="number" id="set-max-sub" value="1">
+                                <input type="number" id="set-max-sub" value="1" class="f-input">
                             </div>
                             <div class="form-group">
-                                <label>Maksimal dana diterima per pengusul (Total)</label>
+                                <label class="f-label">Maksimal dana diterima (Total)</label>
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <span style="font-weight:600;">Rp</span>
-                                    <input type="text" id="set-max-funds" value="100.000.000" style="flex:1;">
+                                    <input type="text" id="set-max-funds" value="100.000.000" class="f-input" style="flex:1;">
                                 </div>
                             </div>
                             <button class="btn-apply" onclick="saveInfoSettings()" style="margin-top:12px; width:fit-content;">Simpan perubahan</button>
@@ -1606,8 +1641,8 @@
                                         <button class="btn-icon" onclick="deleteStatus(${idx})" style="color:var(--error); border:none;"><span class="material-symbols-outlined">delete</span></button>
                                     </div>
                                     <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:10px; border:1px dashed var(--border);">
-                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">AUTO-TRIGGER FORMULA (OPSIONAL)</label>
-                                        <input type="text" value="${s.trigger || ''}" placeholder="Contoh: {Total Skor} > 80" class="f-input" style="font-size:0.8rem; padding:8px; font-family:monospace;" onchange="updateStatusData(${idx}, 'trigger', this.value)">
+                                        <label class="f-label">AUTO-TRIGGER FORMULA (OPSIONAL)</label>
+                                        <input type="text" value="${s.trigger || ''}" placeholder="Contoh: {Total Skor} > 80" class="f-input" style="font-size:0.8rem; padding:8px 12px; font-family:monospace;" onchange="updateStatusData(${idx}, 'trigger', this.value)">
                                         <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">Satu status yang terpenuhi formulanya akan menjadi status otomatis bagi usulan ini.</div>
                                     </div>
                                 </div>
@@ -1761,11 +1796,11 @@
                             ${template.map((ind, idx) => `
                                 <div class="glass" style="padding:20px; border-radius:16px; border:1px solid var(--border); display:flex; gap:16px; align-items:center;">
                                     <div style="flex:2;">
-                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">LABEL KRITERIA</label>
+                                        <label class="f-label">LABEL KRITERIA</label>
                                         <input type="text" value="${ind.label}" class="f-input" onchange="updateReviewInd(${idx}, 'label', this.value)" placeholder="Misal: Mutu Penelitian">
                                     </div>
                                     <div style="flex:1;">
-                                        <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">TIPE</label>
+                                        <label class="f-label">TIPE</label>
                                         <select class="f-input" onchange="updateReviewInd(${idx}, 'type', this.value)">
                                             <option value="text" ${ind.type === 'text' ? 'selected' : ''}>Teks Pendek</option>
                                             <option value="longtext" ${ind.type === 'longtext' ? 'selected' : ''}>Teks Panjang</option>
@@ -1781,17 +1816,17 @@
                                     </div>
                                     ${['dropdown', 'radio', 'multiple options'].includes(ind.type) ? `
                                         <div style="flex:1.5;">
-                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">PILIHAN (PISAH DGN KOMA)</label>
+                                            <label class="f-label">PILIHAN (PISAH DGN KOMA)</label>
                                             <input type="text" value="${(ind.options || []).join(', ')}" class="f-input" onchange="updateReviewInd(${idx}, 'options', this.value.split(',').map(s=>s.trim()))">
                                         </div>
                                     ` : ''}
                                     ${ind.type === 'number' ? `
                                         <div style="width:80px;">
-                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BOBOT (%)</label>
+                                            <label class="f-label">BOBOT (%)</label>
                                             <input type="number" value="${ind.weight || 0}" class="f-input" onchange="updateReviewInd(${idx}, 'weight', this.value)">
                                         </div>
                                         <div style="width:80px;">
-                                            <label style="font-size:0.65rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">MAX SKOR</label>
+                                            <label class="f-label">MAX SKOR</label>
                                             <input type="number" value="${ind.max || 100}" class="f-input" onchange="updateReviewInd(${idx}, 'max', this.value)">
                                         </div>
                                     ` : '<div style="flex:1;"></div>'}
@@ -2288,6 +2323,17 @@
             });
         }
 
+        function filterLinkedProposals(input) {
+            const query = input.value.toLowerCase();
+            const listContainer = document.getElementById("linked-proposals-list");
+            if(!listContainer) return;
+            const labels = listContainer.querySelectorAll("label");
+            labels.forEach(label => {
+                const text = label.innerText.toLowerCase();
+                label.style.display = text.includes(query) ? "flex" : "none";
+            });
+        }
+
         function selectGeneric(el, val) {
             const container = el.closest('.searchable-select');
             const input = container.querySelector('input[type="text"]');
@@ -2587,7 +2633,7 @@
                             ${(program.reviewers || []).map(rev => {
                     const user = registeredUsers.find(u => u.name === rev) || { unit: 'Unknown' };
                     return `
-                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius: var(--radius-md);">
+                                    <div class="dropdown-item" style="cursor:default; padding:16px;">
                                         <div>
                                             <div style="font-weight:600;">${rev}</div>
                                             <div style="font-size:0.75rem; color:var(--text-muted);">Unit: ${user.unit}</div>
@@ -2622,7 +2668,7 @@
                                     <p>Belum ada user dalam daftar cekal (blacklist).</p>
                                 </div>
                             ` : program.blacklist.map((item, idx) => `
-                                <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border:1px solid var(--border); border-radius: var(--radius-md); background:rgba(239,68,68,0.02);">
+                                <div class="dropdown-item" style="cursor:default; padding:20px; border:1px solid rgba(239,68,68,0.1); background:rgba(239,68,68,0.01);">
                                     <div style="display:flex; align-items:center; gap:16px;">
                                         <div style="width:40px; height:40px; border-radius:50%; background:var(--error); color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">${item.user[0]}</div>
                                         <div>
