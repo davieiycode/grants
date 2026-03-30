@@ -13,23 +13,28 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #10b981;
+            --primary: #4f46e5;
+            --primary-soft: #eef2ff;
+            --secondary: #059669;
             --surface: #ffffff;
-            --background: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --background: #fbf9f6; /* Off-white paper background */
+            --paper-edge: #edeae4;
+            --text-main: #1a1c1e;
+            --text-muted: #6b7280;
+            --border: #e2e1dc;
             --radius-md: 12px;
-            --radius-xl: 24px;
-            --error: #ef4444;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --radius-lg: 16px;
+            --radius-xl: 32px;
+            --error: #dc2626;
+            --shadow-paper: 0 4px 20px rgba(0,0,0,0.03);
+            --shadow-focus: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
@@ -37,31 +42,26 @@
             background: var(--background);
             color: var(--text-main);
             line-height: 1.6;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 48px 24px;
         }
 
         nav {
             padding: 16px 40px;
-            border-bottom: 1px solid var(--border);
-            background: white;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--paper-edge);
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .logo {
@@ -70,14 +70,17 @@
             gap: 12px;
             text-decoration: none;
             color: var(--text-main);
+            font-family: 'Outfit';
+            font-weight: 700;
+            font-size: 1.25rem;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             background: var(--primary);
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -96,161 +99,272 @@
             gap: 8px;
             color: var(--text-muted);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.9rem;
-            transition: 0.2s;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.2s;
         }
 
         .back-btn:hover {
+            background: var(--surface);
             color: var(--primary);
+            box-shadow: var(--shadow-paper);
         }
 
         .card-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; gap: 32px;
+            grid-template-columns: 400px 1fr;
+            gap: 32px;
         }
 
         .detail-card {
-            padding: 32px;
+            background: var(--surface);
+            padding: 40px;
             border-radius: var(--radius-xl);
+            border: 1px solid var(--paper-edge);
+            box-shadow: var(--shadow-paper);
+            height: fit-content;
         }
 
         .card-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.15rem;
+            font-weight: 700;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--primary);
+            color: var(--text-main);
         }
 
         .info-group {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
 
         .info-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             color: var(--text-muted);
+            font-weight: 800;
+            margin-bottom: 6px;
             display: block;
-            margin-bottom: 4px;
         }
 
         .info-value {
-            font-weight: 600;
+            font-weight: 500;
             font-size: 1rem;
             color: var(--text-main);
         }
 
-        .settings-form select,
-        .settings-form input,
-        .settings-form textarea {
+        /* Paper Form Controls */
+        .f-input, select.f-input, textarea.f-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            background: white;
+            background: #fafafa;
+            color: var(--text-main);
             font-family: inherit;
-            font-size: 0.95rem;
-            margin-top: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            font-weight: 600;
             font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .f-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-focus);
+        }
+
+        .f-input::placeholder { color: #9ca3af; }
+
+        .form-group { margin-bottom: 24px; }
+        .form-group label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: block;
         }
 
         .btn-apply {
-            background: var(--primary);
+            background: var(--text-main);
             color: white;
             border: none;
-            padding: 12px 32px;
+            padding: 14px 28px;
             border-radius: var(--radius-md);
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.9rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: 0.3s;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s;
         }
 
         .btn-apply:hover {
-            opacity: 0.9;
+            background: var(--primary);
             transform: translateY(-1px);
         }
 
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #fbfbfb;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: white;
+        }
+
         .badge-status {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .group-container {
-            margin-bottom: 32px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
+            margin-bottom: 40px;
+            border: 1px solid var(--paper-edge);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            background: var(--surface);
+            box-shadow: var(--shadow-paper);
             position: relative;
-            background: rgba(255, 255, 255, 0.4);
         }
 
         .group-header {
             position: absolute;
             top: -12px;
-            left: 16px;
+            left: 32px;
             background: var(--primary);
             color: white;
-            padding: 2px 16px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            padding: 4px 18px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
+
+        /* Tabs & Reviews */
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .tab-btn.active { color: var(--text-main); }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 24px;
+            right: 24px;
+            height: 3.5px;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .review-card {
+            padding: 32px;
+            border-radius: 24px;
+            background: #fdfdfd;
+            border: 1px solid var(--paper-edge);
+            margin-bottom: 24px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .review-card:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .review-card .reviewer-name { font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }
+        .review-card .review-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+        
+        .review-score-badge {
+            position: absolute; top: 32px; right: 32px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            font-family: 'Outfit';
+        }
+
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; transition: 0.3s; padding: 20px;
+        }
+        #modal-overlay.show { opacity: 1; }
+        .modal-content {
+            background: white;
+            width: 100%; max-width: 640px;
+            border-radius: var(--radius-xl);
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            max-height: 90vh; overflow-y: auto;
+            border: 1px solid var(--paper-edge);
+        }
+
+        /* Dropdowns */
+        .dropdown-list {
+            position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; 
+            z-index: 1100; border: 1px solid var(--border); display: none; background: white; 
+            margin-top: 8px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+        }
+        .dropdown-item {
+            padding: 12px 18px; cursor: pointer; border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover { background: #f3f4f6; }
+        .dropdown-item div:first-child { font-weight: 700; color: var(--text-main); }
+        .dropdown-item div:last-child { font-size: 0.75rem; color: var(--text-muted); }
 
         #toast {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            background: var(--text-main);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            transform: translateY(100px);
-            transition: 0.3s;
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--text-main); color: white;
+            padding: 16px 28px; border-radius: 16px;
+            z-index: 3000; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            transform: translateY(120px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        #toast.show { transform: translateY(0); }
 
-        #toast.show {
-            transform: translateY(0);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
 
-        @media (max-width: 900px) {
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 1000px) { .card-grid { grid-template-columns: 1fr; } }
 
-        /* Review Styles */
-        .tab-btn:hover { color: var(--primary) !important; }
-        .review-card { padding:24px; border-radius:16px; border:1px solid var(--border); background:white; position:relative; }
-        .review-card .reviewer-name { font-weight:700; font-size:1rem; margin-bottom:4px; }
-        .review-card .review-meta { font-size:0.8rem; color:var(--text-muted); margin-bottom:16px; }
-        .review-score-badge { position:absolute; top:24px; right:24px; background:rgba(99,102,241,0.1); color:var(--primary); padding:4px 12px; border-radius:8px; font-weight:700; font-size:1.1rem; }
-        
-        #modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; z-index:1000; opacity:0; transition:0.3s; padding:20px; }
-        #modal-overlay.show { opacity:1; }
-        .modal-content { background:white; width:100%; max-width:600px; border-radius:24px; padding:32px; transform:translateY(20px); transition:0.3s; max-height:90vh; overflow-y:auto; }
-        #modal-overlay.show .modal-content { transform:translateY(0); }
-        .file-preview { margin-top:12px; padding:12px; border:1px dashed var(--border); border-radius:12px; display:flex; align-items:center; justify-content:space-between; background:rgba(99,102,241,0.02); }
     </style>
 </head>
 
@@ -282,84 +396,99 @@
 
         <div class="card-grid">
             <!-- Left: Basic Info -->
-            <div class="glass detail-card">
-                <h3 class="card-title">
-                    <span class="material-symbols-outlined">description</span>
-                    Informasi Utama
-                </h3>
-                <div class="info-group">
-                    <span class="info-label">Judul Usulan</span>
-                    <div class="info-value" id="disp-title" style="font-size:1.25rem; line-height:1.4;">Memuat...</div>
+            <div class="detail-card">
+                <div class="card-title" style="justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span class="material-symbols-outlined" style="color:var(--primary);">description</span>
+                        Informasi Utama
+                    </div>
+                    <button class="btn-icon" onclick="openEditBasicModal()" title="Edit Info Utama">
+                        <span class="material-symbols-outlined" style="font-size:1.25rem;">edit_square</span>
+                    </button>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                
+                <div class="info-group">
+                    <label class="info-label">Judul Usulan</label>
+                    <div class="info-value" id="disp-title" style="font-family:'Outfit'; font-size:1.35rem; line-height:1.4; color:var(--text-main); margin-top:6px;">Memuat...</div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:12px;">
                     <div class="info-group">
-                        <span class="info-label">Nama Pengusul</span>
-                        <div class="info-value" id="disp-proposer">-</div>
+                        <label class="info-label">Ketua Pengusul</label>
+                        <div class="info-value" id="disp-proposer" style="font-weight:600;">-</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">Unit / Fakultas</span>
+                        <label class="info-label">Unit / Fakultas</label>
                         <div class="info-value" id="disp-unit">-</div>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:12px;">
                     <div class="info-group">
-                        <span class="info-label">Waktu Pengajuan</span>
+                        <label class="info-label">Waktu Pengajuan</label>
                         <div class="info-value" id="disp-date">-</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">Status Saat Ini</span>
-                        <div id="disp-status-container">
-                            <span class="badge-status" id="disp-status"
-                                style="background:rgba(16,185,129,0.1); color:var(--secondary);">Baru Terkirim</span>
+                        <label class="info-label">Status Usulan</label>
+                        <div id="disp-status-container" style="margin-top:4px;">
+                            <span class="badge-status" id="disp-status">-</span>
                         </div>
                     </div>
                 </div>
-                <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
-                <div class="form-group">
-                    <label>Ubah Status Usulan</label>
-                    <select id="update-status" onchange="updateStatusBadge(); enableSave()">
-                        <!-- Options injected by JS -->
-                    </select>
-                    <div id="auto-status-hint" style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; font-style:italic;"></div>
+
+                <div style="margin-top:32px; padding-top:24px; border-top:1px solid var(--paper-edge);">
+                    <div class="form-group">
+                        <label><span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle; margin-right:4px;">settings</span> Kelola Status</label>
+                        <select id="update-status" class="f-input" onchange="updateStatusBadge(); enableSave()" style="font-weight:700;">
+                            <!-- Options injected by JS -->
+                        </select>
+                        <div id="auto-status-hint" style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; font-style:italic;"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Right: Dynamic Attributes & Reviews -->
-            <div class="glass detail-card">
-                <div style="display:flex; border-bottom:1px solid var(--border); margin:-32px -32px 32px -32px; padding:0 32px; margin-bottom:32px;">
-                    <button class="tab-btn active" onclick="switchMainTab('detail', this)" style="padding:20px 24px; border:none; background:none; font-family:'Outfit'; font-weight:700; color:var(--primary); cursor:pointer; border-bottom:3px solid var(--primary); font-size:1rem; transition:0.3s;">Detail Usulan</button>
-                    <button class="tab-btn" onclick="switchMainTab('review', this)" style="padding:20px 24px; border:none; background:none; font-family:'Outfit'; font-weight:700; color:var(--text-muted); cursor:pointer; font-size:1rem; transition:0.3s;">Hasil Review & Penilaian</button>
+            <div class="detail-card" style="padding:0; overflow:hidden;">
+                <!-- Tab Header -->
+                <div style="display:flex; background:#f9f8f6; border-bottom:1px solid var(--paper-edge); padding:0 32px;">
+                    <button class="tab-btn active" onclick="switchMainTab('detail', this)">
+                        Detail Usulan
+                    </button>
+                    <button class="tab-btn" onclick="switchMainTab('review', this)">
+                        Hasil Penilaian & Review
+                    </button>
                 </div>
 
-                <div id="main-tab-detail">
-                    <h3 class="card-title">
-                        <span class="material-symbols-outlined">edit_note</span>
-                        Data Terkait Program
-                    </h3>
-                    <div id="dynamic-form-container" class="settings-form">
+                <!-- Tab Content: Detail -->
+                <div id="main-tab-detail" style="padding:40px;">
+                    <div class="card-title">
+                        <span class="material-symbols-outlined" style="color:var(--primary);">edit_note</span>
+                        Data Terkait Usulan
+                    </div>
+                    <div id="dynamic-form-container">
                         <!-- Fields injected -->
                     </div>
                     <div style="margin-top:40px; display:flex; justify-content:flex-end;">
-                        <button id="btn-save" class="btn-apply" onclick="saveChanges()"
-                            style="opacity:0.6; pointer-events:none;">
+                        <button id="btn-save" class="btn-apply" onclick="saveChanges()" style="opacity:0.6; pointer-events:none;">
                             <span class="material-symbols-outlined">save</span>
                             Simpan Perubahan
                         </button>
                     </div>
                 </div>
 
-                <div id="main-tab-review" style="display:none;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                        <h3 class="card-title" style="margin:0;">
-                            <span class="material-symbols-outlined">rate_review</span>
+                <!-- Tab Content: Review -->
+                <div id="main-tab-review" style="display:none; padding:40px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
+                        <div class="card-title" style="margin:0;">
+                            <span class="material-symbols-outlined" style="color:var(--primary);">rate_review</span>
                             Daftar Penilaian
-                        </h3>
-                        <button class="btn-apply" id="btn-add-review" onclick="openAddReviewModal()" style="font-size:0.85rem; padding:8px 16px;">
-                            <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> Tambah Review
+                        </div>
+                        <button class="btn-apply" id="btn-add-review" onclick="openAddReviewModal()" style="font-size:0.85rem; padding:10px 18px;">
+                            <span class="material-symbols-outlined" style="font-size:1.1rem;">add_circle</span> Tambah Review
                         </button>
                     </div>
-                    <div id="reviews-history-container" style="display:flex; flex-direction:column; gap:20px;">
-                        <!-- Review cards injected -->
+                    <div id="reviews-history-container" style="display:flex; flex-direction:column; gap:24px;">
+                        <!-- Reviews injected -->
                     </div>
                 </div>
             </div>
@@ -380,9 +509,9 @@
 
     <script>
         const proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
-            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Diterima", allowMultiple: false },
-            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Sedang Direview", allowMultiple: true },
-            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Selesai", allowMultiple: false }
+            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Approved", allowMultiple: false },
+            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Under Review", allowMultiple: true },
+            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Completed", allowMultiple: false }
         ];
         const programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
             {
@@ -485,11 +614,91 @@
             const container = document.getElementById('reviews-history-container');
             if (!container) return;
             const reviews = currentProposal.reviews || [];
+            const assignments = currentProposal.assignments || [];
+
+            let html = "";
+
+            // --- PENDING ASSIGNMENTS ---
+            if (assignments.length > 0) {
+                html += `
+                    <div style="margin-bottom:32px;">
+                        <h4 style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                            <span class="material-symbols-outlined" style="font-size:16px; color:var(--primary)">pending_actions</span> Penugasan Review Tertunda
+                        </h4>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            ${assignments.map((as, idx) => {
+                                const isMe = currentUser.name === as.reviewer;
+                                return `
+                                    <div class="glass" style="padding:16px 20px; border-radius:12px; border:1px solid var(--primary); background:rgba(99,102,241,0.03); display:flex; justify-content:space-between; align-items:center;">
+                                        <div>
+                                            <div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${as.reviewer}</div>
+                                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px; display:flex; align-items:center; gap:12px;">
+                                                <span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">calendar_today</span>Tenggat: <strong style="color:var(--text-main)">${as.dueDate}</strong></span>
+                                                <span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">person</span>Oleh: ${as.assignedBy}</span>
+                                            </div>
+                                        </div>
+                                        <div style="display:flex; gap:12px; align-items:center;">
+                                            ${(isMe || currentUser.role === 'Admin') ? `
+                                                <button class="btn-apply" onclick="openAddReviewModal('${as.reviewer}')" style="font-size:0.75rem; padding:8px 16px; background:var(--secondary); height:36px;">
+                                                    <span class="material-symbols-outlined" style="font-size:16px;">edit_document</span> Isi Review
+                                                </button>
+                                            ` : `
+                                                <span style="font-size:0.7rem; background:rgba(0,0,0,0.05); color:var(--text-muted); padding:4px 10px; border-radius:20px; font-weight:600;">Menunggu Reviewer</span>
+                                            `}
+                                            ${(currentUser.role === 'Admin' || currentUser.role === 'Manager') ? `
+                                                <button class="btn-icon" onclick="removeAssignment(${idx})" style="color:var(--error); border-color:transparent; background:transparent;"><span class="material-symbols-outlined" style="font-size:20px;">close</span></button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- ASSIGNMENT FORM (Admin/Manager Only) ---
+            if (currentUser.role === 'Admin' || currentUser.role === 'Manager') {
+                const programReviewers = currentProgram.reviewers || [];
+                // Filter out reviewers already assigned
+                const availableReviewers = programReviewers.filter(r => !assignments.some(as => as.reviewer === r));
+                
+                if (availableReviewers.length > 0) {
+                    html += `
+                        <div class="glass" style="padding:24px; border-radius:16px; border:1px dashed var(--primary); background:rgba(99,102,241,0.02); margin-bottom:40px;">
+                            <div style="font-weight:700; font-family:Outfit; margin-bottom:16px; font-size:0.9rem; color:var(--primary);">Tugaskan Reviewer</div>
+                            <div style="display:grid; grid-template-columns: 1.5fr 1fr auto; gap:16px; align-items:end;">
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem; color:var(--text-muted);">Pilih Reviewer Program</label>
+                                    <select id="assign-reviewer-select" class="f-input" style="height:42px; margin-top:4px;">
+                                        <option value="">-- Pilih Nama Reviewer --</option>
+                                        ${availableReviewers.map(r => `<option value="${r}">${r}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem; color:var(--text-muted);">Due Date (Tenggat)</label>
+                                    <input type="date" id="assign-due-date" class="f-input" style="height:42px; margin-top:4px;">
+                                </div>
+                                <button class="btn-apply" onclick="assignReviewer()" style="height:42px; padding:0 24px; font-size:0.85rem;">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">person_add</span> Tugaskan
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // --- COMPLETED REVIEWS ---
+            html += `
+                <h4 style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="font-size:16px; color:var(--secondary)">task_alt</span> Hasil Review Selesai
+                </h4>
+            `;
 
             if (reviews.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">Belum ada hasil review untuk usulan ini.</div>`;
+                html += `<div style="text-align:center; padding:60px; color:var(--text-muted); border:1px dashed var(--border); border-radius:16px;">Belum ada hasil review yang diselesaikan untuk usulan ini.</div>`;
             } else {
-                container.innerHTML = reviews.map((rev, idx) => {
+                html += reviews.map((rev, idx) => {
                     const totalScore = rev.items.reduce((sum, i) => {
                         const val = parseFloat(i.value) || 0;
                         const weight = parseFloat(i.weight) || 0;
@@ -497,25 +706,25 @@
                     }, 0);
 
                     return `
-                        <div class="review-card glass">
+                        <div class="review-card glass" style="margin-bottom:20px;">
                             <div class="reviewer-name">${rev.reviewer}</div>
                             <div class="review-meta">${rev.period} • ${rev.date}</div>
                             ${totalScore > 0 ? `<div class="review-score-badge">${totalScore.toFixed(1)}</div>` : ''}
                             
-                            <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+                            <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:10px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
                                 ${rev.items.map(item => `
-                                    <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border); padding-bottom:4px;">
-                                        <span style="color:var(--text-muted)">${item.label}</span>
-                                        <span style="font-weight:600;">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px;">
+                                        <span style="color:var(--text-muted); font-size:0.8rem;">${item.label}</span>
+                                        <span style="font-weight:600; text-align:right; max-width:60%; word-break:break-word;">
                                             ${item.type === 'file' ? (item.value ? `<a href="#" onclick="alert('Buka file: ${item.value}')" style="color:var(--primary); text-decoration:none;">Lihat Berkas</a>` : '-') : item.value || '-'}
                                         </span>
                                     </div>
                                 `).join('')}
                             </div>
                             ${(currentUser.role === 'Admin' || currentUser.name === rev.reviewer) ? `
-                                <div style="margin-top:16px; display:flex; justify-content:flex-end;">
-                                    <button onclick="deleteReview(${idx})" style="background:none; border:none; color:var(--error); font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                                        <span class="material-symbols-outlined" style="font-size:14px">delete</span> Hapus Review
+                                <div style="margin-top:20px; display:flex; justify-content:flex-end; border-top:1px dashed var(--border); padding-top:12px;">
+                                    <button onclick="deleteReview(${idx})" style="background:none; border:none; color:var(--error); font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0.7;">
+                                        <span class="material-symbols-outlined" style="font-size:16px">delete</span> Hapus Review
                                     </button>
                                 </div>
                             ` : ''}
@@ -523,15 +732,157 @@
                     `;
                 }).join('');
             }
+            
+            container.innerHTML = html;
 
-            // Only Admin & Reviewer can add
+            // Admin, Manager, and Reviewer roles can add reviews manually
             const btnAdd = document.getElementById('btn-add-review');
             if (btnAdd) {
-                btnAdd.style.display = (currentUser.role === 'Admin' || currentUser.role === 'Reviewer') ? 'flex' : 'none';
+                const canReview = ['Admin', 'Reviewer', 'Manager'].includes(currentUser.role);
+                btnAdd.style.display = canReview ? 'flex' : 'none';
             }
         }
 
-        function openAddReviewModal() {
+        function openEditBasicModal() {
+            if (!['Admin', 'Manager', 'Staf'].includes(currentUser.role)) {
+                alert('Akses Ditolak: Hanya Admin, Manager, atau Staf Administrasi yang memiliki otoritas untuk mengubah data usulan.');
+                return;
+            }
+
+            const body = `
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>Judul Usulan</label>
+                        <textarea id="edit-basic-title" class="f-input" rows="4" placeholder="Tuliskan judul usulan yang baru...">${currentProposal.title}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ketua Pengusul</label>
+                        ${renderUserSearchSelect(currentProposal.proposer, "Cari nama pengusul...")}
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; font-weight:500;">Tip: Memilih pengusul dari database akan menautkan ke unit kerja yang sesuai.</p>
+                    </div>
+                    <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div>
+                            <label>Unit / Fakultas</label>
+                            <input type="text" id="edit-basic-unit" class="f-input" value="${currentProposal.unit}">
+                        </div>
+                        <div>
+                            <label>Tanggal Pengajuan</label>
+                            <input type="date" id="edit-basic-date" class="f-input" value="${currentProposal.date}">
+                        </div>
+                    </div>
+                    <div style="margin-top:40px; display:flex; justify-content:flex-end; gap:12px;">
+                        <button class="btn-icon" onclick="closeModal()" title="Batal" style="width:auto; padding:0 24px; font-weight:700;">Batal</button>
+                        <button class="btn-apply" onclick="saveBasicInfo()">Simpan Perubahan</button>
+                    </div>
+                </div>
+            `;
+            showModal('Edit Informasi Utama', body);
+        }
+
+        function filterGeneric(input) {
+            const val = input.value.toLowerCase();
+            const list = input.nextElementSibling;
+            const items = list.querySelectorAll('div');
+            items.forEach(it => {
+                if (it.innerText.toLowerCase().includes(val)) it.style.display = 'block';
+                else it.style.display = 'none';
+            });
+        }
+
+        function selectGeneric(el, val) {
+            const container = el.closest('.searchable-select');
+            const input = container.querySelector('input[type="text"]');
+            input.value = val;
+            
+            // Hide dropdown - clearing 'block' from style attribute will revert to 'none' in CSS
+            el.parentElement.style.display = '';
+
+            // Auto-fill unit if found
+            const user = registeredUsers.find(u => u.name === val);
+            if (user && document.getElementById('edit-basic-unit')) {
+                document.getElementById('edit-basic-unit').value = user.unit;
+            }
+        }
+
+        function renderUserSearchSelect(currentVal = "", placeholder = "Cari user...") {
+            return `
+                <div class="searchable-select">
+                    <input type="text" id="edit-basic-proposer" value="${currentVal}" placeholder="${placeholder}" 
+                           onfocus="this.nextElementSibling.style.display='block'" 
+                           onkeyup="filterGeneric(this)" class="f-input">
+                    <div class="dropdown-list glass">
+                        ${registeredUsers.map(u => `
+                            <div class="dropdown-item" onclick="selectGeneric(this, '${u.name}')">
+                                <div style="font-weight:600;">${u.name}</div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${u.unit}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveBasicInfo() {
+            const newTitle = document.getElementById('edit-basic-title').value;
+            const newProposer = document.getElementById('edit-basic-proposer').value;
+            const newUnit = document.getElementById('edit-basic-unit').value;
+            const newDate = document.getElementById('edit-basic-date').value;
+
+            if (!newTitle || !newProposer || !newDate) {
+                alert('Judul, Nama Pengusul, dan Tanggal tidak boleh kosong!');
+                return;
+            }
+
+            currentProposal.title = newTitle;
+            currentProposal.proposer = newProposer;
+            currentProposal.unit = newUnit;
+            currentProposal.date = newDate;
+
+            saveProposalSync();
+            closeModal();
+            
+            // Re-render UI labels
+            document.getElementById('disp-title').innerText = currentProposal.title;
+            document.getElementById('disp-proposer').innerText = currentProposal.proposer;
+            document.getElementById('disp-unit').innerText = currentProposal.unit;
+            document.getElementById('disp-date').innerText = currentProposal.date;
+
+            showToast('Informasi utama berhasil diperbarui');
+        }
+
+        function assignReviewer() {
+            const reviewer = document.getElementById('assign-reviewer-select').value;
+            const dueDate = document.getElementById('assign-due-date').value;
+            if (!reviewer || !dueDate) { alert('Harap pilih reviewer dan tentukan tenggat waktu!'); return; }
+
+            if (!currentProposal.assignments) currentProposal.assignments = [];
+            currentProposal.assignments.push({
+                reviewer: reviewer,
+                dueDate: dueDate,
+                assignedBy: currentUser.name,
+                status: 'Pending'
+            });
+
+            saveProposalSync();
+            renderReviews();
+            showToast('Reviewer berhasil ditugaskan');
+        }
+
+        function removeAssignment(idx) {
+            if (!confirm('Batalkan penugasan ini?')) return;
+            currentProposal.assignments.splice(idx, 1);
+            saveProposalSync();
+            renderReviews();
+            showToast('Penugasan dibatalkan');
+        }
+
+        function saveProposalSync() {
+            const pIdx = proposals.findIndex(p => String(p.id) === String(proposalId));
+            proposals[pIdx] = currentProposal;
+            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+        }
+
+        function openAddReviewModal(forcedReviewer = null) {
             const template = currentProgram.reviewTemplate || [
                 { label: "Kesesuaian dengan Skema", type: "number", weight: 30 },
                 { label: "Kualitas Rekam Jejak", type: "number", weight: 30 },
@@ -543,6 +894,10 @@
 
             const body = `
                 <div class="settings-form">
+                    <div class="form-group">
+                        <label>Reviewer</label>
+                        <input type="text" value="${forcedReviewer || currentUser.name}" readonly class="f-input" id="rev-name" style="background:rgba(0,0,0,0.02)">
+                    </div>
                     <div class="form-group">
                         <label>Pilih Periode/Gelombang</label>
                         <select id="rev-period" class="f-input">${periodOptions}</select>
@@ -558,7 +913,7 @@
                                 inputHtml = `
                                     <div id="file-cont-${idx}" class="file-preview">
                                         <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
-                                        <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem;">Pilih Berkas</button>
+                                        <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem; border-radius:8px;">Pilih Berkas</button>
                                     </div>
                                     <input type="hidden" id="${fieldId}" data-label="${t.label}" data-type="${t.type}">
                                 `;
@@ -569,41 +924,41 @@
                                 </select>`;
                             } else if (t.type === 'yes no' || t.type === 'radio') {
                                 const opts = t.type === 'yes no' ? ['Ya', 'Tidak'] : (t.options || []);
-                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
+                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
                                     ${opts.map(o => `
-                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
-                                            <input type="radio" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:auto;"> ${o}
+                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; cursor:pointer;">
+                                            <input type="radio" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:18px; height:18px;"> ${o}
                                         </label>
                                     `).join('')}
                                 </div>`;
                             } else if (t.type === 'multiple options') {
-                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:8px;">
+                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
                                     ${(t.options || []).map(o => `
-                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
-                                            <input type="checkbox" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:auto;"> ${o}
+                                        <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; cursor:pointer;">
+                                            <input type="checkbox" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}" style="width:18px; height:18px;"> ${o}
                                         </label>
                                     `).join('')}
                                 </div>`;
                             } else if (t.type === 'longtext') {
-                                inputHtml = `<textarea id="${fieldId}" rows="3" class="f-input" data-label="${t.label}" data-type="${t.type}"></textarea>`;
+                                inputHtml = `<textarea id="${fieldId}" rows="4" class="f-input" data-label="${t.label}" data-type="${t.type}" placeholder="Masukkan ulasan detail di sini..."></textarea>`;
                             } else {
                                 inputHtml = `<input type="${t.type === 'text' ? 'text' : t.type}" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">`;
                             }
 
                             return `
                                 <div class="form-group">
-                                    <label>${t.label} ${t.weight ? `(Bobot ${t.weight}%)` : ''}</label>
+                                    <label style="color:var(--text-main); font-weight:700;">${t.label} ${t.weight ? `<span style="color:var(--text-muted); font-weight:400;">(Bobot ${t.weight}%)</span>` : ''}</label>
                                     ${inputHtml}
                                 </div>
                             `;
                         }).join('')}
                     </div>
                     <div style="margin-top:32px; display:flex; justify-content:flex-end;">
-                        <button class="btn-apply" onclick="saveReview()">Simpan Penilaian</button>
+                        <button class="btn-apply" onclick="saveReview('${forcedReviewer}')">Simpan Hasil Penilaian</button>
                     </div>
                 </div>
             `;
-            showModal('Tambah Penilaian Baru', body);
+            showModal('Forum Penilaian Usulan', body);
         }
 
         function triggerFileUpload(containerId) {
@@ -623,7 +978,7 @@
             }
         }
 
-        function saveReview() {
+        function saveReview(forcedReviewer = null) {
             const template = currentProgram.reviewTemplate || [];
             const items = [];
             
@@ -651,7 +1006,7 @@
             });
 
             const newReview = {
-                reviewer: currentUser.name,
+                reviewer: forcedReviewer || currentUser.name,
                 period: document.getElementById('rev-period').value,
                 date: new Date().toLocaleDateString('id-ID'),
                 items: items
@@ -660,11 +1015,12 @@
             if (!currentProposal.reviews) currentProposal.reviews = [];
             currentProposal.reviews.push(newReview);
 
-            // Save to storage
-            const pIdx = proposals.findIndex(p => String(p.id) === String(proposalId));
-            proposals[pIdx] = currentProposal;
-            localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+            // If this was from an assignment, remove it
+            if (forcedReviewer && currentProposal.assignments) {
+                currentProposal.assignments = currentProposal.assignments.filter(as => as.reviewer !== forcedReviewer);
+            }
 
+            saveProposalSync();
             closeModal();
             renderReviews();
             showToast('Penilaian berhasil disimpan!');
@@ -766,11 +1122,11 @@
         function renderStatusOptions() {
             const select = document.getElementById('update-status');
             const defaultStatuses = [
-                { label: "Baru Terkirim", color: "#6366f1" },
-                { label: "Review Internal", color: "#f59e0b" },
-                { label: "Diterima Lokasi", color: "#10b981" },
-                { label: "Perlu Perbaikan", color: "#ef4444" },
-                { label: "Ditolak", color: "#1e293b" }
+                { label: "Submitted", color: "#6366f1" },
+                { label: "Internal Review", color: "#f59e0b" },
+                { label: "Received", color: "#10b981" },
+                { label: "Needs Revision", color: "#ef4444" },
+                { label: "Rejected", color: "#1e293b" }
             ];
 
             const programStatuses = (currentProgram && currentProgram.statuses && currentProgram.statuses.length > 0) 
@@ -1014,8 +1370,9 @@
             document.getElementById('disp-status').innerText = newStatus;
         }
 
-        function showToast() {
+        function showToast(msg) {
             const t = document.getElementById('toast');
+            if (msg) t.innerText = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }

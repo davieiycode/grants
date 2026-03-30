@@ -640,9 +640,9 @@
         ];
 
         let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
-            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Diterima", allowMultiple: false },
-            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Sedang Direview", allowMultiple: true },
-            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Selesai", allowMultiple: false }
+            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Approved", allowMultiple: false },
+            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Under Review", allowMultiple: true },
+            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Completed", allowMultiple: false }
         ];
 
         // Get Context from URL
@@ -1017,7 +1017,7 @@
                     unit: unitInput.value,
                     email: emailInput.value,
                     date: now.toISOString().split('T')[0],
-                    status: "Baru Terkirim",
+                    status: "Submitted",
                     allowMultiple: currentProgMeta.allowMultiple,
                     isBlacklisted: !!blacklistedData,
                     blacklistNote: blacklistedData ? blacklistedData.note : null

@@ -14,75 +14,58 @@
         rel="stylesheet" />
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary: #10b981;
-            --background: #f8fafc;
-            --surface: rgba(255, 255, 255, 0.8);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --error: #ef4444;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-soft: rgba(79, 70, 229, 0.08);
+            --secondary: #059669;
+            --background: #fbf9f6; /* Paper-like off-white */
+            --surface: #ffffff;
+            --text-main: #1a1c1e;
+            --text-muted: #6b7280;
+            --border: #e3e1db;
+            --paper-edge: #edeae4;
+            --error: #dc2626;
+            --shadow-paper: 0 4px 24px rgba(0,0,0,0.04);
             --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="dark"] {
-            --background: #0f172a;
-            --surface: rgba(30, 41, 59, 0.8);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+            --radius-lg: 18px;
+            --radius-xl: 32px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
             color: var(--text-main);
+            line-height: 1.6;
             min-height: 100vh;
-            padding: 0;
-            transition: var(--transition);
-            background-image:
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
-            background-attachment: fixed;
         }
 
-        /* Glassmorphism Classes */
+        /* Essential Minimalism */
         .glass {
             background: var(--surface);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow);
+            border: 1px solid var(--paper-edge);
+            box-shadow: var(--shadow-paper);
         }
 
-        [data-theme="dark"] .glass {
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Navigation */
         nav {
             height: 72px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
+            padding: 0 48px;
             position: sticky;
             top: 0;
-            z-index: 100;
-            margin-bottom: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--paper-edge);
         }
 
         .logo {
@@ -90,55 +73,33 @@
             align-items: center;
             gap: 12px;
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--text-main);
             text-decoration: none;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--primary);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 24px;
         }
 
-        .theme-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background: var(--primary);
-            color: white;
-            transform: rotate(15deg);
-        }
-
-        /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 0 20px 80px;
+            padding: 64px 24px;
         }
 
         /* Hero */
@@ -147,60 +108,54 @@
             text-align: center;
         }
 
+        /* Hero Elevation */
+        .hero {
+            margin-bottom: 64px;
+            text-align: center;
+        }
+
         .hero h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            color: var(--text-main);
             letter-spacing: -0.02em;
         }
 
         .hero p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: var(--text-muted);
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
-        /* Program Grid */
+        /* Program Cards Refinement */
         .program-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 32px;
         }
 
         .program-card {
+            background: var(--surface);
+            border: 1px solid var(--paper-edge);
             border-radius: var(--radius-xl);
-            padding: 32px;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             gap: 24px;
             transition: var(--transition);
             position: relative;
-            overflow: hidden;
             cursor: pointer;
-            height: 100%;
+            box-shadow: var(--shadow-paper);
         }
 
         .program-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-
-        .program-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: var(--primary);
-            opacity: 0.5;
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-float);
         }
 
         .program-header {
@@ -210,32 +165,41 @@
         }
 
         .program-icon {
-            width: 56px;
-            height: 56px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 16px;
+            width: 52px;
+            height: 52px;
+            background: #f3f4f6;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .program-card:hover .program-icon {
+            background: var(--primary-soft);
             color: var(--primary);
         }
 
         .status-badge {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 30px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: #f3f4f6;
+            color: var(--text-muted);
         }
 
         .status-open {
-            background: rgba(16, 185, 129, 0.1);
+            background: #ecfdf5;
             color: var(--secondary);
         }
 
         .program-content h2 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 8px;
             color: var(--text-main);
@@ -244,7 +208,7 @@
         .program-content p {
             font-size: 0.95rem;
             color: var(--text-muted);
-            line-height: 1.5;
+            line-height: 1.6;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -252,85 +216,57 @@
             overflow: hidden;
         }
 
-        .program-footer {
+        .program-meta {
             margin-top: auto;
             display: flex;
-            align-items: center;
             justify-content: space-between;
             padding-top: 24px;
-            border-top: 1px solid var(--border);
-        }
-
-        .stats {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stats-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .stats-label {
-            font-size: 0.75rem;
+            border-top: 1px solid #f1f1ef;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-weight: 600;
         }
+
+        .meta-item { display: flex; align-items: center; gap: 6px; }
 
         .btn-apply {
-            background: var(--primary);
+            background: var(--text-main);
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: var(--radius-md);
-            font-weight: 600;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             transition: var(--transition);
-            cursor: pointer;
         }
 
         .btn-apply:hover {
-            background: var(--primary-hover);
-            transform: scale(1.05);
+            background: var(--primary);
+            transform: translateY(-1px);
         }
 
-        /* Program Dashboard Tabs */
-        .program-nav-wrapper {
-            margin-bottom: 32px;
-        }
-
-        .header-top-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
+        /* Dashboard Tabs */
         .tabs {
             display: flex;
             gap: 8px;
-            padding: 6px;
+            margin-bottom: 32px;
+            background: #f1efeb;
+            padding: 4px;
             border-radius: 14px;
-            background: rgba(15, 23, 42, 0.05);
             width: fit-content;
         }
 
-        [data-theme="dark"] .tabs {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         .tab-btn {
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 10px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -339,31 +275,19 @@
         }
 
         .tab-btn.active {
-            background: var(--surface);
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        [data-theme="dark"] .tab-btn.active {
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         /* Views */
         .view-content {
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Proposal List */
@@ -374,47 +298,48 @@
         }
 
         .proposal-item {
-            padding: 24px;
+            background: var(--surface);
+            padding: 24px 32px;
             border-radius: var(--radius-lg);
             display: grid;
             grid-template-columns: 1fr auto;
-            gap: 24px;
+            gap: 32px;
             align-items: center;
             transition: var(--transition);
+            border: 1px solid var(--paper-edge);
+            box-shadow: var(--shadow-paper);
         }
 
         .proposal-item:hover {
-            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.01);
             border-color: var(--primary);
+            box-shadow: var(--shadow-float);
         }
 
         .proposal-info h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
         }
 
         .proposal-meta {
             font-size: 0.85rem;
             color: var(--text-muted);
             display: flex;
-            gap: 16px;
-        }
-
-        .proposal-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            gap: 20px;
+            font-weight: 600;
         }
 
         /* Period View */
         .period-timeline {
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            padding-left: 20px;
-            border-left: 2px solid var(--border);
-            margin-left: 10px;
+            gap: 32px;
+            padding-left: 24px;
+            border-left: 2px solid var(--paper-edge);
+            margin-left: 12px;
         }
 
         .period-card {
@@ -444,71 +369,71 @@
         /* Analysis Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 24px;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .stat-card {
-            padding: 24px;
+            background: var(--surface);
+            padding: 32px;
             border-radius: var(--radius-lg);
             text-align: center;
+            border: 1px solid var(--paper-edge);
+            box-shadow: var(--shadow-paper);
         }
 
         .stat-card h4 {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .stat-card .val {
-            font-size: 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.25rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--text-main);
         }
 
-        /* Tables (General & Usulan) */
+        /* Tables */
         .table-container {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: var(--radius-lg);
+            background: var(--surface);
+            border: 1px solid var(--paper-edge);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-paper);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            text-align: left;
         }
 
         th {
-            text-align: left;
-            padding: 16px;
-            background: rgba(15, 23, 42, 0.05);
-            font-size: 0.8rem;
+            padding: 18px 24px;
+            background: #f9f8f6;
+            font-size: 0.75rem;
+            font-weight: 800;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-weight: 700;
-        }
-
-        [data-theme="dark"] th {
-            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--paper-edge);
         }
 
         td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--paper-edge);
+            font-size: 0.95rem;
             vertical-align: middle;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: rgba(99, 102, 241, 0.02);
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fdfdfd; }
 
         .btn-icon {
             width: 36px;
@@ -518,17 +443,16 @@
             align-items: center;
             justify-content: center;
             border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--primary);
+            background: white;
+            color: var(--text-muted);
             cursor: pointer;
             transition: var(--transition);
         }
 
         .btn-icon:hover {
-            background: var(--primary);
-            color: white;
             border-color: var(--primary);
-            transform: translateY(-2px);
+            color: var(--primary);
+            transform: translateY(-1px);
         }
 
         /* Settings Form */
@@ -580,26 +504,27 @@
         }
 
         /* Settings Sub-nav */
+        /* Settings */
         .settings-container {
             display: grid;
             grid-template-columns: 240px 1fr;
-            gap: 32px;
+            gap: 48px;
             min-height: 500px;
         }
 
         .settings-sidebar {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 8px;
         }
 
         .side-tab {
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 14px 20px;
+            border-radius: 12px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             text-align: left;
             cursor: pointer;
@@ -610,63 +535,46 @@
         }
 
         .side-tab:hover {
-            background: rgba(99, 102, 241, 0.05);
-            color: var(--primary);
+            background: #f1f1ef;
+            color: var(--text-main);
         }
 
         .side-tab.active {
-            background: var(--primary);
+            background: var(--text-main);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-
-        .settings-content {
-            animation: fadeIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .config-card {
-            padding: 32px;
+            background: var(--surface);
+            border: 1px solid var(--paper-edge);
+            padding: 40px;
             border-radius: var(--radius-xl);
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-paper);
         }
 
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
+        /* Forms */
+        .f-input, select.f-input, textarea.f-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #fafaf9;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
         }
 
-        .toggle-row:last-child {
-            border-bottom: none;
+        .f-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
         }
 
-        .chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .chip {
-            padding: 4px 12px;
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chip .remove {
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* Toggle Switch (iOS Style) */
+        /* ToggleSwitch */
         .switch {
             position: relative;
             display: inline-block;
@@ -674,44 +582,21 @@
             height: 24px;
         }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
 
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border);
-            transition: .3s;
-            border-radius: 34px;
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border); transition: .3s; border-radius: 34px;
         }
 
         .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        input:checked+.slider {
-            background-color: var(--primary);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(20px);
-        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         .collapsible-card {
             max-height: 0;
@@ -787,121 +672,64 @@
             gap: 20px;
         }
 
+        /* Modals & Dropdowns */
         .f-input {
             width: 100%;
-            background: var(--background);
-            transition: border-color 0.2s;
-        }
-
-        .f-input:focus {
-            border-color: var(--primary);
-        }
-
-        /* Searchable Dropdown */
-        .searchable-select {
-            position: relative;
-            width: 100%;
-        }
-
-        .searchable-select input {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 0.85rem;
-            border: 1px solid var(--border);
+            padding: 12px 16px;
             border-radius: var(--radius-md);
-            background: white;
+            border: 1px solid var(--border);
+            background: #fafaf9;
+            color: var(--text-main);
             outline: none;
+            transition: var(--transition);
         }
-
-        .dropdown-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
+        .f-input:focus {
             background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-top: 4px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
         }
 
+        .searchable-select { position: relative; width: 100%; }
+        .dropdown-list {
+            position: absolute; top: 100%; left: 0; right: 0; 
+            max-height: 240px; overflow-y: auto; z-index: 1100; 
+            border: 1px solid var(--border); display: none; background: white; 
+            margin-top: 8px; border-radius: 16px; box-shadow: var(--shadow-float);
+            padding: 8px;
+        }
         .dropdown-list div {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 0.85rem;
+            padding: 12px 18px; cursor: pointer; border-radius: 10px;
+            transition: all 0.2s;
         }
-
-        .dropdown-list div:hover {
-            background: rgba(99, 102, 241, 0.05);
-            color: var(--primary);
-        }
-
-        .searchable-select:focus-within .dropdown-list {
-            display: block;
-        }
+        .dropdown-list div:hover { background: #f3f4f6; color: var(--primary); }
 
         @media (max-width: 900px) {
-            .settings-container {
-                grid-template-columns: 1fr;
-            }
-
-            .settings-sidebar {
-                flex-direction: row;
-                overflow-x: auto;
-                padding-bottom: 8px;
-            }
-
-            .side-tab {
-                white-space: nowrap;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            nav {
-                padding: 0 20px;
-            }
-
-            .program-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                width: 100%;
-                overflow-x: auto;
-            }
+            .settings-container { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.25rem; }
+            nav { padding: 0 24px; }
         }
     </style>
 </head>
 
 <body data-theme="light">
 
-    <nav class="glass">
-        <a href="index.html" class="logo"
-            style="text-decoration:none; display:flex; align-items:center; gap:12px; color:var(--text-main);">
+    <nav>
+        <a href="index.html" class="logo">
             <div class="logo-icon">
-                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span class="material-symbols-outlined">description</span>
             </div>
-            <span style="font-weight:700; font-family:'Outfit'; font-size:1.1rem; letter-spacing:-0.02em;">Grants
-                Portal</span>
+            <span>Grants Portal</span>
         </a>
         <div class="nav-links" id="main-nav-links"
-            style="display:flex; align-items:center; gap:24px; margin-left:40px; flex:1;">
+            style="display:flex; align-items:center; gap:32px; margin-left:48px; flex:1;">
             <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs"
-                style="text-decoration:none; color:inherit; font-weight:600; font-family:'Outfit'; font-size:0.9rem; border-bottom: 2px solid var(--primary); padding: 4px 0;">Program</a>
+                style="text-decoration:none; color:inherit; font-weight:700; font-family:'Outfit'; font-size:0.95rem; border-bottom: 3px solid var(--primary); padding: 8px 0; transition:0.3s;">Program</a>
             <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users"
-                style="text-decoration:none; color:var(--text-muted); font-weight:600; font-family:'Outfit'; font-size:0.9rem; padding: 4px 0;">User
-                & Blacklist</a>
+                style="text-decoration:none; color:var(--text-muted); font-weight:700; font-family:'Outfit'; font-size:0.95rem; padding: 8px 0; transition:0.3s;">User & Kebijakan</a>
         </div>
         <div class="nav-actions">
-            <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
-                <span class="material-symbols-outlined">dark_mode</span>
-            </button>
+            <!-- Simplified Toggle Area -->
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Admin Mode</div>
         </div>
     </nav>
 
@@ -1001,15 +829,26 @@
                 <div class="stats-grid" id="analisis-container">
                     <!-- Stats injected here -->
                 </div>
-                <div class="glass"
-                    style="padding: 32px; border-radius: var(--radius-xl); text-align: center; color: var(--text-muted);">
+                
+                <div id="analisis-placeholder" class="glass"
+                    style="padding: 40px; border-radius: var(--radius-xl); text-align: center; color: var(--text-muted); margin-top:20px;">
                     <span class="material-symbols-outlined"
-                        style="font-size: 48px; margin-bottom: 16px;">bar_chart</span>
+                        style="font-size: 48px; margin-bottom: 16px; opacity:0.3;">bar_chart</span>
                     <p>Visualisasi data terperinci akan muncul di sini seiring bertambahnya usulan.</p>
+                </div>
+
+                <div id="analisis-charts" class="charts-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; display:none; margin-top:20px;">
+                   <!-- Charts injected here -->
                 </div>
             </div>
 
             <div id="view-keuangan" class="view-content" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                    <h3 style="font-family:'Outfit'">Log Keuangan & Anggaran</h3>
+                    <button class="btn-apply" onclick="openFinanceModal()" style="height:36px; padding:0 16px; font-size:0.85rem;">
+                        <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> Tambah Transaksi
+                    </button>
+                </div>
                 <div class="glass" style="border-radius: var(--radius-lg); overflow-x: auto;">
                     <table>
                         <thead>
@@ -1019,6 +858,7 @@
                                 <th>Tanggal</th>
                                 <th>Jumlah</th>
                                 <th>Status</th>
+                                <th style="text-align:right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="finance-container">
@@ -1089,7 +929,25 @@
         </div>
     </div>
 
+    <div id="toast" style="position: fixed; bottom: 32px; right: 32px; background: #0f172a; color: white; padding: 12px 24px; border-radius: 16px; transform: translateY(100px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 3000; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4); opacity: 0; pointer-events: none; font-weight:500; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" style="font-size:20px; color:var(--secondary);">check_circle</span>
+        <span id="toast-msg">Berhasil diperbarui!</span>
+    </div>
+
     <script>
+        function showToast(msg = 'Berhasil diperbarui') {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toast-msg');
+            if (!t || !m) return;
+            m.innerText = msg;
+            t.style.transform = 'translateY(0)';
+            t.style.opacity = '1';
+            setTimeout(() => {
+                t.style.transform = 'translateY(100px)';
+                t.style.opacity = '0';
+            }, 3500);
+        }
+
         // Data & State Management
         let programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
             {
@@ -1196,7 +1054,7 @@
                         <div class="program-icon">
                             <span class="material-symbols-outlined">${prog.icon || 'folder'}</span>
                         </div>
-                        <span class="status-badge status-open">Buka</span>
+                        <span class="status-badge status-open">Open</span>
                     </div>
                     <div class="program-content">
                         <h2>${prog.name}</h2>
@@ -1205,7 +1063,7 @@
                     <div class="program-footer">
                         <div class="stats">
                             <span class="stats-value">${count}</span>
-                            <span class="stats-label">Usulan Masuk</span>
+                            <span class="stats-label"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">description</span>Proposals Submitted</span>
                         </div>
                         <button class="btn-apply" onclick="event.stopPropagation(); window.location.href='entry.html?program=${encodeURIComponent(prog.name)}'">
                             Daftar Usulan
@@ -1573,8 +1431,8 @@
                         <td style="font-size: 0.85rem; color: var(--text-muted);">${p.date}</td>
                         <td>
                             <div style="display:flex; flex-direction:column; gap:4px;">
-                                <span style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color:${p.status === 'Baru Terkirim' ? 'var(--primary)' : 'var(--secondary)'}">
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">${p.status === 'Baru Terkirim' ? 'schedule' : 'check_circle'}</span>
+                                <span style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color:${p.status === 'Submitted' ? 'var(--primary)' : 'var(--secondary)'}">
+                                    <span class="material-symbols-outlined" style="font-size: 16px;">${p.status === 'Submitted' ? 'schedule' : 'check_circle'}</span>
                                     ${p.status}
                                 </span>
                                 ${p.isBlacklisted ? `
@@ -1702,48 +1560,330 @@
             const program = programs.find(p => p.id == progId);
             const filtered = proposals.filter(p => p.program === program.name);
 
-            const units = [...new Set(filtered.map(p => p.unit))].length;
+            const unitsCount = [...new Set(filtered.map(p => p.unit))].length;
+
+            // Financial Calculations
+            const logs = program.financeLogs || [];
+            const totalBudget = logs.filter(l => l.cat === 'Budgeting' && l.status !== 'Rejected').reduce((acc, curr) => acc + parseInt(curr.amount.replace(/\./g, '') || 0), 0);
+            const totalSpent = logs.filter(l => l.cat !== 'Budgeting' && l.status !== 'Rejected').reduce((acc, curr) => acc + parseInt(curr.amount.replace(/\./g, '') || 0), 0);
+            const remaining = totalBudget - totalSpent;
 
             container.innerHTML = `
                 <div class="stat-card glass">
-                    <h4>Total Usulan</h4>
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary); opacity: 0.5; margin-bottom: 8px;">description</span>
+                    <h4>Total Proposals</h4>
                     <div class="val">${filtered.length}</div>
                 </div>
                 <div class="stat-card glass" style="border-bottom: 4px solid var(--secondary);">
-                    <h4>Diterima Lokasi</h4>
-                    <div class="val">${filtered.filter(p => p.status !== 'Baru Terkirim').length}</div>
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--secondary); opacity: 0.5; margin-bottom: 8px;">receipt_long</span>
+                    <h4>Received</h4>
+                    <div class="val">${filtered.filter(p => p.status !== 'Submitted').length}</div>
                 </div>
                 <div class="stat-card glass">
-                    <h4>Unit Bertisipasi</h4>
-                    <div class="val">${units}</div>
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary); opacity: 0.5; margin-bottom: 8px;">corporate_fare</span>
+                    <h4>Participating Units</h4>
+                    <div class="val">${unitsCount}</div>
                 </div>
                 <div class="stat-card glass">
-                    <h4>Persentase Kuota</h4>
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary); opacity: 0.5; margin-bottom: 8px;">pie_chart</span>
+                    <h4>Quota Percentage</h4>
                     <div class="val">${Math.min(100, (filtered.length / 10) * 100).toFixed(0)}%</div>
                 </div>
+                
+                <div class="stat-card glass" style="background: rgba(99,102,241,0.03)">
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--primary); opacity: 0.5; margin-bottom: 8px;">account_balance_wallet</span>
+                    <h4>Total Budget</h4>
+                    <div class="val" style="font-size: 1.5rem;">Rp ${totalBudget.toLocaleString('id-ID')}</div>
+                </div>
+                <div class="stat-card glass" style="background: rgba(239, 68, 68, 0.03)">
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--error); opacity: 0.5; margin-bottom: 8px;">payments</span>
+                    <h4>Total Spent</h4>
+                    <div class="val" style="font-size: 1.5rem; color: var(--error);">Rp ${totalSpent.toLocaleString('id-ID')}</div>
+                </div>
+                <div class="stat-card glass" style="background: rgba(16, 185, 129, 0.03); border-top: 4px solid var(--secondary);">
+                    <span class="material-symbols-outlined" style="font-size: 32px; color: var(--secondary); opacity: 0.5; margin-bottom: 8px;">savings</span>
+                    <h4>Remaining Balance</h4>
+                    <div class="val" style="font-size: 1.5rem; color: var(--secondary);">Rp ${remaining.toLocaleString('id-ID')}</div>
+                </div>
             `;
+
+            renderAnalisisCharts(filtered, unitsCount);
+        }
+
+        function renderAnalisisCharts(filtered, units) {
+            const placeholder = document.getElementById('analisis-placeholder');
+            const chartsContainer = document.getElementById('analisis-charts');
+            
+            const minProposals = 3;
+            const minUnits = 2;
+
+            if (filtered.length < minProposals || units < minUnits) {
+                placeholder.style.display = 'block';
+                chartsContainer.style.display = 'none';
+                
+                const missingProps = Math.max(0, minProposals - filtered.length);
+                const missingUnits = Math.max(0, minUnits - units);
+                
+                let msg = `Visualisasi data terperinci akan muncul seiring bertambahnya usulan.`;
+                if (missingProps > 0 || missingUnits > 0) {
+                   msg += `<div style="margin-top:10px; font-size:0.8rem; opacity:0.7; font-weight:500; display:flex; justify-content:center; gap:16px;">
+                      ${missingProps > 0 ? `<span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">add_circle</span> Kurang ${missingProps} usulan</span>` : ''}
+                      ${missingUnits > 0 ? `<span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">groups</span> Kurang ${missingUnits} unit</span>` : ''}
+                   </div>`;
+                }
+                placeholder.querySelector('p').innerHTML = msg;
+                return;
+            }
+
+            placeholder.style.display = 'none';
+            chartsContainer.style.display = 'grid';
+            chartsContainer.innerHTML = ''; 
+
+            const statusMap = {};
+            filtered.forEach(p => { statusMap[p.status] = (statusMap[p.status] || 0) + 1; });
+            const sChart = document.createElement('div');
+            sChart.className = 'glass';
+            sChart.style = 'padding:24px; border-radius:var(--radius-lg);';
+            sChart.innerHTML = `<h5 style="margin-bottom:24px; font-family:Outfit; display:flex; align-items:center; gap:8px;"><span class="material-symbols-outlined" style="color:var(--primary)">analytics</span> Sebaran Status Usulan</h5>`;
+            Object.entries(statusMap).forEach(([status, count]) => {
+                const pct = (count / filtered.length) * 100;
+                sChart.innerHTML += `
+                    <div style="margin-bottom:18px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+                            <span style="font-weight:600">${status}</span>
+                            <span style="color:var(--text-muted)">${count} Usulan (${pct.toFixed(0)}%)</span>
+                        </div>
+                        <div style="height:10px; background:rgba(99,102,241,0.05); border-radius:5px; overflow:hidden;">
+                            <div style="height:100%; width:${pct}%; background:var(--primary); box-shadow:0 0 10px rgba(99,102,241,0.2);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const unitMap = {};
+            filtered.forEach(p => { unitMap[p.unit] = (unitMap[p.unit] || 0) + 1; });
+            const uChart = document.createElement('div');
+            uChart.className = 'glass';
+            uChart.style = 'padding:24px; border-radius:var(--radius-lg);';
+            uChart.innerHTML = `<h5 style="margin-bottom:24px; font-family:Outfit; display:flex; align-items:center; gap:8px;"><span class="material-symbols-outlined" style="color:var(--secondary)">corporate_fare</span> Partisipasi Unit Kerja</h5>`;
+            Object.entries(unitMap).forEach(([unit, count]) => {
+                const pct = (count / filtered.length) * 100;
+                uChart.innerHTML += `
+                    <div style="margin-bottom:18px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+                            <span style="font-weight:600; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${unit}</span>
+                            <span>${count} Usulan</span>
+                        </div>
+                        <div style="height:10px; background:rgba(16,185,129,0.05); border-radius:5px; overflow:hidden;">
+                            <div style="height:100%; width:${pct}%; background:var(--secondary); box-shadow:0 0 10px rgba(16,185,129,0.2);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            chartsContainer.appendChild(sChart);
+            chartsContainer.appendChild(uChart);
         }
 
         function renderKeuanganTab() {
             const container = document.getElementById('finance-container');
             const program = programs.find(p => p.id == progId);
+            
+            if (!program.financeLogs) {
+                program.financeLogs = [
+                    { title: "Alokasi Pagu Awal", cat: "Budgeting", date: "2026-01-01", amount: "500.000.000", status: "Approved", linkedProposals: [] },
+                    { title: "Honor Reviewer Gelombang 1", cat: "Payout", date: "2026-03-20", amount: "12.500.000", status: "Pending", linkedProposals: [101] },
+                    { title: "Biaya Publikasi Media", cat: "Operational", date: "2026-02-15", amount: "5.000.000", status: "Completed", linkedProposals: [] }
+                ];
+            }
 
-            // Mock data transaksi
-            const txs = [
-                { title: "Alokasi Pagu Awal", cat: "Budgeting", date: "2026-01-01", amount: "Rp 500.000.000", status: "Approved" },
-                { title: "Honor Reviewer Gelombang 1", cat: "Payout", date: "2026-03-20", amount: "Rp 12.500.000", status: "Pending" },
-                { title: "Biaya Publikasi Media", cat: "Operational", date: "2026-02-15", amount: "Rp 5.000.000", status: "Completed" }
-            ];
+            container.innerHTML = program.financeLogs.map((tx, idx) => {
+                const linkedProposals = tx.linkedProposals || [];
+                const linkedHtml = linkedProposals.length > 0 ? `
+                    <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+                        ${linkedProposals.map(pid => {
+                            const p = proposals.find(pr => pr.id == pid);
+                            if (!p) return '';
+                            return `<span style="font-size:0.65rem; background:rgba(0,0,0,0.03); color:var(--text-muted); border:1px solid var(--border); padding:2px 6px; border-radius:4px;" title="${p.title}">#${p.id} ${p.proposer}</span>`;
+                        }).join('')}
+                    </div>
+                ` : '';
 
-            container.innerHTML = txs.map(tx => `
-                <tr>
-                    <td style="font-weight:600">${tx.title}</td>
+                return `
+                <tr style="cursor:pointer;" onclick="if(event.target.tagName !== 'BUTTON' && !event.target.closest('button')) openFinanceModal(${idx})">
+                    <td style="padding:16px 12px;">
+                        <div style="font-weight:600">${tx.title}</div>
+                        ${linkedHtml}
+                        <div style="display:flex; gap:12px; margin-top:8px; font-size:0.75rem; color:var(--text-muted);">
+                            ${tx.linkedPeriod ? `<span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">event_repeat</span>${tx.linkedPeriod}</span>` : ''}
+                            ${tx.notes ? `<span title="${tx.notes}"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">notes</span>Catatan</span>` : ''}
+                            ${tx.file ? `<span><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">attach_file</span>${tx.file}</span>` : ''}
+                        </div>
+                    </td>
                     <td><span style="font-size:0.75rem; background:rgba(99,102,241,0.1); padding:2px 8px; border-radius:4px; color:var(--primary)">${tx.cat}</span></td>
                     <td style="color:var(--text-muted); font-size:0.85rem;">${tx.date}</td>
-                    <td style="font-weight:700">${tx.amount}</td>
-                    <td><span style="font-size:0.8rem; color:${tx.status === 'Approved' || tx.status === 'Completed' ? 'var(--secondary)' : 'var(--primary)'}">${tx.status}</span></td>
+                    <td style="font-weight:700">Rp ${tx.amount}</td>
+                    <td><span style="font-size:0.8rem; color:${['Approved', 'Completed'].includes(tx.status) ? 'var(--secondary)' : 'var(--primary)'}">${tx.status}</span></td>
+                    <td style="text-align:right">
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn-icon" onclick="openFinanceModal(${idx})" title="Edit"><span class="material-symbols-outlined" style="font-size:18px">edit</span></button>
+                            <button class="btn-icon" onclick="deleteFinanceTx(${idx})" title="Hapus" style="color:var(--error); border-color:var(--error);"><span class="material-symbols-outlined" style="font-size:18px">delete</span></button>
+                        </div>
+                    </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        function openFinanceModal(idx = null) {
+            const program = programs.find(p => p.id == progId);
+            const isEdit = idx !== null;
+            const data = isEdit ? program.financeLogs[idx] : { 
+                title: '', cat: 'Operational', date: new Date().toISOString().split('T')[0], 
+                amount: '', status: 'Pending', linkedProposals: [], 
+                linkedPeriod: '', notes: '', file: '' 
+            };
+            
+            const linkedIds = data.linkedProposals || [];
+            const programProposals = proposals.filter(p => p.program === program.name);
+            const programPeriods = program.periods || [];
+
+            showModal(isEdit ? 'Ubah Transaksi' : 'Transaksi Baru', `
+                <div class="settings-form" style="padding:10px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="form-group">
+                            <label>Nama Transaksi</label>
+                            <input type="text" id="tx-title" value="${data.title}" placeholder="Contoh: Honor Reviewer">
+                        </div>
+                        <div class="form-group">
+                            <label>Periode Tahapan</label>
+                            <select id="tx-period">
+                                <option value="">-- Tanpa Periode --</option>
+                                ${programPeriods.map(p => `
+                                    <option value="${p.label}" ${data.linkedPeriod === p.label ? 'selected' : ''}>${p.label}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px;">
+                        <div class="form-group">
+                            <label>Usulan Terkait (${linkedIds.length} Terpilih)</label>
+                            <div style="max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-md); padding:8px 12px; background:var(--background);">
+                                ${programProposals.length === 0 ? '<div style="font-size:0.85rem; color:var(--text-muted); padding:8px 0;">Belum ada usulan masuk.</div>' : 
+                                    programProposals.map(p => `
+                                        <label style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.03); cursor:pointer;">
+                                            <input type="checkbox" name="linked-prop" value="${p.id}" ${linkedIds.includes(p.id) ? 'checked' : ''} style="width:16px; height:16px;">
+                                            <div style="line-height:1.2;">
+                                                <div style="font-weight:600; font-size:0.85rem;">${p.title}</div>
+                                                <div style="font-size:0.75rem; color:var(--text-muted);">ID: #${p.id} • ${p.proposer}</div>
+                                            </div>
+                                        </label>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan Tambahan</label>
+                            <textarea id="tx-notes" style="height:115px; resize:none;" placeholder="Catatan internal transaksi...">${data.notes || ''}</textarea>
+                            
+                            <label style="margin-top:16px;">Dokumen Pendukung (Invoice/Bukti)</label>
+                            <div id="finance-file-cont" style="display:flex; align-items:center; gap:12px; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; background:white;">
+                                <span class="material-symbols-outlined" style="font-size:20px; color:var(--text-muted);">${data.file ? 'description' : 'upload_file'}</span>
+                                <span style="font-size:0.8rem; color:var(--text-muted); flex:1; overflow:hidden; text-overflow:ellipsis;">${data.file || 'Belum ada file'}</span>
+                                <button type="button" onclick="triggerFinanceUpload()" class="btn-icon" style="height:32px; width:32px;"><span class="material-symbols-outlined" style="font-size:16px;">add</span></button>
+                                <input type="hidden" id="tx-file" value="${data.file || ''}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:24px;">
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="tx-cat">
+                                <option value="Budgeting" ${data.cat === 'Budgeting' ? 'selected' : ''}>Budgeting</option>
+                                <option value="Payout" ${data.cat === 'Payout' ? 'selected' : ''}>Payout</option>
+                                <option value="Operational" ${data.cat === 'Operational' ? 'selected' : ''}>Operational</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" id="tx-date" value="${data.date}">
+                        </div>
+                        <div class="form-group">
+                            <label>Jumlah (Rp)</label>
+                            <input type="text" id="tx-amount" value="${data.amount}" placeholder="Contoh: 10.000.000">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="tx-status">
+                                <option value="Pending" ${data.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Approved" ${data.status === 'Approved' ? 'selected' : ''}>Approved</option>
+                                <option value="Completed" ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Rejected" ${data.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:32px; display:flex; gap:12px; justify-content:flex-end;">
+                        <button class="btn-icon" onclick="closeModal()" style="width:auto; padding:0 24px; border-radius:10px;">Batal</button>
+                        <button class="btn-apply" onclick="saveFinanceTx(${idx})" style="width:auto; padding:0 32px; border-radius:10px;">SIMPAN</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function triggerFinanceUpload() {
+            const name = prompt("Simulasi: Pilih file bukti bayar (misal: invoice_01.pdf):", "invoice.pdf");
+            if (name) {
+                document.getElementById('tx-file').value = name;
+                const cont = document.getElementById('finance-file-cont');
+                cont.querySelector('span:nth-child(2)').innerText = name;
+                cont.querySelector('span:nth-child(1)').innerText = 'description';
+            }
+        }
+
+        function saveFinanceTx(idx) {
+            const program = programs.find(p => p.id == progId);
+            const title = document.getElementById('tx-title').value;
+            const amount = document.getElementById('tx-amount').value.replace(/[^0-9]/g, '');
+            
+            // Collect linked proposals
+            const linked = Array.from(document.querySelectorAll('input[name="linked-prop"]:checked')).map(cb => parseInt(cb.value));
+
+            if (!title || !amount) { alert('Lengkapi data!'); return; }
+
+            const entry = {
+                title: title,
+                cat: document.getElementById('tx-cat').value,
+                date: document.getElementById('tx-date').value,
+                amount: parseInt(amount).toLocaleString('id-ID'),
+                status: document.getElementById('tx-status').value,
+                linkedProposals: linked,
+                linkedPeriod: document.getElementById('tx-period').value,
+                notes: document.getElementById('tx-notes').value,
+                file: document.getElementById('tx-file').value
+            };
+
+            if (idx !== null) {
+                program.financeLogs[idx] = entry;
+            } else {
+                program.financeLogs.unshift(entry);
+            }
+
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            closeModal();
+            renderKeuanganTab();
+            showToast('Data keuangan diperbarui');
+        }
+
+        function deleteFinanceTx(idx) {
+            if (!confirm('Hapus log transaksi ini?')) return;
+            const program = programs.find(p => p.id == progId);
+            program.financeLogs.splice(idx, 1);
+            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            renderKeuanganTab();
+            showToast('Transaksi dihapus');
         }
 
         function renderSettingTab() {
@@ -1907,11 +2047,11 @@
                 `;
             } else if (sub === 'status') {
                 const programStatuses = program.statuses || [
-                    { label: "Baru Terkirim", color: "#6366f1" },
-                    { label: "Review Internal", color: "#f59e0b" },
-                    { label: "Diterima Lokasi", color: "#10b981" },
-                    { label: "Perlu Perbaikan", color: "#ef4444" },
-                    { label: "Ditolak", color: "#1e293b" }
+                    { label: "Submitted", color: "#6366f1" },
+                    { label: "Internal Review", color: "#f59e0b" },
+                    { label: "Received", color: "#10b981" },
+                    { label: "Needs Revision", color: "#ef4444" },
+                    { label: "Rejected", color: "#1e293b" }
                 ];
 
                 container.innerHTML = `
@@ -2357,11 +2497,11 @@
             const program = programs.find(p => p.id == progId);
             if (!program.statuses) {
                 program.statuses = [
-                    { label: "Baru Terkirim", color: "#6366f1" },
-                    { label: "Review Internal", color: "#f59e0b" },
-                    { label: "Diterima Lokasi", color: "#10b981" },
-                    { label: "Perlu Perbaikan", color: "#ef4444" },
-                    { label: "Ditolak", color: "#1e293b" }
+                    { label: "Submitted", color: "#6366f1" },
+                    { label: "Internal Review", color: "#f59e0b" },
+                    { label: "Received", color: "#10b981" },
+                    { label: "Needs Revision", color: "#ef4444" },
+                    { label: "Rejected", color: "#1e293b" }
                 ];
             }
             program.statuses.push({ label: "Status Baru", color: "#6366f1", trigger: "" });
@@ -2391,11 +2531,11 @@
             if (!confirm("Reset alur status ke pengaturan awal? Semua formula otomatis yang telah dibuat akan dihapus.")) return;
             const program = programs.find(p => p.id == progId);
             program.statuses = [
-                { label: "Baru Terkirim", color: "#6366f1" },
-                { label: "Review Internal", color: "#f59e0b" },
-                { label: "Diterima Lokasi", color: "#10b981" },
-                { label: "Perlu Perbaikan", color: "#ef4444" },
-                { label: "Ditolak", color: "#1e293b" }
+                { label: "Submitted", color: "#6366f1" },
+                { label: "Internal Review", color: "#f59e0b" },
+                { label: "Received", color: "#10b981" },
+                { label: "Needs Revision", color: "#ef4444" },
+                { label: "Rejected", color: "#1e293b" }
             ];
             switchSettingSubTab('status');
         }
@@ -2992,6 +3132,15 @@
 
             const list = program.team[role];
             if (isAdd) {
+                // Validation: Prevent dual role (PIC and Staff)
+                const otherRole = role === 'pic' ? 'staff' : 'pic';
+                const otherList = program.team[otherRole] || [];
+                
+                if (otherList.includes(userName)) {
+                    alert(`${userName} sudah terdaftar sebagai ${otherRole === 'pic' ? 'PIC' : 'Staf Administrasi'}. \n\nUser tidak boleh merangkap jabatan dalam satu program yang sama.`);
+                    return;
+                }
+
                 if (!list.includes(userName)) list.push(userName);
             } else {
                 program.team[role] = list.filter(u => u !== userName);
