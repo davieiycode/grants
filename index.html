@@ -727,9 +727,17 @@
             <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users"
                 style="text-decoration:none; color:var(--text-muted); font-weight:700; font-family:'Outfit'; font-size:0.95rem; padding: 8px 0; transition:0.3s;">User & Kebijakan</a>
         </div>
-        <div class="nav-actions">
-            <!-- Simplified Toggle Area -->
-            <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Admin Mode</div>
+        <div class="nav-actions" style="display:flex; align-items:center; gap:16px;">
+            <select id="role-switcher" class="f-input" style="width:auto; padding:8px 16px; font-size:0.85rem; font-weight:700;" onchange="switchRole(this.value)">
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Staf">Staf Admin</option>
+                <option value="Dosen">Dosen/Pengusul</option>
+                <option value="Reviewer">Reviewer</option>
+            </select>
+            <button class="btn-icon" id="theme-toggle" title="Toggle Tema" style="width:40px; height:40px; border-radius:50%;">
+                <span class="material-symbols-outlined" style="font-size:1.2rem;">dark_mode</span>
+            </button>
         </div>
     </nav>
 
@@ -1116,13 +1124,30 @@
             document.getElementById('program-dashboard').style.display = 'none';
 
             // Active State
-            document.getElementById('nav-programs').style.borderBottom = view === 'program' ? '2px solid var(--primary)' : 'none';
+            document.getElementById('nav-programs').style.borderBottom = view === 'program' ? '3px solid var(--primary)' : 'none';
             document.getElementById('nav-programs').style.color = view === 'program' ? 'var(--text-main)' : 'var(--text-muted)';
-            document.getElementById('nav-users').style.borderBottom = view === 'users' ? '2px solid var(--primary)' : 'none';
+            document.getElementById('nav-users').style.borderBottom = view === 'users' ? '3px solid var(--primary)' : 'none';
             document.getElementById('nav-users').style.color = view === 'users' ? 'var(--text-main)' : 'var(--text-muted)';
 
             if (view === 'users') switchGlobalUserSubTab('daftar-user');
         }
+
+        function switchRole(role) {
+            const roleMap = {
+                'Admin': registeredUsers[0],
+                'Manager': registeredUsers[0],
+                'Staf': registeredUsers[1],
+                'Dosen': registeredUsers[2],
+                'Reviewer': registeredUsers[3],
+            };
+            currentUser = roleMap[role] || registeredUsers[0];
+            currentUser = { ...currentUser, role }; // Override role
+            // Re-render current view
+            const progId = new URLSearchParams(window.location.search).get('p');
+            if (progId) renderProgramDashboard(progId, 'usulan');
+            else renderDashboard();
+        }
+
 
         function switchGlobalUserSubTab(sub) {
             const container = document.getElementById('global-user-content');
