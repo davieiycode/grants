@@ -1213,10 +1213,16 @@
             localStorage.setItem('grants_global_blacklist', JSON.stringify(blacklist));
             globalBlacklist = blacklist;
 
+            // Sync to Firestore
+            const newEntry = blacklist[blacklist.length - 1];
+            window.fbSave('global_blacklist', newEntry.id, newEntry);
+
             const regIdx = registeredUsers.findIndex(u => u.email === email);
             if (regIdx !== -1) {
                 registeredUsers[regIdx].isBlocked = true;
                 localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+                // Sync user status to Firestore
+                window.fbSave('registeredUsers', email, registeredUsers[regIdx]);
             }
 
             closeModal();
@@ -1355,9 +1361,21 @@
             const list = [];
             snap.forEach(d => list.push(d.data()));
             window.globalLogs = list;
-            if (window.switchGlobalUserSubTab) {
-                // If we are on the log tab, refresh it
-                // switchGlobalUserSubTab('log-akses');
+        });
+
+        onSnapshot(collection(db, "global_blacklist"), (snap) => {
+            const list = [];
+            snap.forEach(d => list.push(d.data()));
+            if (list.length > 0) {
+                window.globalBlacklist = list;
+                localStorage.setItem('grants_global_blacklist', JSON.stringify(list));
+            }
+        });
+
+        onSnapshot(doc(db, "settings", "global_permissions"), (snap) => {
+            if (snap.exists()) {
+                window.globalPermissions = snap.data().permissions;
+                localStorage.setItem('grants_global_permissions', JSON.stringify(window.globalPermissions));
             }
         });
 
@@ -1384,7 +1402,7 @@
         };
 
         // Listen for Auth State Changes
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
 
@@ -1396,10 +1414,16 @@
                 const profile = document.getElementById('user-profile-nav');
                 if (btn) btn.style.display = 'none';
 
-                // Ensure correct user data is in session
-                const email = user.email;
-                const found = registeredUsers.find(u => u.email === email);
-                const systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
+                // FETCH LATEST FROM CLOUD (Ensures role updates are instant on login)
+                const userDoc = await getDoc(doc(db, "registeredUsers", user.email));
+                let systemUser;
+                if (userDoc.exists()) {
+                    systemUser = { ...userDoc.data(), photoURL: user.photoURL };
+                } else {
+                    // Fallback to local if doc doesn't exist yet but user is found locally
+                    const found = registeredUsers.find(u => u.email === user.email);
+                    systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
+                }
 
                 currentUser = systemUser;
                 localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
@@ -1411,7 +1435,6 @@
                     document.getElementById('nav-user-photo').src = systemUser.photoURL || '';
                 }
 
-                // Important: Trigger final UI rendering after auth is confirmed
                 init();
             } else {
                 if (loginGate) loginGate.style.display = 'flex';
@@ -1419,14 +1442,21 @@
             }
         });
 
-        function syncFirebaseUser(fbUser) {
+        async function syncFirebaseUser(fbUser) {
             if (!fbUser) return;
             const email = fbUser.email;
-            const found = registeredUsers.find(u => u.email === email);
-
-            const sessionUser = found
-                ? { ...found, photoURL: fbUser.photoURL }
-                : { id: Date.now(), name: fbUser.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: fbUser.photoURL };
+            
+            // Explicitly pull from Firestore to get the newest ROLE
+            const userDoc = await getDoc(doc(db, "registeredUsers", email));
+            let sessionUser;
+            if (userDoc.exists()) {
+                sessionUser = { ...userDoc.data(), photoURL: fbUser.photoURL };
+            } else {
+                const found = registeredUsers.find(u => u.email === email);
+                sessionUser = found
+                    ? { ...found, photoURL: fbUser.photoURL }
+                    : { id: Date.now(), name: fbUser.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: fbUser.photoURL };
+            }
 
             currentUser = sessionUser;
             localStorage.setItem('grants_current_user', JSON.stringify(sessionUser));
@@ -2017,6 +2047,10 @@
 
         window.saveGlobalPermissions = function () {
             localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+            
+            // Sync to Firestore (Master Settings)
+            window.fbSave('settings', 'global_permissions', { permissions: globalPermissions });
+            
             showToast('Kebijakan akses berhasil disimpan!');
         };
 
