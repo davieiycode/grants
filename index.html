@@ -369,437 +369,465 @@
     <!-- LOGIN GATE -->
     <div id="login-gate">
         <div class="login-card animate-fade-in">
-            <div style="width:72px; height:72px; background:var(--primary); border-radius:22px; display:flex; align-items:center; justify-content:center; color:white; margin:0 auto 2rem; box-shadow:0 10px 20px var(--primary-soft);">
+            <div
+                style="width:72px; height:72px; background:var(--primary); border-radius:22px; display:flex; align-items:center; justify-content:center; color:white; margin:0 auto 2rem; box-shadow:0 10px 20px var(--primary-soft);">
                 <span class="material-symbols-outlined" style="font-size:40px;">description</span>
             </div>
-            <h1 style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.03em; color:var(--text-main); margin-bottom:0.5rem;">Portal Hibah PWA</h1>
-            <p style="color:var(--text-muted); font-size:1rem; margin-bottom:2.5rem; font-weight:500;">Silakan login dengan Google untuk mengakses sistem dashboard.</p>
-            
-            <button onclick="loginWithGoogle()" 
-                    style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:white; color:var(--text-main); border:1px solid var(--border); padding:14px; border-radius:16px; font-weight:850; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); transition:all 0.2s;">
+            <h1
+                style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.03em; color:var(--text-main); margin-bottom:0.5rem;">
+                Portal Hibah PWA</h1>
+            <p style="color:var(--text-muted); font-size:1rem; margin-bottom:2.5rem; font-weight:500;">Silakan login
+                dengan Google untuk mengakses sistem dashboard.</p>
+
+            <button onclick="loginWithGoogle()"
+                style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:white; color:var(--text-main); border:1px solid var(--border); padding:14px; border-radius:16px; font-weight:850; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); transition:all 0.2s;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
                 Login with Google Account
             </button>
-            <p style="margin-top:2rem; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.6;">© 2026 Universitas Riset Terpadu. All rights reserved.</p>
+            <p style="margin-top:2rem; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.6;">© 2026
+                Universitas Gadjah Mada. All rights reserved.</p>
         </div>
     </div>
 
     <div id="main-app-container">
-    <nav>
-        <a href="index.html" class="logo">
-            <div class="logo-icon">
-                <span class="material-symbols-outlined">description</span>
-            </div>
-            <span>Grants Portal</span>
-        </a>
-        <div class="nav-links" id="main-nav-links">
-            <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs">Program</a>
-            <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users">User & Kebijakan</a>
-            <a href="#" onclick="switchMainView('guide')" class="nav-link" id="nav-guide">Panduan</a>
-        </div>
-        <div class="nav-actions" style="display:flex; align-items:center; gap:1.25rem;">
-            <div id="impersonation-alert" style="display:none; align-items:center; gap:12px; background:rgba(239, 68, 68, 0.05); color:var(--error); padding:8px 16px; border-radius:12px; border:1px solid rgba(239, 68, 68, 0.2); font-size:0.8rem; font-weight:850; box-shadow:0 4px 12px rgba(239, 68, 68, 0.05);">
-                <span class="material-symbols-outlined" style="font-size:20px; font-weight:800;">security</span>
-                <div style="line-height:1;">
-                    <span style="display:block; font-size:0.65rem; opacity:0.6; margin-bottom:2px;">LOGGED IN AS:</span>
-                    <span id="impersonated-name" style="letter-spacing:0.02em;">...</span>
+        <nav>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <span class="material-symbols-outlined">description</span>
                 </div>
-                <button onclick="stopImpersonating()" style="background:var(--error); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.75rem; font-weight:900; letter-spacing:0.02em; transition:all 0.2s;">EXIT</button>
+                <span>Grants Portal</span>
+            </a>
+            <div class="nav-links" id="main-nav-links">
+                <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs">Program</a>
+                <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users">User & Kebijakan</a>
+                <a href="#" onclick="switchMainView('guide')" class="nav-link" id="nav-guide">Panduan</a>
             </div>
+            <div class="nav-actions" style="display:flex; align-items:center; gap:1.25rem;">
+                <div id="impersonation-alert"
+                    style="display:none; align-items:center; gap:12px; background:rgba(239, 68, 68, 0.05); color:var(--error); padding:8px 16px; border-radius:12px; border:1px solid rgba(239, 68, 68, 0.2); font-size:0.8rem; font-weight:850; box-shadow:0 4px 12px rgba(239, 68, 68, 0.05);">
+                    <span class="material-symbols-outlined" style="font-size:20px; font-weight:800;">security</span>
+                    <div style="line-height:1;">
+                        <span style="display:block; font-size:0.65rem; opacity:0.6; margin-bottom:2px;">LOGGED IN
+                            AS:</span>
+                        <span id="impersonated-name" style="letter-spacing:0.02em;">...</span>
+                    </div>
+                    <button onclick="stopImpersonating()"
+                        style="background:var(--error); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.75rem; font-weight:900; letter-spacing:0.02em; transition:all 0.2s;">EXIT</button>
+                </div>
 
-            <!-- Firebase Auth UI -->
-            <div id="auth-container" style="display:flex; align-items:center; gap:1rem;">
-                <button id="btn-google-login" onclick="loginWithGoogle()" 
+                <!-- Firebase Auth UI -->
+                <div id="auth-container" style="display:flex; align-items:center; gap:1rem;">
+                    <button id="btn-google-login" onclick="loginWithGoogle()"
                         style="display:flex; align-items:center; gap:10px; background:white; color:var(--text-main); border:1px solid var(--border); padding:8px 16px; border-radius:12px; font-weight:800; font-size:0.85rem; cursor:pointer; box-shadow:var(--shadow-sm); transition:all 0.2s;">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
-                    Login with Google
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
+                            height="18">
+                        Login with Google
+                    </button>
+                    <div id="user-profile-nav" style="display:none; align-items:center; gap:12px;">
+                        <div style="text-align:right;">
+                            <div id="nav-user-name"
+                                style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...
+                            </div>
+                            <div id="nav-user-role"
+                                style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST
+                            </div>
+                        </div>
+                        <img id="nav-user-photo"
+                            style="width:40px; height:40px; border-radius:12px; border:2px solid var(--primary-soft); background:var(--background);">
+                        <button class="btn-icon glass" onclick="logoutFirebase()" title="Log out"
+                            style="width:36px; height:36px; border-radius:10px; color:var(--text-muted);">
+                            <span class="material-symbols-outlined" style="font-size:18px;">logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-icon" id="theme-toggle" title="Toggle Tema">
+                    <span class="material-symbols-outlined">dark_mode</span>
                 </button>
-                <div id="user-profile-nav" style="display:none; align-items:center; gap:12px;">
-                    <div style="text-align:right;">
-                        <div id="nav-user-name" style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...</div>
-                        <div id="nav-user-role" style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST</div>
-                    </div>
-                    <img id="nav-user-photo" style="width:40px; height:40px; border-radius:12px; border:2px solid var(--primary-soft); background:var(--background);">
-                    <button class="btn-icon glass" onclick="logoutFirebase()" title="Log out" style="width:36px; height:36px; border-radius:10px; color:var(--text-muted);">
-                        <span class="material-symbols-outlined" style="font-size:18px;">logout</span>
-                    </button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Dashboard View (Program List) -->
+            <div id="dashboard-view">
+                <header class="hero">
+                    <h1>Temukan Program Hibah</h1>
+                    <p>Klik salah satu program di bawah ini untuk mengelola usulan, periode, dan konfigurasi lainnya.
+                    </p>
+                </header>
+
+                <div class="program-grid" id="program-grid">
+                    <!-- Program cards injected here -->
                 </div>
             </div>
 
-            <button class="btn-icon" id="theme-toggle" title="Toggle Tema">
-                <span class="material-symbols-outlined">dark_mode</span>
-            </button>
-        </div>
-    </nav>
+            <!-- Global User Management View -->
+            <div id="global-users-view" style="display:none; animation:fadeIn 0.4s ease;">
+                <header class="hero" style="text-align:left; margin-bottom:40px;">
+                    <h1 style="margin:0; font-size:2.5rem;">Pengelolaan User</h1>
+                    <p style="margin:0;">Kelola akses sistem, daftar user aktif, dan kebijakan pencekalan (blacklist)
+                        global.</p>
+                </header>
 
-    <div class="container">
-        <!-- Dashboard View (Program List) -->
-        <div id="dashboard-view">
-            <header class="hero">
-                <h1>Temukan Program Hibah</h1>
-                <p>Klik salah satu program di bawah ini untuk mengelola usulan, periode, dan konfigurasi lainnya.</p>
-            </header>
-
-            <div class="program-grid" id="program-grid">
-                <!-- Program cards injected here -->
-            </div>
-        </div>
-
-        <!-- Global User Management View -->
-        <div id="global-users-view" style="display:none; animation:fadeIn 0.4s ease;">
-            <header class="hero" style="text-align:left; margin-bottom:40px;">
-                <h1 style="margin:0; font-size:2.5rem;">Pengelolaan User</h1>
-                <p style="margin:0;">Kelola akses sistem, daftar user aktif, dan kebijakan pencekalan (blacklist)
-                    global.</p>
-            </header>
-
-            <div class="settings-container">
-                <div class="settings-sidebar">
-                    <button class="side-tab active" onclick="switchGlobalUserSubTab('daftar-user')">
-                        <span class="material-symbols-outlined">group</span> Daftar User
-                    </button>
-                    <button class="side-tab" onclick="switchGlobalUserSubTab('hak-akses')">
-                        <span class="material-symbols-outlined">security</span> Kebijakan Akses
-                    </button>
-                    <button class="side-tab" onclick="switchGlobalUserSubTab('blacklist-global')">
-                        <span class="material-symbols-outlined">block</span> Blacklist Global
-                    </button>
-                    <button class="side-tab" onclick="switchGlobalUserSubTab('log-akses')">
-                        <span class="material-symbols-outlined">history</span> Log Akses
-                    </button>
-                    <button class="side-tab" onclick="switchGlobalUserSubTab('arsip-program')">
-                        <span class="material-symbols-outlined">archive</span> Arsip & Sampah
-                    </button>
-                </div>
-                <div class="settings-content" id="global-user-content" style="padding:32px; background:white;">
-                    <!-- Sub content here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Global User Guide View -->
-        <div id="global-guide-view" style="display:none; animation:fadeIn 0.4s ease;">
-            <header class="hero" style="text-align:left; margin-bottom:40px;">
-                <h1 style="margin:0; font-size:2.5rem; font-weight:900;">Pusat Panduan Portal Hibah</h1>
-                <p style="margin:0; color:var(--text-muted); font-size:1.1rem; margin-top:0.5rem;">Pelajari cara
-                    menggunakan sistem Grants Portal sesuai dengan peran Anda.</p>
-            </header>
-
-            <div class="grid-cols-2" style="gap:2rem;">
-                <!-- 1. Program Creation -->
-                <div class="glass"
-                    style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                    <div
-                        style="width:64px; height:64px; border-radius:18px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center;">
-                        <span class="material-symbols-outlined"
-                            style="font-size:32px; color:var(--primary);">add_home</span>
-                    </div>
-                    <div>
-                        <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">A. Membuat Program Baru
-                        </h3>
-                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                            Langkah bagi **Superadmin/Admin** untuk merancang skema hibah baru di dalam sistem.</p>
-                        <div style="display:flex; flex-direction:column; gap:12px;">
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                    style="font-size:0.9rem;">Klik tombol <b>Tambah Program</b> di Dashboard
-                                    utama.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                    style="font-size:0.9rem;">Isi Nama Skema, pilih Ikon, dan Deskripsi.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                    style="font-size:0.9rem;">Di Dashboard Program, atur <b>Periode</b>
-                                    (Open/Close).</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                    style="font-size:0.9rem;">Atur Syarat <b>Berkas</b> dan <b>Atribut Data</b> di menu
-                                    Pengaturan.</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Submission -->
-                <div class="glass"
-                    style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                    <div
-                        style="width:64px; height:64px; border-radius:18px; background:rgba(16,185,129,0.1); display:flex; align-items:center; justify-content:center;">
-                        <span class="material-symbols-outlined"
-                            style="font-size:32px; color:var(--secondary);">description</span>
-                    </div>
-                    <div>
-                        <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">B. Mengajukan Proposal
-                        </h3>
-                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                            Panduan bagi **Pengusul** untuk mengirimkan usulan proposal mereka ke sistem.</p>
-                        <div style="display:flex; flex-direction:column; gap:12px;">
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                    style="font-size:0.9rem;">Buka dashboard program hibah yang dituju.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                    style="font-size:0.9rem;">Klik tombol <b>Usulan Baru</b>.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                    style="font-size:0.9rem;">Isi judul, data atribut kustom, dan upload lampiran
-                                    wajib.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                    style="font-size:0.9rem;">Pastikan semua mandatory terisi lalu klik <b>Kirim
-                                        Proposal</b>.</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Assign Reviewer -->
-                <div class="glass"
-                    style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                    <div
-                        style="width:64px; height:64px; border-radius:18px; background:rgba(99,102,241,0.1); display:flex; align-items:center; justify-content:center;">
-                        <span class="material-symbols-outlined"
-                            style="font-size:32px; color:var(--primary);">person_add</span>
-                    </div>
-                    <div>
-                        <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">C. Assign Reviewer</h3>
-                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                            Proses penugasan evaluator oleh **Admin/Manager** ke usulan yang masuk.</p>
-                        <div style="display:flex; flex-direction:column; gap:12px;">
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                    style="font-size:0.9rem;">Buka tab <b>Usulan</b> di dashboard program
-                                    tertentu.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                    style="font-size:0.9rem;">Klik ikon menu di samping kanan nama pengusul.</span>
-                            </div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                    style="font-size:0.9rem;">Pilih <b>Assign Reviewer</b> pada baris data
-                                    usulan.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                    style="font-size:0.9rem;">Centang daftar Reviewer yang diinginkan lalu
-                                    <b>Simpan</b>.</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. Review Process -->
-                <div class="glass"
-                    style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                    <div
-                        style="width:64px; height:64px; border-radius:18px; background:rgba(217,119,6,0.1); display:flex; align-items:center; justify-content:center;">
-                        <span class="material-symbols-outlined"
-                            style="font-size:32px; color:#d97706;">rate_review</span>
-                    </div>
-                    <div>
-                        <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">D. Evaluasi (Review)</h3>
-                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                            Langkah bagi **Reviewer** untuk memberikan skor dan rekomendasi akhir.</p>
-                        <div style="display:flex; flex-direction:column; gap:12px;">
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                    style="font-size:0.9rem;">Buka daftar usulan yang ditugaskan kepada Anda.</span>
-                            </div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                    style="font-size:0.9rem;">Klik usulan untuk melihat detail dan download
-                                    berkas.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                    style="font-size:0.9rem;">Buka tab <b>Penilaian</b> lalu isi skor
-                                    per-indikator.</span></div>
-                            <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                    style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                    style="font-size:0.9rem;">Simpan draft atau kirim penilaian final ke Admin.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Program Detail Dashboard -->
-        <div id="program-dashboard" style="display: none;">
-            <div class="program-nav-wrapper">
-                <div class="prog-header"
-                    style="display:flex; align-items:center; gap:2rem; margin-bottom:2rem; padding: 1.5rem 0; border-bottom: 1px solid var(--border);">
-                    <!-- Dynamic Content -->
-                </div>
-
-                <div class="tabs glass"
-                    style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0.75rem;">
-                    <div style="display:flex; gap:0.5rem; overflow-x:auto;">
-                        <button id="tab-btn-usulan" class="tab-btn active" onclick="switchTab('usulan')">
-                            <span class="material-symbols-outlined">description</span> Usulan
-                        </button>
-                        <button id="tab-btn-periode" class="tab-btn" onclick="switchTab('periode')">
-                            <span class="material-symbols-outlined">event_repeat</span> Periode
-                        </button>
-                        <button id="tab-btn-analisis" class="tab-btn" onclick="switchTab('analisis')">
-                            <span class="material-symbols-outlined">insights</span> Analisis
-                        </button>
-                        <button id="tab-btn-keuangan" class="tab-btn" onclick="switchTab('keuangan')">
-                            <span class="material-symbols-outlined">payments</span> Keuangan
-                        </button>
-                        <button id="tab-btn-users" class="tab-btn" onclick="switchTab('users')">
-                            <span class="material-symbols-outlined">group</span> User
-                        </button>
-                        <button id="tab-btn-setting" class="tab-btn" onclick="switchTab('setting')">
-                            <span class="material-symbols-outlined">settings</span> Pengaturan
-                        </button>
-                        <button id="tab-btn-logs" class="tab-btn" onclick="switchTab('logs')">
-                            <span class="material-symbols-outlined">history</span> Log
-                        </button>
-                    </div>
-                    <div style="display:flex; gap:12px; align-items:center;">
-                        <button class="btn-secondary" onclick="exportProposalsToExcel()" 
-                                style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
-                            <span class="material-symbols-outlined" style="font-size:18px; color:var(--primary);">download</span> Ekspor (.xlsx)
-                        </button>
-                        <button id="btn-add-proposal" class="btn-primary" onclick="openProposalModal()"
-                            style="height:40px; padding:0 20px; border-radius:10px; font-weight:800; font-size:0.85rem; flex-shrink:0;">
-                            <span class="material-symbols-outlined" style="font-size:20px;">add_circle</span> Usulan Baru
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-usulan" class="view-content">
-                <div class="glass table-container" id="proposal-list-container">
-                    <!-- Table injected here -->
-                </div>
-            </div>
-
-
-            <div id="view-periode" class="view-content" style="display: none;">
-                <div class="period-timeline" id="period-container">
-                    <!-- Periods injected here -->
-                </div>
-            </div>
-
-            <div id="view-analisis" class="view-content" style="display: none;">
-                <div id="analisis-overview">
-                    <!-- Stats injected here -->
-                </div>
-
-                <div id="analisis-placeholder" class="glass"
-                    style="padding: 40px; border-radius: var(--radius-xl); text-align: center; color: var(--text-muted); margin-top:20px;">
-                    <span class="material-symbols-outlined"
-                        style="font-size: 48px; margin-bottom: 16px; opacity:0.3;">bar_chart</span>
-                    <p>Visualisasi data terperinci akan muncul di sini seiring bertambahnya usulan.</p>
-                </div>
-
-                <div id="analisis-charts" class="charts-grid"
-                    style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; display:none; margin-top:20px;">
-                    <!-- Charts injected here -->
-                </div>
-            </div>
-
-            <div id="view-keuangan" class="view-content" style="display: none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                    <h3 style="font-family:'Outfit'">Log Keuangan & Anggaran</h3>
-                    <button class="btn-apply" onclick="openFinanceModal()"
-                        style="height:36px; padding:0 16px; font-size:0.85rem;">
-                        <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> Tambah
-                        Transaksi
-                    </button>
-                </div>
-                <div class="glass" style="border-radius: var(--radius-lg); overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Transaksi</th>
-                                <th>Kategori</th>
-                                <th>Tanggal</th>
-                                <th>Jumlah</th>
-                                <th>Status</th>
-                                <th style="text-align:right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="finance-container">
-                            <!-- Finance data injected here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="view-users" class="view-content" style="display: none;">
-                <div class="settings-container">
-                    <div class="settings-sidebar" id="users-sidebar">
-                        <button class="side-tab active" onclick="switchUserSubTab('pengelola')">
-                            <span class="material-symbols-outlined">badge</span> Pengelola
-                        </button>
-                        <button class="side-tab" onclick="switchUserSubTab('reviewer')">
-                            <span class="material-symbols-outlined">rate_review</span> Reviewer
-                        </button>
-                    </div>
-                    <div class="settings-content" id="user-sub-content"></div>
-                </div>
-            </div>
-
-            <div id="view-setting" class="view-content" style="display: none;">
                 <div class="settings-container">
                     <div class="settings-sidebar">
-                        <button class="side-tab active" onclick="switchSettingSubTab('info')">
-                            <span class="material-symbols-outlined">info</span> Informasi
+                        <button class="side-tab active" onclick="switchGlobalUserSubTab('daftar-user')">
+                            <span class="material-symbols-outlined">group</span> Daftar User
                         </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('atribut')">
-                            <span class="material-symbols-outlined">reorder</span> Atribut
+                        <button class="side-tab" onclick="switchGlobalUserSubTab('hak-akses')">
+                            <span class="material-symbols-outlined">security</span> Kebijakan Akses
                         </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('kaitan')">
-                            <span class="material-symbols-outlined">link</span> Integrasi
+                        <button class="side-tab" onclick="switchGlobalUserSubTab('blacklist-global')">
+                            <span class="material-symbols-outlined">block</span> Blacklist Global
                         </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('status')">
-                            <span class="material-symbols-outlined">rule</span> Status usulan
+                        <button class="side-tab" onclick="switchGlobalUserSubTab('log-akses')">
+                            <span class="material-symbols-outlined">history</span> Log Akses
                         </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('timeline')">
-                            <span class="material-symbols-outlined">timeline</span> Tahapan Program
-                        </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('berkas')">
-                            <span class="material-symbols-outlined">folder</span> Berkas Lampiran
-                        </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('notif')">
-                            <span class="material-symbols-outlined">mail</span> E-mail & Notifikasi
-                        </button>
-                        <button class="side-tab" onclick="switchSettingSubTab('review')">
-                            <span class="material-symbols-outlined">rate_review</span> Formulir Review
+                        <button class="side-tab" onclick="switchGlobalUserSubTab('arsip-program')">
+                            <span class="material-symbols-outlined">archive</span> Arsip & Sampah
                         </button>
                     </div>
-
-                    <div class="settings-content" id="setting-sub-content">
-                        <!-- Sub-content injected here -->
+                    <div class="settings-content" id="global-user-content" style="padding:32px; background:white;">
+                        <!-- Sub content here -->
                     </div>
                 </div>
             </div>
 
-            <div id="view-logs" class="view-content" style="display: none;">
-                <div id="program-logs-container"></div>
-            </div>
-        </div>
-    </div>
+            <!-- Global User Guide View -->
+            <div id="global-guide-view" style="display:none; animation:fadeIn 0.4s ease;">
+                <header class="hero" style="text-align:left; margin-bottom:40px;">
+                    <h1 style="margin:0; font-size:2.5rem; font-weight:900;">Pusat Panduan Portal Hibah</h1>
+                    <p style="margin:0; color:var(--text-muted); font-size:1.1rem; margin-top:0.5rem;">Pelajari cara
+                        menggunakan sistem Grants Portal sesuai dengan peran Anda.</p>
+                </header>
 
-    <!-- Enhanced Modal System -->
-    <div id="modal-overlay" class="modal-overlay" style="display:none;"
-        onclick="if(event.target === this) closeModal()">
-        <div class="modal-card glass">
-            <div class="modal-inner">
-                <div class="modal-header">
-                    <h3 id="modal-title">Modal Title</h3>
-                    <button class="btn-icon" onclick="closeModal()" title="Tutup">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+                <div class="grid-cols-2" style="gap:2rem;">
+                    <!-- 1. Program Creation -->
+                    <div class="glass"
+                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
+                        <div
+                            style="width:64px; height:64px; border-radius:18px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:32px; color:var(--primary);">add_home</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">A. Membuat Program
+                                Baru
+                            </h3>
+                            <p
+                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                                Langkah bagi **Superadmin/Admin** untuk merancang skema hibah baru di dalam sistem.</p>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
+                                        style="font-size:0.9rem;">Klik tombol <b>Tambah Program</b> di Dashboard
+                                        utama.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
+                                        style="font-size:0.9rem;">Isi Nama Skema, pilih Ikon, dan Deskripsi.</span>
+                                </div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
+                                        style="font-size:0.9rem;">Di Dashboard Program, atur <b>Periode</b>
+                                        (Open/Close).</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
+                                        style="font-size:0.9rem;">Atur Syarat <b>Berkas</b> dan <b>Atribut Data</b> di
+                                        menu
+                                        Pengaturan.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Submission -->
+                    <div class="glass"
+                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
+                        <div
+                            style="width:64px; height:64px; border-radius:18px; background:rgba(16,185,129,0.1); display:flex; align-items:center; justify-content:center;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:32px; color:var(--secondary);">description</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">B. Mengajukan Proposal
+                            </h3>
+                            <p
+                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                                Panduan bagi **Pengusul** untuk mengirimkan usulan proposal mereka ke sistem.</p>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
+                                        style="font-size:0.9rem;">Buka dashboard program hibah yang dituju.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
+                                        style="font-size:0.9rem;">Klik tombol <b>Usulan Baru</b>.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
+                                        style="font-size:0.9rem;">Isi judul, data atribut kustom, dan upload lampiran
+                                        wajib.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
+                                        style="font-size:0.9rem;">Pastikan semua mandatory terisi lalu klik <b>Kirim
+                                            Proposal</b>.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Assign Reviewer -->
+                    <div class="glass"
+                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
+                        <div
+                            style="width:64px; height:64px; border-radius:18px; background:rgba(99,102,241,0.1); display:flex; align-items:center; justify-content:center;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:32px; color:var(--primary);">person_add</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">C. Assign Reviewer
+                            </h3>
+                            <p
+                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                                Proses penugasan evaluator oleh **Admin/Manager** ke usulan yang masuk.</p>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
+                                        style="font-size:0.9rem;">Buka tab <b>Usulan</b> di dashboard program
+                                        tertentu.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
+                                        style="font-size:0.9rem;">Klik ikon menu di samping kanan nama pengusul.</span>
+                                </div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
+                                        style="font-size:0.9rem;">Pilih <b>Assign Reviewer</b> pada baris data
+                                        usulan.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
+                                        style="font-size:0.9rem;">Centang daftar Reviewer yang diinginkan lalu
+                                        <b>Simpan</b>.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Review Process -->
+                    <div class="glass"
+                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
+                        <div
+                            style="width:64px; height:64px; border-radius:18px; background:rgba(217,119,6,0.1); display:flex; align-items:center; justify-content:center;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:32px; color:#d97706;">rate_review</span>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">D. Evaluasi (Review)
+                            </h3>
+                            <p
+                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                                Langkah bagi **Reviewer** untuk memberikan skor dan rekomendasi akhir.</p>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
+                                        style="font-size:0.9rem;">Buka daftar usulan yang ditugaskan kepada Anda.</span>
+                                </div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
+                                        style="font-size:0.9rem;">Klik usulan untuk melihat detail dan download
+                                        berkas.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
+                                        style="font-size:0.9rem;">Buka tab <b>Penilaian</b> lalu isi skor
+                                        per-indikator.</span></div>
+                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
+                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
+                                        style="font-size:0.9rem;">Simpan draft atau kirim penilaian final ke
+                                        Admin.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="modal-body" class="modal-body"></div>
+            </div>
+
+            <!-- Program Detail Dashboard -->
+            <div id="program-dashboard" style="display: none;">
+                <div class="program-nav-wrapper">
+                    <div class="prog-header"
+                        style="display:flex; align-items:center; gap:2rem; margin-bottom:2rem; padding: 1.5rem 0; border-bottom: 1px solid var(--border);">
+                        <!-- Dynamic Content -->
+                    </div>
+
+                    <div class="tabs glass"
+                        style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0.75rem;">
+                        <div style="display:flex; gap:0.5rem; overflow-x:auto;">
+                            <button id="tab-btn-usulan" class="tab-btn active" onclick="switchTab('usulan')">
+                                <span class="material-symbols-outlined">description</span> Usulan
+                            </button>
+                            <button id="tab-btn-periode" class="tab-btn" onclick="switchTab('periode')">
+                                <span class="material-symbols-outlined">event_repeat</span> Periode
+                            </button>
+                            <button id="tab-btn-analisis" class="tab-btn" onclick="switchTab('analisis')">
+                                <span class="material-symbols-outlined">insights</span> Analisis
+                            </button>
+                            <button id="tab-btn-keuangan" class="tab-btn" onclick="switchTab('keuangan')">
+                                <span class="material-symbols-outlined">payments</span> Keuangan
+                            </button>
+                            <button id="tab-btn-users" class="tab-btn" onclick="switchTab('users')">
+                                <span class="material-symbols-outlined">group</span> User
+                            </button>
+                            <button id="tab-btn-setting" class="tab-btn" onclick="switchTab('setting')">
+                                <span class="material-symbols-outlined">settings</span> Pengaturan
+                            </button>
+                            <button id="tab-btn-logs" class="tab-btn" onclick="switchTab('logs')">
+                                <span class="material-symbols-outlined">history</span> Log
+                            </button>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <button class="btn-secondary" onclick="exportProposalsToExcel()"
+                                style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
+                                <span class="material-symbols-outlined"
+                                    style="font-size:18px; color:var(--primary);">download</span> Ekspor (.xlsx)
+                            </button>
+                            <button id="btn-add-proposal" class="btn-primary" onclick="openProposalModal()"
+                                style="height:40px; padding:0 20px; border-radius:10px; font-weight:800; font-size:0.85rem; flex-shrink:0;">
+                                <span class="material-symbols-outlined" style="font-size:20px;">add_circle</span> Usulan
+                                Baru
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-usulan" class="view-content">
+                    <div class="glass table-container" id="proposal-list-container">
+                        <!-- Table injected here -->
+                    </div>
+                </div>
+
+
+                <div id="view-periode" class="view-content" style="display: none;">
+                    <div class="period-timeline" id="period-container">
+                        <!-- Periods injected here -->
+                    </div>
+                </div>
+
+                <div id="view-analisis" class="view-content" style="display: none;">
+                    <div id="analisis-overview">
+                        <!-- Stats injected here -->
+                    </div>
+
+                    <div id="analisis-placeholder" class="glass"
+                        style="padding: 40px; border-radius: var(--radius-xl); text-align: center; color: var(--text-muted); margin-top:20px;">
+                        <span class="material-symbols-outlined"
+                            style="font-size: 48px; margin-bottom: 16px; opacity:0.3;">bar_chart</span>
+                        <p>Visualisasi data terperinci akan muncul di sini seiring bertambahnya usulan.</p>
+                    </div>
+
+                    <div id="analisis-charts" class="charts-grid"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; display:none; margin-top:20px;">
+                        <!-- Charts injected here -->
+                    </div>
+                </div>
+
+                <div id="view-keuangan" class="view-content" style="display: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                        <h3 style="font-family:'Outfit'">Log Keuangan & Anggaran</h3>
+                        <button class="btn-apply" onclick="openFinanceModal()"
+                            style="height:36px; padding:0 16px; font-size:0.85rem;">
+                            <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> Tambah
+                            Transaksi
+                        </button>
+                    </div>
+                    <div class="glass" style="border-radius: var(--radius-lg); overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaksi</th>
+                                    <th>Kategori</th>
+                                    <th>Tanggal</th>
+                                    <th>Jumlah</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="finance-container">
+                                <!-- Finance data injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-users" class="view-content" style="display: none;">
+                    <div class="settings-container">
+                        <div class="settings-sidebar" id="users-sidebar">
+                            <button class="side-tab active" onclick="switchUserSubTab('pengelola')">
+                                <span class="material-symbols-outlined">badge</span> Pengelola
+                            </button>
+                            <button class="side-tab" onclick="switchUserSubTab('reviewer')">
+                                <span class="material-symbols-outlined">rate_review</span> Reviewer
+                            </button>
+                        </div>
+                        <div class="settings-content" id="user-sub-content"></div>
+                    </div>
+                </div>
+
+                <div id="view-setting" class="view-content" style="display: none;">
+                    <div class="settings-container">
+                        <div class="settings-sidebar">
+                            <button class="side-tab active" onclick="switchSettingSubTab('info')">
+                                <span class="material-symbols-outlined">info</span> Informasi
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('atribut')">
+                                <span class="material-symbols-outlined">reorder</span> Atribut
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('kaitan')">
+                                <span class="material-symbols-outlined">link</span> Integrasi
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('status')">
+                                <span class="material-symbols-outlined">rule</span> Status usulan
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('timeline')">
+                                <span class="material-symbols-outlined">timeline</span> Tahapan Program
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('berkas')">
+                                <span class="material-symbols-outlined">folder</span> Berkas Lampiran
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('notif')">
+                                <span class="material-symbols-outlined">mail</span> E-mail & Notifikasi
+                            </button>
+                            <button class="side-tab" onclick="switchSettingSubTab('review')">
+                                <span class="material-symbols-outlined">rate_review</span> Formulir Review
+                            </button>
+                        </div>
+
+                        <div class="settings-content" id="setting-sub-content">
+                            <!-- Sub-content injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-logs" class="view-content" style="display: none;">
+                    <div id="program-logs-container"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast-container">
-        <span class="material-symbols-outlined">check_circle</span>
-        <span id="toast-msg">Berhasil diperbarui!</span>
-    </div>
+        <!-- Enhanced Modal System -->
+        <div id="modal-overlay" class="modal-overlay" style="display:none;"
+            onclick="if(event.target === this) closeModal()">
+            <div class="modal-card glass">
+                <div class="modal-inner">
+                    <div class="modal-header">
+                        <h3 id="modal-title">Modal Title</h3>
+                        <button class="btn-icon" onclick="closeModal()" title="Tutup">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <div id="modal-body" class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast-container">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span id="toast-msg">Berhasil diperbarui!</span>
+        </div>
 
     </div><!-- End of main-app-container -->
 
@@ -861,7 +889,7 @@
         ];
 
         let registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [
-            { id: 1, name: "Admin Utama", unit: "Pusat IT", role: "Superadmin", email: "admin@univ.ac.id", phone: "08123456789", dept: "Infrastruktur Digital", expertise: "Security & Cloud" },
+            { id: 1, name: "Superadmin UGM", unit: "Direktorat IT", role: "Superadmin", email: "rafieiy.m@gmail.com", phone: "08123456789", dept: "Infrastruktur", expertise: "Security" },
             { id: 2, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Editor", email: "siti@univ.ac.id", phone: "08123456788", dept: "Teknik Sipil", expertise: "Struktur Beton" },
             { id: 3, name: "Budi Santoso", unit: "Fakultas Ekonomi", role: "Pengusul", email: "budi@univ.ac.id", phone: "08123456787", dept: "Manajemen", expertise: "Fintech" },
             { id: 4, name: "Prof. Dr. Ir. Tech", unit: "Pusat Riset AI", role: "Reviewer", email: "tech@univ.ac.id", phone: "08123456786", dept: "Machine Learning", expertise: "Natural Language Processing" },
@@ -875,38 +903,38 @@
         let recycleBin = JSON.parse(localStorage.getItem('grants_recycle_bin')) || [];
 
         const defaultPermissions = {
-            'Superadmin': { 
-                programs: 2, users: 2, settings: 2, analysis: 2, finance: 2, 
+            'Superadmin': {
+                programs: 2, users: 2, settings: 2, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 2, manage_blacklist: 2, input_review_others: 2,
                 view_program_logs: 2, delete_program_logs: 2
             },
-            'Admin': { 
-                programs: 2, users: 2, settings: 2, analysis: 2, finance: 2, 
+            'Admin': {
+                programs: 2, users: 2, settings: 2, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 2, manage_blacklist: 2, input_review_others: 2,
                 view_program_logs: 2, delete_program_logs: 2
             },
-            'Manager': { 
-                programs: 2, users: 0, settings: 0, analysis: 2, finance: 2, 
+            'Manager': {
+                programs: 2, users: 0, settings: 0, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 0, manage_blacklist: 2, input_review_others: 2,
                 view_program_logs: 2, delete_program_logs: 0
             },
-            'Editor': { 
-                programs: 1, users: 0, settings: 0, analysis: 1, finance: 0, 
+            'Editor': {
+                programs: 1, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 2, change_prop_status: 0, submit_for_others: 1,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 2,
                 view_program_logs: 1, delete_program_logs: 0
             },
-            'Reviewer': { 
-                programs: 0, users: 0, settings: 0, analysis: 1, finance: 0, 
+            'Reviewer': {
+                programs: 0, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 1, change_prop_status: 0, submit_for_others: 0,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 2,
                 view_program_logs: 0, delete_program_logs: 0
             },
-            'Pengusul': { 
-                programs: 0, users: 0, settings: 0, analysis: 1, finance: 0, 
+            'Pengusul': {
+                programs: 0, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 1, change_prop_status: 0, submit_for_others: 0,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 0,
                 view_program_logs: 0, delete_program_logs: 0
@@ -1256,12 +1284,12 @@
                 const btn = document.getElementById('btn-google-login');
                 const profile = document.getElementById('user-profile-nav');
                 if (btn) btn.style.display = 'none';
-                
+
                 // Ensure correct user data is in session
                 const email = user.email;
                 const found = registeredUsers.find(u => u.email === email);
                 const systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
-                
+
                 currentUser = systemUser;
                 localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
 
@@ -1271,7 +1299,7 @@
                     document.getElementById('nav-user-role').innerText = systemUser.role.toUpperCase();
                     document.getElementById('nav-user-photo').src = systemUser.photoURL || '';
                 }
-                
+
                 // Important: Trigger final UI rendering after auth is confirmed
                 init();
             } else {
@@ -1284,14 +1312,14 @@
             if (!fbUser) return;
             const email = fbUser.email;
             const found = registeredUsers.find(u => u.email === email);
-            
-            const sessionUser = found 
-                ? { ...found, photoURL: fbUser.photoURL } 
+
+            const sessionUser = found
+                ? { ...found, photoURL: fbUser.photoURL }
                 : { id: Date.now(), name: fbUser.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: fbUser.photoURL };
-            
+
             currentUser = sessionUser;
             localStorage.setItem('grants_current_user', JSON.stringify(sessionUser));
-            location.reload(); 
+            location.reload();
         }
     </script>
     <script>
@@ -1396,7 +1424,7 @@
 
             const canViewAll = (globalPermissions[currentUser.role] || {}).view_all_props;
             let filtered = programs.filter(p => p.name.toLowerCase().includes(filter) || (p.desc && p.desc.toLowerCase().includes(filter)));
-            
+
             // Filter inactive for non-admins
             if (!canViewAll) {
                 filtered = filtered.filter(p => p.status !== 'archived');
@@ -1713,7 +1741,7 @@
                 }
                 const roles = ['Superadmin', 'Admin', 'Manager', 'Editor', 'Reviewer', 'Pengusul'];
                 const perms = [
-                    { 
+                    {
                         module: 'Dashboard & Program',
                         icon: 'apps',
                         features: [
@@ -1723,13 +1751,13 @@
                             { id: 'view_program_logs', label: 'Melihat Log Aktivitas' }
                         ]
                     },
-                    { 
+                    {
                         module: 'Usulan Program (Naskah)',
                         icon: 'description',
                         features: [
-                            { 
-                                id: 'proposals_scope', 
-                                label: 'Cakupan Kelola Usulan', 
+                            {
+                                id: 'proposals_scope',
+                                label: 'Cakupan Kelola Usulan',
                                 type: 'special',
                                 options: [
                                     { value: 3, label: 'Kelola Semua Usulan' },
@@ -1742,7 +1770,7 @@
                             { id: 'submit_for_others', label: 'Mendaftarkan Usulan Orang Lain' }
                         ]
                     },
-                    { 
+                    {
                         module: 'Review & Analisis',
                         icon: 'rate_review',
                         features: [
@@ -1751,7 +1779,7 @@
                             { id: 'finance', label: 'Akses Data Keuangan' }
                         ]
                     },
-                    { 
+                    {
                         module: 'Manajemen User',
                         icon: 'person',
                         features: [
@@ -1801,14 +1829,14 @@
                                                         <div style="font-weight:700; color:var(--text-main); font-size:0.9rem;">${p.label}</div>
                                                     </td>
                                                     ${roles.map(r => {
-                                                        const roleP = globalPermissions[r] || {};
-                                                        const level = (roleP[p.id] !== undefined) ? roleP[p.id] : 0;
-                                                        const opts = p.type === 'special' ? p.options : [
-                                                            { value: 2, label: 'Bisa Kelola' },
-                                                            { value: 1, label: 'Melihat Saja' },
-                                                            { value: 0, label: 'Tidak Bisa' }
-                                                        ];
-                                                        return `
+                    const roleP = globalPermissions[r] || {};
+                    const level = (roleP[p.id] !== undefined) ? roleP[p.id] : 0;
+                    const opts = p.type === 'special' ? p.options : [
+                        { value: 2, label: 'Bisa Kelola' },
+                        { value: 1, label: 'Melihat Saja' },
+                        { value: 0, label: 'Tidak Bisa' }
+                    ];
+                    return `
                                                             <td style="padding:0.75rem 0.5rem; text-align:center;">
                                                                 <select onchange="setPermissionLevel('${r}', '${p.id}', parseInt(this.value))" 
                                                                         style="width:95%; padding:8px 6px; border-radius:8px; border:1px solid var(--border); font-size:0.7rem; font-weight:700; background:white; color:${level >= 2 ? 'var(--primary)' : (level >= 1 ? 'var(--secondary)' : 'var(--text-muted)')};"
@@ -1817,7 +1845,7 @@
                                                                 </select>
                                                             </td>
                                                         `;
-                                                    }).join('')}
+                }).join('')}
                                                 </tr>
                                             `).join('')}
                                         </tbody>
@@ -1878,7 +1906,7 @@
         window.exportProposalsToExcel = function () {
             const program = programs.find(p => p.id == progId);
             if (!program) return;
-            
+
             const filtered = proposals.filter(p => p.program === program.name);
             if (filtered.length === 0) {
                 showToast("Belum ada data usulan untuk diekspor.", "error");
@@ -1904,13 +1932,13 @@
 
                 // Auto-sizing columns roughly
                 const wscols = [
-                    {wch: 12}, // ID
-                    {wch: 50}, // Title
-                    {wch: 25}, // Proposer
-                    {wch: 25}, // Unit
-                    {wch: 18}, // Date
-                    {wch: 15}, // Status
-                    {wch: 15}  // Period
+                    { wch: 12 }, // ID
+                    { wch: 50 }, // Title
+                    { wch: 25 }, // Proposer
+                    { wch: 25 }, // Unit
+                    { wch: 18 }, // Date
+                    { wch: 15 }, // Status
+                    { wch: 15 }  // Period
                 ];
                 ws['!cols'] = wscols;
 
@@ -2053,7 +2081,7 @@
             if (!program) return;
 
             const scope = globalPermissions[currentUser.role]?.proposals_scope !== undefined ? globalPermissions[currentUser.role].proposals_scope : 1;
-            
+
             let filtered = proposals.filter(p => p.program === program.name);
 
             // Access policy filtering: Scope 0 = None, 1+ = View All
@@ -2061,8 +2089,8 @@
                 container.innerHTML = `<div class="glass" style="padding:4rem; text-align:center; opacity:0.6;"><span class="material-symbols-outlined" style="font-size:3rem; margin-bottom:1rem;">lock</span><p>Anda tidak memiliki akses ke usulan di program ini.</p></div>`;
                 return;
             } else if (scope < 1) { // Standard user sees own
-                filtered = filtered.filter(p => 
-                    p.proposer === currentUser.name || 
+                filtered = filtered.filter(p =>
+                    p.proposer === currentUser.name ||
                     (p.members && p.members.some(m => m.name === currentUser.name))
                 );
             }
@@ -2097,19 +2125,19 @@
                         </thead>
                         <tbody>
                             ${filtered.map((p, idx) => {
-                                const reviewMode = program.reviewMode || 'open';
-                                const isReviewer = currentUser.role === 'Reviewer';
-                                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
-                                let displayProposer = p.proposer;
-                                if (reviewMode === 'double-blind' && isReviewer && !isAdmin) {
-                                    displayProposer = "[IDENTITAS TERSEMBUNYI]";
-                                }
-                                
-                                const scope = globalPermissions[currentUser.role]?.proposals_scope !== undefined ? globalPermissions[currentUser.role].proposals_scope : 1;
-                                const isMyProp = p.proposer === currentUser.name;
-                                const canEdit = (scope >= 3) || (scope === 2 && !isMyProp);
+                const reviewMode = program.reviewMode || 'open';
+                const isReviewer = currentUser.role === 'Reviewer';
+                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
+                let displayProposer = p.proposer;
+                if (reviewMode === 'double-blind' && isReviewer && !isAdmin) {
+                    displayProposer = "[IDENTITAS TERSEMBUNYI]";
+                }
 
-                                return `
+                const scope = globalPermissions[currentUser.role]?.proposals_scope !== undefined ? globalPermissions[currentUser.role].proposals_scope : 1;
+                const isMyProp = p.proposer === currentUser.name;
+                const canEdit = (scope >= 3) || (scope === 2 && !isMyProp);
+
+                return `
                                 <tr class="animate-fade-in" style="--delay: ${idx * 0.05}; border-bottom:1px solid var(--border); transition:all 0.2s ease;">
                                     <td style="padding:1.25rem 1.5rem; font-weight:850; color:var(--primary); font-size:0.9rem;">#${p.id || (100 + idx)}</td>
                                     <td style="padding:1.25rem 1.5rem;">
@@ -2142,7 +2170,7 @@
                                     </td>
                                 </tr>
                                 `;
-                            }).join('')}
+            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -2213,8 +2241,8 @@
             let filtered = proposals.filter(p => p.program === program.name);
 
             if (currentUser.role === 'Pengusul') {
-                filtered = filtered.filter(p => 
-                    p.proposer === currentUser.name || 
+                filtered = filtered.filter(p =>
+                    p.proposer === currentUser.name ||
                     (p.members && p.members.some(m => m.name === currentUser.name))
                 );
             }
@@ -3022,14 +3050,14 @@
                         </div>
                         <div id="review-template-container" style="display:flex; flex-direction:column; gap:1.5rem;">
                             ${(() => {
-                                const groupsMap = {};
-                                template.forEach((ind, i) => {
-                                    const gName = ind.group || 'Tanpa Grup';
-                                    if (!groupsMap[gName]) groupsMap[gName] = [];
-                                    groupsMap[gName].push({ data: ind, idx: i });
-                                });
+                        const groupsMap = {};
+                        template.forEach((ind, i) => {
+                            const gName = ind.group || 'Tanpa Grup';
+                            if (!groupsMap[gName]) groupsMap[gName] = [];
+                            groupsMap[gName].push({ data: ind, idx: i });
+                        });
 
-                                return Object.keys(groupsMap).map(gName => `
+                        return Object.keys(groupsMap).map(gName => `
                                     <div class="f-group draggable-item" draggable="true" ondragstart="onReviewGroupDragStart(event, '${gName}')" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onReviewGroupDrop(event, '${gName}')" 
                                          style="background:rgba(0,0,0,0.02); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border);">
                                         <div style="font-weight:800; font-family:'Outfit'; color:var(--primary); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
@@ -3101,7 +3129,7 @@
                                         </div>
                                     </div>
                                 `).join('');
-                            })()}
+                    })()}
                         </div>
                         <div style="margin-top:2rem; display:flex; justify-content:flex-end;">
                             <button class="btn-primary" onclick="saveReviewSettings()" style="height:48px; min-width:200px;">Simpan Templat Review</button>
@@ -3751,7 +3779,7 @@
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             switchSettingSubTab('review');
         }
-        
+
         // Unified indicators update
         function updateReviewIndicator(idx, key, val) {
             const program = programs.find(p => p.id == progId);
@@ -3760,7 +3788,7 @@
             if (key === 'type' || key === 'group') switchSettingSubTab('review');
         }
         function deleteReviewIndicator(idx) {
-            if(!confirm("Hapus indikator penilaian ini?")) return;
+            if (!confirm("Hapus indikator penilaian ini?")) return;
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate.splice(idx, 1);
             switchSettingSubTab('review');
@@ -4481,7 +4509,7 @@
             const progBudget = document.getElementById('set-prog-budget');
             if (progBudget) program.totalBudget = progBudget.value;
 
-            addProgramLog('update', `Memperbarui informasi umum ${oldName !== program.name ? '(Nama berubah dari '+oldName+')' : ''}`);
+            addProgramLog('update', `Memperbarui informasi umum ${oldName !== program.name ? '(Nama berubah dari ' + oldName + ')' : ''}`);
             showToast('Informasi program berhasil diperbarui');
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             renderProgramHeader();
@@ -4491,7 +4519,7 @@
         function toggleProgramActive() {
             const program = programs.find(p => p.id == progId);
             const isArchived = program.status === 'archived';
-            
+
             if (confirm(`Apakah Anda yakin ingin ${isArchived ? 'mengaktifkan kembali' : 'menonaktifkan'} program "${program.name}"?`)) {
                 program.status = isArchived ? 'active' : 'archived';
                 addProgramLog('archive', `Status program diubah menjadi: ${program.status.toUpperCase()}`);
@@ -4507,7 +4535,7 @@
                 const idx = programs.findIndex(p => p.id == progId);
                 const deletedItem = programs.splice(idx, 1)[0];
                 deletedItem.deletedAt = new Date().toISOString();
-                
+
                 recycleBin.push(deletedItem);
                 localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
                 localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
@@ -4523,11 +4551,11 @@
             const program = recycleBin.splice(idx, 1)[0];
             delete program.deletedAt;
             program.status = 'archived'; // Default to archived after restore for safety
-            
+
             programs.push(program);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
-            
+
             showToast('Program berhasil di-restore ke Arsip');
             switchGlobalUserSubTab('arsip-program');
         }
@@ -4545,10 +4573,10 @@
             if (!confirm("PERINGATAN: Program akan dihapus SELAMANYA beserta seluruh history data. Lanjutkan?")) return;
             const idx = recycleBin.findIndex(p => p.id == id);
             if (idx === -1) return;
-            
+
             const program = recycleBin.splice(idx, 1)[0];
             localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
-            
+
             // Final cleanup of proposals if any (optional as they are already disconnected usually)
             proposals = proposals.filter(p => p.program !== program.name);
             localStorage.setItem('grants_proposals', JSON.stringify(proposals));
@@ -4566,7 +4594,7 @@
             const canViewMember = (globalPermissions[currentUser.role] || {}).view_member_props;
             const canShowRevCount = (globalPermissions[currentUser.role] || {}).stat_reviewers_count;
 
-            const userProposals = canViewAll 
+            const userProposals = canViewAll
                 ? proposals.filter(p => p.program === program.name)
                 : proposals.filter(p => p.program === program.name && (p.proposer === currentUser.name || (canViewMember && p.members && p.members.some(m => m.name === currentUser.name))));
 
@@ -4608,11 +4636,11 @@
 
 
         // --- PROPOSAL DRAG & DROP HANDLERS ---
-        window.onPropMemberDragStart = function(e, idx) {
+        window.onPropMemberDragStart = function (e, idx) {
             e.dataTransfer.setData('text/plain', idx);
             e.target.classList.add('dragging');
         };
-        window.onPropMemberDrop = function(e, targetIdx) {
+        window.onPropMemberDrop = function (e, targetIdx) {
             e.preventDefault();
             const sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
             if (isNaN(sourceIdx) || sourceIdx === targetIdx) return;
@@ -4621,7 +4649,7 @@
             window.renderPropMembersList();
         };
 
-        window.renderPropMembersList = function() {
+        window.renderPropMembersList = function () {
             const list = document.getElementById('prop-members-list');
             if (!list) return '';
             list.innerHTML = (window.tempProposalMembers || []).map((m, idx) => `
@@ -4629,7 +4657,7 @@
                     <div style="width:24px; height:24px; color:var(--text-muted); cursor:grab;">
                         <span class="material-symbols-outlined" style="font-size:20px;">drag_indicator</span>
                     </div>
-                    <div style="width:32px; height:32px; border-radius:50%; background:${idx === 0 ? 'var(--primary)' : 'var(--primary-soft)'}; color:${idx === 0 ? 'white' : 'var(--primary)'}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.7rem;">${idx === 0 ? 'K' : idx+1}</div>
+                    <div style="width:32px; height:32px; border-radius:50%; background:${idx === 0 ? 'var(--primary)' : 'var(--primary-soft)'}; color:${idx === 0 ? 'white' : 'var(--primary)'}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.7rem;">${idx === 0 ? 'K' : idx + 1}</div>
                     <div style="flex:1;">
                         <div style="font-weight:800; font-size:0.85rem; color:var(--text-main);">${m.name}</div>
                         <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">${m.unit} • ${m.role}</div>
@@ -4640,10 +4668,10 @@
             return list.innerHTML;
         };
 
-        window.triggerPropFileUpload = function(inputId) {
+        window.triggerPropFileUpload = function (inputId) {
             document.getElementById(inputId).click();
         };
-        window.onPropFileChanged = function(input, labelId) {
+        window.onPropFileChanged = function (input, labelId) {
             const file = input.files[0];
             if (file) {
                 document.getElementById(labelId).innerText = file.name;
@@ -4654,15 +4682,15 @@
         function openProposalModal(pid = null) {
             const program = programs.find(p => p.id == progId);
             const proposal = pid ? proposals.find(p => p.id == pid) : null;
-            
+
             // Initialize current members
             if (proposal && proposal.members && proposal.members.length > 0) {
                 window.tempProposalMembers = [...proposal.members];
             } else {
-                window.tempProposalMembers = [{ 
-                    name: proposal ? proposal.proposer : currentUser.name, 
-                    role: 'Ketua Pengusul', 
-                    unit: proposal ? proposal.unit : currentUser.unit 
+                window.tempProposalMembers = [{
+                    name: proposal ? proposal.proposer : currentUser.name,
+                    role: 'Ketua Pengusul',
+                    unit: proposal ? proposal.unit : currentUser.unit
                 }];
             }
 
@@ -4859,7 +4887,7 @@
             } else {
                 totalSpent = financeLogs.filter(tx => tx.status === 'Approved' || tx.status === 'Completed').reduce((sum, tx) => sum + (parseInt(tx.amount.replace(/\./g, '')) || 0), 0);
             }
-            
+
             const unitsCount = new Set(filtered.map(p => p.unit)).size;
 
             const totalLabel = canViewAll ? 'Total Usulan' : 'Usulan Saya / Tim';
