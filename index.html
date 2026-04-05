@@ -1265,8 +1265,28 @@
         const dashboardView = document.getElementById('dashboard-view');
         const programDashboard = document.getElementById('program-dashboard');
         const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        // Theme Logic
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+            } else {
+                document.body.removeAttribute('data-theme');
+                if (themeToggle) themeToggle.innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+            }
+            localStorage.setItem('grants_theme', theme);
+        }
 
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                applyTheme(current);
+            });
+        }
+
+        // Apply saved theme on start
+        const savedTheme = localStorage.getItem('grants_theme');
+        if (savedTheme) applyTheme(savedTheme);
 
         // Routing & Initialization
         // --- Firebase Modular SDK Setup ---
@@ -1410,29 +1430,43 @@
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
 
-                const btn = document.getElementById('btn-google-login');
-                const profile = document.getElementById('user-profile-nav');
-                if (btn) btn.style.display = 'none';
+                const gLoginBtn = document.getElementById('btn-google-login');
+                const profileNav = document.getElementById('user-profile-nav');
+                if (gLoginBtn) gLoginBtn.style.display = 'none';
 
-                // FETCH LATEST FROM CLOUD (Ensures role updates are instant on login)
-                const userDoc = await getDoc(doc(db, "registeredUsers", user.email));
+                // Initial UI Setup (Responsive & Instant)
+                if (profileNav) {
+                    profileNav.style.display = 'flex';
+                    document.getElementById('nav-user-name').innerText = user.displayName;
+                    document.getElementById('nav-user-photo').src = user.photoURL || '';
+                    document.getElementById('nav-user-role').innerText = 'SYNKRON...';
+                }
+
+                // 1. Fetch Latest Profile from Cloud (Sync roles, etc.)
                 let systemUser;
-                if (userDoc.exists()) {
-                    systemUser = { ...userDoc.data(), photoURL: user.photoURL };
-                } else {
-                    // Fallback to local if doc doesn't exist yet but user is found locally
+                try {
+                    const userDoc = await getDoc(doc(db, "registeredUsers", user.email));
+                    if (userDoc.exists()) {
+                        systemUser = { ...userDoc.data(), photoURL: user.photoURL };
+                    } else {
+                        const found = registeredUsers.find(u => u.email === user.email);
+                        systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
+                    }
+                } catch (e) {
+                    console.error("Profile Fetch Failed:", e);
+                    // Fallback to local
                     const found = registeredUsers.find(u => u.email === user.email);
                     systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
                 }
 
+                // 2. Finalize Identity
                 currentUser = systemUser;
                 localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
 
-                if (profile) {
-                    profile.style.display = 'flex';
+                // 3. Update Profile UI with Correct Role
+                if (profileNav) {
                     document.getElementById('nav-user-name').innerText = systemUser.name;
                     document.getElementById('nav-user-role').innerText = systemUser.role.toUpperCase();
-                    document.getElementById('nav-user-photo').src = systemUser.photoURL || '';
                 }
 
                 init();
