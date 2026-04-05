@@ -331,11 +331,60 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Login Guard Styles */
+        #login-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid white;
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            width: 100%;
+        }
+
+        #main-app-container {
+            display: none;
+        }
     </style>
 </head>
 
 <body data-theme="light">
 
+    <!-- LOGIN GATE -->
+    <div id="login-gate">
+        <div class="login-card animate-fade-in">
+            <div style="width:72px; height:72px; background:var(--primary); border-radius:22px; display:flex; align-items:center; justify-content:center; color:white; margin:0 auto 2rem; box-shadow:0 10px 20px var(--primary-soft);">
+                <span class="material-symbols-outlined" style="font-size:40px;">description</span>
+            </div>
+            <h1 style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.03em; color:var(--text-main); margin-bottom:0.5rem;">Portal Hibah PWA</h1>
+            <p style="color:var(--text-muted); font-size:1rem; margin-bottom:2.5rem; font-weight:500;">Silakan login dengan Google untuk mengakses sistem dashboard.</p>
+            
+            <button onclick="loginWithGoogle()" 
+                    style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:white; color:var(--text-main); border:1px solid var(--border); padding:14px; border-radius:16px; font-weight:850; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); transition:all 0.2s;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
+                Login with Google Account
+            </button>
+            <p style="margin-top:2rem; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.6;">© 2026 Universitas Riset Terpadu. All rights reserved.</p>
+        </div>
+    </div>
+
+    <div id="main-app-container">
     <nav>
         <a href="index.html" class="logo">
             <div class="logo-icon">
@@ -751,6 +800,8 @@
         <span class="material-symbols-outlined">check_circle</span>
         <span id="toast-msg">Berhasil diperbarui!</span>
     </div>
+
+    </div><!-- End of main-app-container -->
 
     <script>
         function showToast(msg = 'Berhasil diperbarui') {
@@ -1195,27 +1246,37 @@
 
         // Listen for Auth State Changes
         onAuthStateChanged(auth, (user) => {
+            const loginGate = document.getElementById('login-gate');
+            const mainApp = document.getElementById('main-app-container');
+
             if (user) {
+                if (loginGate) loginGate.style.display = 'none';
+                if (mainApp) mainApp.style.display = 'block';
+
                 const btn = document.getElementById('btn-google-login');
                 const profile = document.getElementById('user-profile-nav');
                 if (btn) btn.style.display = 'none';
+                
+                // Ensure correct user data is in session
+                const email = user.email;
+                const found = registeredUsers.find(u => u.email === email);
+                const systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
+                
+                currentUser = systemUser;
+                localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
+
                 if (profile) {
                     profile.style.display = 'flex';
-                    // We need to ensure the role mapping is synced
-                    const email = user.email;
-                    const found = registeredUsers.find(u => u.email === email);
-                    const systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
-                    
-                    currentUser = systemUser;
-                    localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
-
                     document.getElementById('nav-user-name').innerText = systemUser.name;
                     document.getElementById('nav-user-role').innerText = systemUser.role.toUpperCase();
                     document.getElementById('nav-user-photo').src = systemUser.photoURL || '';
-                    
-                    // Force refresh permissions after role detection
-                    checkAdminVisibility();
                 }
+                
+                // Important: Trigger final UI rendering after auth is confirmed
+                init();
+            } else {
+                if (loginGate) loginGate.style.display = 'flex';
+                if (mainApp) mainApp.style.display = 'none';
             }
         });
 
