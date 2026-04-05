@@ -1459,6 +1459,11 @@
                     systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
                 }
 
+                // FORCE SUPERADMIN for owner email
+                if (user.email === 'rafieiy.m@gmail.com') {
+                    systemUser.role = 'Superadmin';
+                }
+
                 // 2. Finalize Identity
                 currentUser = systemUser;
                 localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
