@@ -678,23 +678,25 @@
                                 <span class="material-symbols-outlined">history</span> Log
                             </button>
                         </div>                         <div style="display:flex; gap:12px; align-items:center;">
-                            <button class="btn-secondary" onclick="triggerImportExcel()" 
+                            ${(globalPermissions[currentUser.role] || {}).import_export_data >= 2 ? `
+                                <button class="btn-secondary" onclick="triggerImportExcel()" 
+                                        style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
+                                    <span class="material-symbols-outlined" style="font-size:18px; color:var(--primary);">upload</span> Impor (.xlsx)
+                                </button>
+                                <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
+                                
+                                <button class="btn-secondary" onclick="exportProposalsToExcel()"
                                     style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
-                                <span class="material-symbols-outlined" style="font-size:18px; color:var(--primary);">upload</span> Impor (.xlsx)
-                            </button>
-                            <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
-                            
-                            <button class="btn-secondary" onclick="exportProposalsToExcel()"
-                                style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
-                                <span class="material-symbols-outlined"
-                                    style="font-size:18px; color:var(--primary);">download</span> Ekspor (.xlsx)
-                            </button>
+                                    <span class="material-symbols-outlined"
+                                        style="font-size:18px; color:var(--primary);">download</span> Ekspor (.xlsx)
+                                </button>
+                            ` : ''}
                             <button id="btn-add-proposal" class="btn-primary" onclick="openProposalModal()"
                                 style="height:40px; padding:0 20px; border-radius:10px; font-weight:800; font-size:0.85rem; flex-shrink:0;">
                                 <span class="material-symbols-outlined" style="font-size:20px;">add_circle</span> Usulan
                                 Baru
                             </button>
-                        </div>>
+                        </div>
                     </div>
                 </div>
 
@@ -912,37 +914,37 @@
                 programs: 2, users: 2, settings: 2, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 2, manage_blacklist: 2, input_review_others: 2,
-                view_program_logs: 2, delete_program_logs: 2
+                view_program_logs: 2, delete_program_logs: 2, import_export_data: 2
             },
             'Admin': {
                 programs: 2, users: 2, settings: 2, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 2, manage_blacklist: 2, input_review_others: 2,
-                view_program_logs: 2, delete_program_logs: 2
+                view_program_logs: 2, delete_program_logs: 2, import_export_data: 2
             },
             'Manager': {
                 programs: 2, users: 0, settings: 0, analysis: 2, finance: 2,
                 proposals_scope: 3, change_prop_status: 2, submit_for_others: 2,
                 manage_archive_trash: 0, manage_blacklist: 2, input_review_others: 2,
-                view_program_logs: 2, delete_program_logs: 0
+                view_program_logs: 2, delete_program_logs: 0, import_export_data: 2
             },
             'Editor': {
                 programs: 1, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 2, change_prop_status: 0, submit_for_others: 1,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 2,
-                view_program_logs: 1, delete_program_logs: 0
+                view_program_logs: 1, delete_program_logs: 0, import_export_data: 1
             },
             'Reviewer': {
                 programs: 0, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 1, change_prop_status: 0, submit_for_others: 0,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 2,
-                view_program_logs: 0, delete_program_logs: 0
+                view_program_logs: 0, delete_program_logs: 0, import_export_data: 0
             },
             'Pengusul': {
                 programs: 0, users: 0, settings: 0, analysis: 1, finance: 0,
                 proposals_scope: 1, change_prop_status: 0, submit_for_others: 0,
                 manage_archive_trash: 0, manage_blacklist: 0, input_review_others: 0,
-                view_program_logs: 0, delete_program_logs: 0
+                view_program_logs: 0, delete_program_logs: 0, import_export_data: 0
             }
         };
 
@@ -1930,6 +1932,7 @@
                         features: [
                             { id: 'programs', label: 'Kelola Program / Dashboard' },
                             { id: 'settings', label: 'Pengaturan Global & Sistem' },
+                            { id: 'import_export_data', label: 'Impor & Ekspor Data' },
                             { id: 'manage_archive_trash', label: 'Kelola Arsip & Recycle Bin' },
                             { id: 'view_program_logs', label: 'Melihat Log Aktivitas' }
                         ]
