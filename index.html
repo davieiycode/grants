@@ -677,8 +677,13 @@
                             <button id="tab-btn-logs" class="tab-btn" onclick="switchTab('logs')">
                                 <span class="material-symbols-outlined">history</span> Log
                             </button>
-                        </div>
-                        <div style="display:flex; gap:12px; align-items:center;">
+                        </div>                         <div style="display:flex; gap:12px; align-items:center;">
+                            <button class="btn-secondary" onclick="triggerImportExcel()" 
+                                    style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
+                                <span class="material-symbols-outlined" style="font-size:18px; color:var(--primary);">upload</span> Impor (.xlsx)
+                            </button>
+                            <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
+                            
                             <button class="btn-secondary" onclick="exportProposalsToExcel()"
                                 style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
                                 <span class="material-symbols-outlined"
@@ -689,7 +694,7 @@
                                 <span class="material-symbols-outlined" style="font-size:20px;">add_circle</span> Usulan
                                 Baru
                             </button>
-                        </div>
+                        </div>>
                     </div>
                 </div>
 
@@ -1022,6 +1027,11 @@
             }
 
             localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+            
+            // Sync user data to Firestore (using email as doc ID for reliability)
+            const updatedUser = id ? registeredUsers.find(u => u.id == id) : registeredUsers[registeredUsers.length - 1];
+            if (updatedUser) window.fbSave('registeredUsers', updatedUser.email, updatedUser);
+
             closeModal();
             switchGlobalUserSubTab('daftar-user');
             showToast('Data user berhasil diperbarui');
@@ -1237,6 +1247,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDmQ75KAyCqe23COQjN076WKM5qycxAUqg",
@@ -1252,12 +1263,81 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- CLOUD SYNC BRIDGE ---
+        window.fbSave = async (col, id, data) => {
+            try {
+                await setDoc(doc(db, col, id.toString()), data);
+            } catch (err) {
+                console.error("Firestore Save Error:", err);
+            }
+        };
+
+        window.addGlobalLog = async (action, details = "") => {
+            const logId = Date.now().toString();
+            const logData = {
+                id: logId,
+                timestamp: new Date().toISOString(),
+                user: currentUser?.name || "System",
+                email: currentUser?.email || "-",
+                action: action,
+                details: details
+            };
+            await setDoc(doc(db, "global_logs", logId), logData);
+        };
+
+        // Realtime Listeners for Auto-Sync Across Devices
+        onSnapshot(collection(db, "programs"), (snap) => {
+            const list = [];
+            snap.forEach(d => list.push(d.data()));
+            if (list.length > 0) {
+                window.programs = list;
+                localStorage.setItem('grants_programs_meta', JSON.stringify(list));
+                if (typeof renderDashboard === 'function') renderDashboard();
+            }
+        });
+
+        onSnapshot(collection(db, "proposals"), (snap) => {
+            const list = [];
+            snap.forEach(d => list.push(d.data()));
+            if (list.length > 0) {
+                window.proposals = list;
+                localStorage.setItem('grants_proposals', JSON.stringify(list));
+                // Only refresh if we are currently viewing the proposals
+                if (document.getElementById('program-dashboard')?.style.display === 'block') {
+                    if (typeof renderUsulanTab === 'function') renderUsulanTab();
+                }
+            }
+        });
+
+        onSnapshot(collection(db, "registeredUsers"), (snap) => {
+            const list = [];
+            snap.forEach(d => list.push(d.data()));
+            if (list.length > 0) {
+                window.registeredUsers = list;
+                localStorage.setItem('grants_registeredUsers', JSON.stringify(list));
+            }
+        });
+
+        onSnapshot(query(collection(db, "global_logs"), orderBy("timestamp", "desc")), (snap) => {
+            const list = [];
+            snap.forEach(d => list.push(d.data()));
+            window.globalLogs = list;
+            if (window.switchGlobalUserSubTab) {
+                // If we are on the log tab, refresh it
+                // switchGlobalUserSubTab('log-akses');
+            }
+        });
+
+        // Export Auth Functions to Global Window Scope
 
         // Export Auth Functions to Global Window Scope
         window.loginWithGoogle = function () {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).then((result) => {
                 showToast(`Halo ${result.user.displayName}, sedang menyinkronkan peran...`);
+                addGlobalLog("LOGIN", `User logged in via Google: ${result.user.email}`);
                 syncFirebaseUser(result.user);
             }).catch((error) => {
                 showToast("Login gagal: " + error.message, "error");
@@ -1856,7 +1936,41 @@
                     </div>
                 `;
             } else if (sub === 'log-akses') {
-                container.innerHTML = `<div style="text-align:center; padding:5rem; opacity:0.3;"><span class="material-symbols-outlined" style="font-size:64px;">history</span><h3>Log sistem belum tersedia dalam sesi demonstrasi ini.</h3></div>`;
+                const logs = window.globalLogs || [];
+                container.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <div>
+                            <h2 style="font-family:'Outfit'; font-size:1.5rem; letter-spacing:-0.03em;">Log Aktivitas Sistem</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Audit trail seluruh interaksi user dan perubahan data di cloud.</p>
+                        </div>
+                        <button class="btn-secondary" onclick="addGlobalLog('REFRESH', 'Manual refresh triggered'); showToast('Log berhasil direfresh');">
+                            <span class="material-symbols-outlined" style="font-size:18px;">refresh</span>
+                        </button>
+                    </div>
+                    <div style="overflow-hidden; border-radius:12px; border:1px solid var(--border);">
+                        <table style="margin:0; font-size:0.85rem;">
+                            <thead style="background:rgba(0,0,0,0.02);">
+                                <tr>
+                                    <th style="padding:1rem;">Waktu</th>
+                                    <th style="padding:1rem;">Aksi</th>
+                                    <th style="padding:1rem;">User</th>
+                                    <th style="padding:1rem;">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${logs.length === 0 ? `<tr><td colspan="4" style="padding:4rem; text-align:center; opacity:0.5;">Belum ada log aktivitas masuk.</td></tr>` : 
+                                  logs.map(lg => `
+                                    <tr style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:1rem; font-family:'Outfit'; font-weight:700;">${new Date(lg.timestamp).toLocaleString('id-ID')}</td>
+                                        <td style="padding:1rem;"><span class="chip" style="background:${lg.action === 'LOGIN' ? 'var(--secondary)' : (lg.action === 'ERROR' ? 'var(--error)' : 'var(--primary)')}; color:white; font-size:0.6rem;">${lg.action}</span></td>
+                                        <td style="padding:1rem; font-weight:700;">${lg.user} <br><span style="font-size:0.7rem; color:var(--text-muted);">${lg.email}</span></td>
+                                        <td style="padding:1rem; color:var(--text-muted); font-size:0.8rem;">${lg.details}</td>
+                                    </tr>
+                                  `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
             }
         }
 
@@ -1913,16 +2027,28 @@
                 return;
             }
 
-            // Prep data
-            const data = filtered.map(p => ({
-                "ID USULAN": `#${p.id}`,
-                "JUDUL": p.title,
-                "PENGUSUL": p.proposer,
-                "UNIT KERJA": p.unit || "Fakultas Teknik",
-                "TANGGAL SUBMIT": p.date || p.submittedAt,
-                "STATUS": p.status.toUpperCase(),
-                "PERIODE": p.period || "-"
-            }));
+            const pAttrs = program.attributes || [];
+
+            // Prep data with dynamic attributes
+            const data = filtered.map(p => {
+                const row = {
+                    "ID USULAN": `#${p.id}`,
+                    "JUDUL": p.title,
+                    "PENGUSUL": p.proposer,
+                    "UNIT KERJA": p.unit || "Fakultas Teknik",
+                    "TANGGAL SUBMIT": p.date || p.submittedAt,
+                    "STATUS": p.status.toUpperCase(),
+                    "PERIODE": p.period || "-"
+                };
+
+                // Inject custom attributes as columns
+                pAttrs.forEach(attr => {
+                    const val = (p.attributes && p.attributes[attr.id]) !== undefined ? p.attributes[attr.id] : "";
+                    row[attr.label.toUpperCase()] = val;
+                });
+
+                return row;
+            });
 
             // Create XLSX using SheetJS
             try {
@@ -1932,14 +2058,9 @@
 
                 // Auto-sizing columns roughly
                 const wscols = [
-                    { wch: 12 }, // ID
-                    { wch: 50 }, // Title
-                    { wch: 25 }, // Proposer
-                    { wch: 25 }, // Unit
-                    { wch: 18 }, // Date
-                    { wch: 15 }, // Status
-                    { wch: 15 }  // Period
+                    { wch: 12 }, { wch: 50 }, { wch: 25 }, { wch: 25 }, { wch: 18 }, { wch: 15 }, { wch: 15 }
                 ];
+                pAttrs.forEach(() => wscols.push({ wch: 22 })); // Extra columns
                 ws['!cols'] = wscols;
 
                 const safeName = program.name.replace(/\s+/g, '_').toUpperCase();
@@ -1949,6 +2070,89 @@
                 console.error("Export Error:", err);
                 showToast("Gagal melakukan ekspor data", "error");
             }
+        };
+
+        window.triggerImportExcel = function () {
+            document.getElementById('import-excel-input').click();
+        };
+
+        window.importProposalsFromExcel = function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const program = programs.find(p => p.id == progId);
+            if (!program) return;
+
+            const pAttrs = program.attributes || [];
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet);
+
+                    if (rows.length === 0) {
+                        showToast("File Excel kosong.", "error");
+                        return;
+                    }
+
+                    let importedCount = 0;
+                    rows.forEach(row => {
+                        const rawId = row["ID USULAN"] ? row["ID USULAN"].toString().replace('#', '') : null;
+
+                        // Dynamic attribute mapping
+                        const attributes = {};
+                        pAttrs.forEach(attr => {
+                            const colName = attr.label.toUpperCase();
+                            if (row[colName] !== undefined) {
+                                attributes[attr.id] = row[colName];
+                            }
+                        });
+
+                        const newProp = {
+                            id: rawId ? parseInt(rawId) : (Date.now() + importedCount),
+                            title: row["JUDUL"] || "Untitled",
+                            proposer: row["PENGUSUL"] || "Anonymous",
+                            unit: row["UNIT KERJA"] || "Fakultas Teknik",
+                            status: (row["STATUS"] || "Draft").toLowerCase(),
+                            date: row["TANGGAL SUBMIT"] || new Date().toISOString().split('T')[0],
+                            period: row["PERIODE"] || "-",
+                            program: program.name,
+                            members: [],
+                            attributes: attributes, // Integrated custom attributes
+                            logs: [{ date: new Date().toISOString(), action: 'Imported via Excel', user: currentUser.name }]
+                        };
+
+                        const exists = proposals.findIndex(p => p.id === newProp.id);
+                        if (exists !== -1) {
+                            proposals[exists] = { ...proposals[exists], ...newProp };
+                        } else {
+                            proposals.push(newProp);
+                        }
+                        importedCount++;
+                    });
+
+                    localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+                    
+                    // Sync each imported proposal to Firestore
+                    rows.forEach((row, i) => {
+                        const rawId = row["ID USULAN"] ? row["ID USULAN"].toString().replace('#', '') : null;
+                        const finalId = rawId ? parseInt(rawId) : (Date.now() + i);
+                        const pData = proposals.find(p => p.id === finalId);
+                        if (pData) window.fbSave('proposals', finalId, pData);
+                    });
+
+                    showToast(`${importedCount} usulan berhasil disinkronkan!`);
+                    renderUsulanTab();
+                    event.target.value = '';
+                } catch (err) {
+                    console.error("Import Error:", err);
+                    showToast("Gagal membaca file. Pastikan format kolom sesuai.", "error");
+                }
+            };
+            reader.readAsArrayBuffer(file);
         };
 
         window.filterGlobalUserList = function (input) {
@@ -4856,6 +5060,15 @@
             }
 
             localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+            
+            // Sync to Firestore
+            if (pid) {
+                window.fbSave('proposals', pid, proposals.find(p => p.id == pid));
+            } else {
+                const newP = proposals[proposals.length - 1];
+                window.fbSave('proposals', newP.id, newP);
+            }
+
             closeModal();
             showToast(pid ? 'Usulan berhasil diperbarui' : 'Usulan berhasil dikirim!');
             renderProposalTab();
