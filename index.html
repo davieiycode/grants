@@ -1054,8 +1054,30 @@
             globalBlacklist = blacklist;
             localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
 
+            // Sync to Firestore
+            window.fbSave('registeredUsers', registeredUsers[idx].email, registeredUsers[idx]);
+
             switchGlobalUserSubTab('daftar-user');
             showToast(isBlocked ? 'User telah diblokir' : 'User telah diaktifkan kembali');
+        };
+
+        window.deleteUser = function (id) {
+            const user = registeredUsers.find(u => u.id == id);
+            if (!user) return;
+            if (user.email === currentUser.email) {
+                showToast("Anda tidak dapat menghapus akun Anda sendiri.", "error");
+                return;
+            }
+            if (!confirm(`Hapus user ${user.name} secara permanen dari sistem dan cloud?`)) return;
+
+            const idx = registeredUsers.findIndex(u => u.id == id);
+            registeredUsers.splice(idx, 1);
+            localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+
+            window.fbDelete('registeredUsers', user.email);
+            addGlobalLog("DELETE_USER", `User deleted: ${user.name} (${user.email})`);
+            switchGlobalUserSubTab('daftar-user');
+            showToast('User berhasil dihapus selamanya.');
         };
 
         window.openGlobalBlacklistModal = function () {
@@ -1271,6 +1293,15 @@
                 await setDoc(doc(db, col, id.toString()), data);
             } catch (err) {
                 console.error("Firestore Save Error:", err);
+            }
+        };
+
+        window.fbDelete = async (col, id) => {
+            try {
+                const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
+                await deleteDoc(doc(db, col, id.toString()));
+            } catch (err) {
+                console.error("Firestore Delete Error:", err);
             }
         };
 
@@ -1678,6 +1709,9 @@
                                                 <button class="btn-icon" title="Edit" onclick="window.openUserModal(${u.id})" style="width:38px; height:38px; border:1px solid var(--border); border-radius:10px;"><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>
                                                 <button class="btn-icon" style="color:${u.isBlocked ? 'var(--secondary)' : 'var(--error)'}; border:1px solid currentColor; border-radius:10px; width:38px; height:38px;" title="${u.isBlocked ? 'Unblock' : 'Block'}" onclick="window.toggleUserBlock(${u.id})">
                                                     <span class="material-symbols-outlined" style="font-size:20px;">${u.isBlocked ? 'check_circle' : 'block'}</span>
+                                                </button>
+                                                <button class="btn-icon" style="color:var(--error); border:1px solid var(--border); border-radius:10px; width:38px; height:38px;" title="Delete User" onclick="window.deleteUser(${u.id})">
+                                                    <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
                                                 </button>
                                             </div>
                                         </td>
