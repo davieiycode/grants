@@ -1921,7 +1921,8 @@
                             { id: 'settings', label: 'Pengaturan Global & Sistem' },
                             { id: 'import_export_data', label: 'Impor & Ekspor Data' },
                             { id: 'manage_archive_trash', label: 'Kelola Arsip & Recycle Bin' },
-                            { id: 'view_program_logs', label: 'Melihat Log Aktivitas' }
+                            { id: 'view_program_logs', label: 'Melihat Log Aktivitas' },
+                            { id: 'delete_program_logs', label: 'Hapus Log Aktivitas' }
                         ]
                     },
                     {
@@ -2012,8 +2013,7 @@
                     return `
                                                             <td style="padding:0.75rem 0.5rem; text-align:center;">
                                                                 <select onchange="setPermissionLevel('${r}', '${p.id}', parseInt(this.value))" 
-                                                                        style="width:95%; padding:8px 6px; border-radius:8px; border:1px solid var(--border); font-size:0.7rem; font-weight:700; background:white; color:${level >= 2 ? 'var(--primary)' : (level >= 1 ? 'var(--secondary)' : 'var(--text-muted)')};"
-                                                                        ${r === 'Superadmin' ? 'disabled' : ''}>
+                                                                        style="width:95%; padding:8px 6px; border-radius:8px; border:1px solid var(--border); font-size:0.7rem; font-weight:700; background:white; color:${level >= 2 ? 'var(--primary)' : (level >= 1 ? 'var(--secondary)' : 'var(--text-muted)')};">
                                                                     ${opts.map(o => `<option value="${o.value}" ${level == o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
                                                                 </select>
                                                             </td>
