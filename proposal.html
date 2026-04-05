@@ -26,7 +26,7 @@
             top: 0;
             z-index: 1000;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
@@ -94,7 +94,7 @@
         .tab-header {
             display: flex;
             border-bottom: 1px solid var(--border);
-            background: rgba(0,0,0,0.02);
+            background: rgba(0, 0, 0, 0.02);
             padding: 0 2rem;
         }
 
@@ -122,15 +122,19 @@
             transition: var(--transition);
             padding: 8px 16px;
             border-radius: 12px;
-            background: rgba(0,0,0,0.02);
+            background: rgba(0, 0, 0, 0.02);
             border: 1px solid var(--border);
         }
+
         .back-btn:hover {
             background: var(--surface);
             transform: translateX(-4px);
         }
 
-        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
         .tab-btn.active::after {
             content: '';
             position: absolute;
@@ -194,16 +198,41 @@
         }
 
         @media (max-width: 1024px) {
-            .card-grid { grid-template-columns: 1fr; }
-            .container { padding: 2rem 1.5rem; }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 2rem 1.5rem;
+            }
         }
 
         @media (max-width: 640px) {
-            nav { padding: 1rem; flex-direction: column; gap: 0.75rem; }
-            .tab-header { padding: 0 1rem; overflow-x: auto; }
-            .tab-btn { padding: 1rem; font-size: 0.875rem; }
-            .detail-card { padding: 1.5rem; }
-            .review-score-badge { position: static; display: inline-block; margin-bottom: 1rem; }
+            nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .tab-header {
+                padding: 0 1rem;
+                overflow-x: auto;
+            }
+
+            .tab-btn {
+                padding: 1rem;
+                font-size: 0.875rem;
+            }
+
+            .detail-card {
+                padding: 1.5rem;
+            }
+
+            .review-score-badge {
+                position: static;
+                display: inline-block;
+                margin-bottom: 1rem;
+            }
         }
     </style>
 </head>
@@ -216,7 +245,8 @@
         </a>
         <div style="display:flex; align-items:center; gap:16px;">
             <span style="font-size:0.85rem; color:var(--text-muted);">Simulasi Login:</span>
-            <select id="mock-login" onchange="changeMockUser()" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.85rem; outline:none;">
+            <select id="mock-login" onchange="changeMockUser()"
+                style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.85rem; outline:none;">
             </select>
         </div>
     </nav>
@@ -247,19 +277,24 @@
                     </div>
                 </div>
 
-                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:20px;">
+                <div class="card-title"
+                    style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:20px;">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <span class="material-symbols-outlined" style="color:var(--primary);">description</span>
                         <span style="font-family:'Outfit'; font-size:1.1rem; font-weight:800;">Informasi Utama</span>
                     </div>
-                    <button class="btn-icon" onclick="openEditBasicModal()" title="Edit Info Utama" style="background:white; border:1px solid var(--border); width:36px; height:36px;">
-                        <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--text-main);">edit_square</span>
+                    <button id="btn-edit-basic" class="btn-icon" onclick="openEditBasicModal()" title="Edit Info Utama"
+                        style="background:white; border:1px solid var(--border); width:36px; height:36px; display:none;">
+                        <span class="material-symbols-outlined"
+                            style="font-size:1.1rem; color:var(--text-main);">edit_square</span>
                     </button>
                 </div>
-                
+
                 <div class="info-group">
                     <label class="info-label">Judul Usulan</label>
-                    <div class="info-value" id="disp-title" style="font-family:'Outfit'; font-size:1.35rem; line-height:1.4; color:var(--text-main); margin-top:6px;">Memuat...</div>
+                    <div class="info-value" id="disp-title"
+                        style="font-family:'Outfit'; font-size:1.35rem; line-height:1.4; color:var(--text-main); margin-top:6px;">
+                        Memuat...</div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:12px;">
@@ -286,13 +321,19 @@
                     </div>
                 </div>
 
-                <div style="margin-top:32px; padding-top:24px; border-top:1px solid var(--paper-edge);">
+                <div id="status-management-section"
+                    style="margin-top:32px; padding-top:24px; border-top:1px solid var(--paper-edge); display:none;">
                     <div class="form-group">
-                        <label class="f-label"><span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle; margin-right:4px;">settings</span> Kelola Status</label>
-                        <select id="update-status" class="f-input" onchange="updateStatusBadge(); enableSave()" style="font-weight:700;">
+                        <label class="f-label"><span class="material-symbols-outlined"
+                                style="font-size:1rem; vertical-align:middle; margin-right:4px;">settings</span> Kelola
+                            Status</label>
+                        <select id="update-status" class="f-input" onchange="updateStatusBadge(); enableSave()"
+                            style="font-weight:700;">
                             <!-- Options injected by JS -->
                         </select>
-                        <div id="auto-status-hint" style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; font-style:italic;"></div>
+                        <div id="auto-status-hint"
+                            style="font-size:0.75rem; color:var(--text-muted); margin-top:10px; font-style:italic;">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -318,13 +359,14 @@
                     <div id="dynamic-form-container">
                         <!-- Fields injected -->
                     </div>
-                    
+
                     <div id="proposal-files-container" style="margin-top:32px;">
                         <!-- Files injected -->
                     </div>
 
                     <div style="margin-top:40px; display:flex; justify-content:flex-end;">
-                        <button id="btn-save" class="btn-apply" onclick="saveChanges()" style="opacity:0.6; pointer-events:none;">
+                        <button id="btn-save" class="btn-apply" onclick="saveChanges()"
+                            style="opacity:0.6; pointer-events:none;">
                             <span class="material-symbols-outlined">save</span>
                             Simpan Perubahan
                         </button>
@@ -338,8 +380,10 @@
                             <span class="material-symbols-outlined" style="color:var(--primary);">rate_review</span>
                             Daftar Penilaian
                         </div>
-                        <button class="btn-apply" id="btn-add-review" onclick="openAddReviewModal()" style="font-size:0.85rem; padding:10px 18px;">
-                            <span class="material-symbols-outlined" style="font-size:1.1rem;">add_circle</span> Tambah Review
+                        <button class="btn-apply" id="btn-add-review" onclick="openAddReviewModal()"
+                            style="font-size:0.85rem; padding:10px 18px;">
+                            <span class="material-symbols-outlined" style="font-size:1.1rem;">add_circle</span> Tambah
+                            Review
                         </button>
                     </div>
                     <div id="reviews-history-container" style="display:flex; flex-direction:column; gap:24px;">
@@ -354,7 +398,9 @@
         <div class="modal-card" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2 id="modal-title" style="font-family:'Outfit'; font-size:1.5rem; margin:0;">Tambah Penilaian</h2>
-                <button onclick="closeModal()" class="btn-icon" style="background:none; border:none; cursor:pointer; color:var(--text-muted);"><span class="material-symbols-outlined">close</span></button>
+                <button onclick="closeModal()" class="btn-icon"
+                    style="background:none; border:none; cursor:pointer; color:var(--text-muted);"><span
+                        class="material-symbols-outlined">close</span></button>
             </div>
             <div id="modal-body" class="modal-body"></div>
         </div>
@@ -415,7 +461,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const proposalId = urlParams.get('id');
 
-        const registeredUsers = [
+        const mockUsers = [
             { id: 1, name: "Admin Utama", unit: "Pusat IT", role: "Superadmin", email: "admin@univ.ac.id" },
             { id: 2, name: "Manager Hibah", unit: "Direktorat Inovasi", role: "Manager", email: "manager@univ.ac.id" },
             { id: 3, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Editor", email: "siti@univ.ac.id" },
@@ -424,7 +470,9 @@
             { id: 6, name: "Pengusul Luar", unit: "Umum", role: "Pengusul", email: "tamu@univ.ac.id" }
         ];
 
-        let currentUser = localStorage.getItem('grants_activeUser') ? JSON.parse(localStorage.getItem('grants_activeUser')) : registeredUsers[0];
+        let registeredUsers = JSON.parse(localStorage.getItem('grants_users')) || mockUsers;
+        let currentUser = localStorage.getItem('grants_activeUser') ? JSON.parse(localStorage.getItem('grants_activeUser')) : (registeredUsers[0] || {});
+        let globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || {};
 
         let currentProposal = null;
         let currentProgram = null;
@@ -478,6 +526,10 @@
 
             // --- PENDING ASSIGNMENTS ---
             if (assignments.length > 0) {
+                const reviewMode = currentProgram ? currentProgram.reviewMode : 'open';
+                const isProposer = currentProposal.proposer === currentUser.name;
+                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
+                
                 html += `
                     <div style="margin-bottom:2.5rem;" class="animate-fade-in">
                         <h4 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem; display:flex; align-items:center; gap:10px; font-weight:800;">
@@ -486,11 +538,17 @@
                         <div style="display:flex; flex-direction:column; gap:1rem;">
                             ${assignments.map((as, idx) => {
                                 const isMe = currentUser.name === as.reviewer;
-                                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
-                                const displayName = (isMe || isAdmin) ? as.reviewer : `Reviewer ${idx + 1}`;
-                                const displayInitial = (isMe || isAdmin) ? as.reviewer[0] : 'R';
+                                
+                                // Hide reviewer name from proposer if blind
+                                let hideName = false;
+                                if ((reviewMode === 'single-blind' || reviewMode === 'double-blind') && isProposer && !isAdmin) {
+                                    hideName = true;
+                                }
 
-                                return `
+                                const displayName = (isMe || isAdmin || !hideName) ? as.reviewer : `Reviewer ${idx + 1}`;
+                                const displayInitial = (isMe || isAdmin || !hideName) ? as.reviewer[0] : 'R';
+
+                    return `
                                     <div class="glass" style="padding:1.5rem 2rem; border-radius:var(--radius-lg); border:1px solid rgba(99,102,241,0.2); background:rgba(99,102,241,0.02); display:flex; justify-content:space-between; align-items:center; transition:var(--transition);">
                                         <div style="display:flex; align-items:center; gap:1.5rem;">
                                             <div style="width:44px; height:44px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:900;">${displayInitial}</div>
@@ -516,7 +574,7 @@
                                         </div>
                                     </div>
                                 `;
-                            }).join('')}
+                }).join('')}
                         </div>
                     </div>
                 `;
@@ -526,7 +584,7 @@
             if (['Superadmin', 'Admin', 'Manager'].includes(currentUser.role)) {
                 const programReviewers = currentProgram.reviewers || [];
                 const availableReviewers = programReviewers.filter(r => !assignments.some(as => as.reviewer === r));
-                
+
                 if (availableReviewers.length > 0) {
                     html += `
                         <div class="glass config-card animate-fade-in" style="padding:2rem; border-radius:var(--radius-xl); border:1px dashed var(--primary); background:rgba(99,102,241,0.01); margin-bottom:3rem; box-shadow:none;">
@@ -604,7 +662,7 @@
                     `;
                 }).join('');
             }
-            
+
             container.innerHTML = html;
 
             // Admin, Manager, and Reviewer roles can add reviews manually
@@ -665,7 +723,7 @@
             const container = el.closest('.searchable-select');
             const input = container.querySelector('input[type="text"]');
             input.value = val;
-            
+
             // Hide dropdown - clearing 'block' from style attribute will revert to 'none' in CSS
             el.parentElement.style.display = '';
 
@@ -731,10 +789,10 @@
 
                 // Status check
                 const isStatusAllowed = !f.statusRequired || f.statusRequired === currentProposal.status;
-                
+
                 // Existing file?
-                const fileData = (currentProposal.customFiles && currentProposal.customFiles[f.label]) || null;
-                const extensionsStr = f.exts ? f.exts.map(e => '.'+e).join(', ') : (f.extensions ? f.extensions : '.pdf');
+                const fileData = (currentProposal.files && currentProposal.files[f.label]) || (currentProposal.customFiles && currentProposal.customFiles[f.label]) || null;
+                const extensionsStr = f.exts ? f.exts.map(e => '.' + e).join(', ') : (f.extensions ? f.extensions : '.pdf');
 
                 html += `
                     <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem; display:flex; align-items:center; gap:16px;">
@@ -770,29 +828,29 @@
             });
 
             html += `</div></div>`;
-            
+
             if (visibleFilesCount > 0) {
                 container.innerHTML = html;
             }
         }
 
-        window.triggerProposalFileUpload = function(label) {
+        window.triggerProposalFileUpload = function (label) {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            
-            fileInput.onchange = function(e) {
+
+            fileInput.onchange = function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
-                
+
                 const reader = new FileReader();
-                reader.onload = function(evt) {
+                reader.onload = function (evt) {
                     const dataUrl = evt.target.result;
                     if (!currentProposal.customFiles) currentProposal.customFiles = {};
                     currentProposal.customFiles[label] = {
                         name: file.name,
-                        url: dataUrl 
+                        url: dataUrl
                     };
-                    
+
                     try {
                         saveProposalSync();
                         renderFiles();
@@ -804,7 +862,7 @@
                 };
                 reader.readAsDataURL(file);
             };
-            
+
             fileInput.click();
         };
 
@@ -826,7 +884,7 @@
 
             saveProposalSync();
             closeModal();
-            
+
             // Re-render UI labels
             document.getElementById('disp-title').innerText = currentProposal.title;
             document.getElementById('disp-proposer').innerText = currentProposal.proposer;
@@ -891,27 +949,27 @@
                     <hr style="margin:24px 0; border:none; border-top:1px solid var(--border);">
                     <div id="rev-template-fields">
                         ${template.map((t, idx) => {
-                            const fieldId = `rev-val-${idx}`;
-                            const optionsList = t.options ? t.options.split(',').map(s => s.trim()) : [];
-                            let inputHtml = "";
-                            if (t.type === 'number') {
-                                inputHtml = `<input type="number" id="${fieldId}" placeholder="0 - ${t.max || 100}" class="f-input" data-label="${t.label}" data-type="${t.type}" data-weight="${t.weight || 0}">`;
-                            } else if (t.type === 'file') {
-                                inputHtml = `
+                const fieldId = `rev-val-${idx}`;
+                const optionsList = t.options ? t.options.split(',').map(s => s.trim()) : [];
+                let inputHtml = "";
+                if (t.type === 'number') {
+                    inputHtml = `<input type="number" id="${fieldId}" placeholder="0 - ${t.max || 100}" class="f-input" data-label="${t.label}" data-type="${t.type}" data-weight="${t.weight || 0}">`;
+                } else if (t.type === 'file') {
+                    inputHtml = `
                                     <div id="file-cont-${idx}" class="file-preview">
                                         <span style="font-size:0.8rem; color:var(--text-muted);">Belum ada berkas</span>
                                         <button onclick="triggerFileUpload('file-cont-${idx}')" class="btn-icon" style="width:auto; padding:4px 12px; font-size:0.7rem; border-radius:8px;">Pilih Berkas</button>
                                     </div>
                                     <input type="hidden" id="${fieldId}" data-label="${t.label}" data-type="${t.type}">
                                 `;
-                            } else if (t.type === 'dropdown') {
-                                inputHtml = `<select id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">
+                } else if (t.type === 'dropdown') {
+                    inputHtml = `<select id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">
                                     <option value="">-- Pilih --</option>
                                     ${optionsList.map(o => `<option value="${o}">${o}</option>`).join('')}
                                 </select>`;
-                            } else if (t.type === 'yes no' || t.type === 'radio' || t.type === 'checkbox') {
-                                const opts = t.type === 'yes no' ? ['Ya', 'Tidak'] : (t.type === 'checkbox' ? ['Ya', 'Tidak'] : optionsList);
-                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
+                } else if (t.type === 'yes no' || t.type === 'radio' || t.type === 'checkbox') {
+                    const opts = t.type === 'yes no' ? ['Ya', 'Tidak'] : (t.type === 'checkbox' ? ['Ya', 'Tidak'] : optionsList);
+                    inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
                                     ${opts.map(o => `
                                         <label class="f-radio-label" style="font-size:0.85rem;">
                                             <input type="radio" name="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}">
@@ -920,8 +978,8 @@
                                         </label>
                                     `).join('')}
                                 </div>`;
-                            } else if (t.type === 'multiple options') {
-                                inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
+                } else if (t.type === 'multiple options') {
+                    inputHtml = `<div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
                                     ${optionsList.map(o => `
                                         <label class="f-check-label" style="font-size:0.85rem; padding:8px 16px; border-radius:12px; border:1px solid var(--border); background:white;">
                                             <input type="checkbox" data-group="${fieldId}" value="${o}" data-label="${t.label}" data-type="${t.type}">
@@ -930,10 +988,10 @@
                                         </label>
                                     `).join('')}
                                 </div>`;
-                            } else if (t.type === 'longtext' || t.type === 'longtext html') {
-                                inputHtml = `<textarea id="${fieldId}" rows="4" class="f-input" data-label="${t.label}" data-type="${t.type}" placeholder="Masukkan ulasan detail di sini..."></textarea>`;
-                            } else if (t.type === 'file') {
-                                inputHtml = `
+                } else if (t.type === 'longtext' || t.type === 'longtext html') {
+                    inputHtml = `<textarea id="${fieldId}" rows="4" class="f-input" data-label="${t.label}" data-type="${t.type}" placeholder="Masukkan ulasan detail di sini..."></textarea>`;
+                } else if (t.type === 'file') {
+                    inputHtml = `
                                     <div id="cont-${fieldId}" class="f-input" style="display:flex; align-items:center; justify-content:space-between; height:auto; padding:12px 16px; background:rgba(0,0,0,0.02); border:1px dashed var(--border); border-radius:12px; cursor:pointer;" onclick="triggerFileUpload('cont-${fieldId}')">
                                         <div style="display:flex; align-items:center; gap:10px; color:var(--text-muted);">
                                             <span class="material-symbols-outlined">upload_file</span>
@@ -942,19 +1000,19 @@
                                     </div>
                                     <input type="hidden" id="${fieldId}" data-label="${t.label}" data-type="file">
                                 `;
-                            } else if (t.type === 'formula') {
-                                inputHtml = `<input type="text" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="formula" readonly style="background:var(--primary-soft); color:var(--primary); font-family:monospace; font-weight:700;" placeholder="Otomatis dihitung...">`;
-                            } else {
-                                inputHtml = `<input type="${t.type === 'text' ? 'text' : (t.type || 'text')}" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">`;
-                            }
+                } else if (t.type === 'formula') {
+                    inputHtml = `<input type="text" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="formula" readonly style="background:var(--primary-soft); color:var(--primary); font-family:monospace; font-weight:700;" placeholder="Otomatis dihitung...">`;
+                } else {
+                    inputHtml = `<input type="${t.type === 'text' ? 'text' : (t.type || 'text')}" id="${fieldId}" class="f-input" data-label="${t.label}" data-type="${t.type}">`;
+                }
 
-                            return `
+                return `
                                 <div class="form-group">
                                     <label style="color:var(--text-main); font-weight:700;">${t.label} ${t.weight ? `<span style="color:var(--text-muted); font-weight:400;">(Bobot ${t.weight}%)</span>` : ''}</label>
                                     ${inputHtml}
                                 </div>
                             `;
-                        }).join('')}
+            }).join('')}
                     </div>
                     <div style="margin-top:32px; display:flex; justify-content:flex-end;">
                         <button class="btn-apply" onclick="saveReview('${forcedReviewer}')">Simpan Hasil Penilaian</button>
@@ -990,7 +1048,7 @@
         function saveReview(forcedReviewer = null) {
             const template = currentProgram.reviewTemplate || [];
             const items = [];
-            
+
             template.forEach((t, idx) => {
                 const fieldId = `rev-val-${idx}`;
                 let value = "";
@@ -1098,18 +1156,67 @@
                 pg.name.trim().toLowerCase() === currentProposal.program.trim().toLowerCase()
             );
 
+            // Apply Global Accessibility Policies during init (Scoping: 3:All, 2:Others, 1:View, 0:None)
+            const rolePerms = globalPermissions[currentUser.role] || {};
+            const isMyProp = currentProposal.proposer === currentUser.name ||
+                ((currentProposal.members || currentProposal.authors || []).some(m => m.name === currentUser.name));
+            
+            const scope = rolePerms.proposals_scope !== undefined ? rolePerms.proposals_scope : 1;
+            if (scope === 0) {
+                alert('Anda tidak memiliki izin untuk melihat usulan ini.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Status management access (only for level 2+ and appropriate scope)
+            if (rolePerms.change_prop_status >= 2) {
+                const sec = document.getElementById('status-management-section');
+                if (sec) sec.style.display = 'block';
+            }
+            
+            // Review input access (Level 2+)
+            if (rolePerms.input_review_others < 2) {
+                const btn = document.getElementById('btn-add-review');
+                if (btn) btn.style.display = 'none';
+            }
+            
+            // Edit access logic
+            let canEdit = (scope >= 3) || (scope === 2 && !isMyProp);
+            if (canEdit) {
+                const editBtn = document.getElementById('btn-edit-basic');
+                if (editBtn) editBtn.style.display = 'flex';
+                
+                const saveBtn = document.getElementById('btn-save');
+                if (saveBtn) saveBtn.parentNode.style.display = 'flex';
+            } else {
+                const editBtn = document.getElementById('btn-edit-basic');
+                if (editBtn) editBtn.style.display = 'none';
+
+                const saveBtn = document.getElementById('btn-save');
+                if (saveBtn) saveBtn.parentNode.style.display = 'none';
+            }
+
             if (!currentProgram) {
                 console.error("Program metadata missing for study:", currentProposal.program);
                 alert("Peringatan: Metadata untuk program '" + currentProposal.program + "' tidak ditemukan. Beberapa fitur mungkin tidak lengkap.");
             }
 
-            // Render basic info
+            // Render basic info (Handling Blind Review)
+            const reviewMode = currentProgram ? currentProgram.reviewMode : 'open';
+            const isReviewer = currentUser.role === 'Reviewer';
+            const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
+            
+            let displayProposer = currentProposal.proposer;
+            if (reviewMode === 'double-blind' && isReviewer && !isAdmin) {
+                displayProposer = "[IDENTITAS TERSEMBUNYI]";
+            }
+
             document.getElementById('proposal-id-tag').innerText = `ID: #${currentProposal.id}`;
             document.getElementById('disp-title').innerText = currentProposal.title;
-            document.getElementById('disp-proposer').innerText = currentProposal.proposer;
+            document.getElementById('disp-proposer').innerText = displayProposer;
             document.getElementById('disp-unit').innerText = currentProposal.unit;
             document.getElementById('disp-date').innerText = currentProposal.date;
-            
+
             // Render specific status options
             renderStatusOptions();
 
@@ -1139,8 +1246,8 @@
                 { label: "Rejected", color: "#1e293b" }
             ];
 
-            const programStatuses = (currentProgram && currentProgram.statuses && currentProgram.statuses.length > 0) 
-                ? currentProgram.statuses 
+            const programStatuses = (currentProgram && currentProgram.statuses && currentProgram.statuses.length > 0)
+                ? currentProgram.statuses
                 : defaultStatuses;
 
             select.innerHTML = programStatuses.map(s => `
@@ -1156,7 +1263,7 @@
             const select = document.getElementById('update-status');
             const opt = select.options[select.selectedIndex];
             const color = opt ? opt.dataset.color : '#6366f1';
-            
+
             const badge = document.getElementById('disp-status');
             badge.innerText = select.value;
             badge.style.background = `${color}15`;
@@ -1165,7 +1272,7 @@
 
         function checkAutoStatus(applyToSelect = true) {
             if (!currentProgram || !currentProgram.statuses) return;
-            
+
             const hint = document.getElementById('auto-status-hint');
             hint.innerText = '';
 
@@ -1179,14 +1286,14 @@
                     } else {
                         // For radios/checkboxes (not yet updated in currentProposal)
                         const radio = document.querySelector(`input[name="attr-${idx}"]:checked`);
-                        if(radio) customData[attr.label] = radio.value;
+                        if (radio) customData[attr.label] = radio.value;
                     }
                 });
             }
 
             // Also check currentProposal's existing data as fallback
             const dataToEval = { ...currentProposal.customData, ...customData };
-            
+
             for (const s of currentProgram.statuses) {
                 if (s.trigger) {
                     try {
@@ -1195,7 +1302,7 @@
                             const val = isNaN(dataToEval[key]) ? `'${dataToEval[key]}'` : dataToEval[key];
                             expression = expression.replace(new RegExp(`{${key}}`, 'g'), val || 0);
                         }
-                        
+
                         // Security check: only allow basic comparisons
                         if (eval(expression)) {
                             hint.innerText = `Catatan: Aturan "${s.trigger}" terpenuhi. Status disarankan: ${s.label}`;
@@ -1228,12 +1335,14 @@
                     </div>
                 `;
             }
-        }
+            function renderAttributes() {
+                const authorsList = document.getElementById('proposal-authors');
+                const members = currentProposal.members || currentProposal.authors || [];
 
-        function renderAttributes() {
-            const authorsList = document.getElementById('proposal-authors');
-            if (currentProposal.authors && currentProposal.authors.length > 0) {
-                authorsList.innerHTML = currentProposal.authors.map(m => `
+                if (members.length > 0) {
+                    authorsList.innerHTML = members.map((m, idx) => {
+                        const roleName = idx === 0 ? 'First Author' : 'Anggota';
+                        return `
                     <div class="glass" style="padding:16px; border-radius:12px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:white;">
                         <div style="display:flex; gap:12px; align-items:center;">
                             <div style="width:36px; height:36px; border-radius:50%; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
@@ -1241,14 +1350,18 @@
                             </div>
                             <div>
                                 <div style="font-weight:800; font-size:0.95rem; color:var(--text-main); line-height:1.2;">${m.name}</div>
-                                <div style="font-size:0.7rem; color:var(--text-muted);">${m.unit} • ${m.email}</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">${m.unit || '-'} • ${m.email || m.role || ''}</div>
                             </div>
                         </div>
-                        <span class="status-badge" style="font-size:0.6rem; background:${m.role === 'First Author' ? 'var(--primary)' : 'var(--background)'}; color:${m.role === 'First Author' ? 'white' : 'var(--text-muted)'}; border:none;">${m.role}</span>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            <span class="status-badge" style="font-size:0.6rem; background:${idx === 0 ? 'var(--primary)' : 'var(--background)'}; color:${idx === 0 ? 'white' : 'var(--text-muted)'}; border:none;">${roleName}</span>
+                            ${m.isCorresponding ? '<span style="font-size:0.55rem; color:var(--primary); font-weight:700;">Corresponding</span>' : ''}
+                        </div>
                     </div>
-                `).join('');
-            } else {
-                authorsList.innerHTML = `
+                `;
+                    }).join('');
+                } else {
+                    authorsList.innerHTML = `
                     <div class="glass" style="padding:16px; border-radius:12px; border:1px solid var(--border); display:flex; gap:12px; align-items:center; background:white;">
                          <div style="width:36px; height:36px; border-radius:50%; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
                             <span class="material-symbols-outlined" style="font-size:18px;">person</span>
@@ -1260,6 +1373,7 @@
                         <span class="status-badge" style="font-size:0.6rem; margin-left:auto;">First Author</span>
                     </div>
                 `;
+                }
             }
 
             const container = document.getElementById('dynamic-form-container');
@@ -1288,11 +1402,11 @@
 
             groupKeys.forEach((groupName, i) => {
                 let gpHtml = `<div>`;
-                
+
                 if (!(groupKeys.length === 1 && groupName === 'Informasi Tambahan')) {
                     gpHtml += `<div class="group-header">${groupName}</div>`;
                 } else {
-                    gpHtml += `<div style="margin-top:8px;"></div>`; 
+                    gpHtml += `<div style="margin-top:8px;"></div>`;
                 }
 
                 gpHtml += `<div style="display:grid; grid-template-columns:1fr; gap:20px;">`;

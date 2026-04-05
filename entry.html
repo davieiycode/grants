@@ -294,7 +294,10 @@
                 <div id="team-list-container" style="display:none; margin-top: 1.5rem;">
                     <div style="font-weight:800; font-family:'Outfit'; font-size:0.85rem; color:var(--primary); text-transform:uppercase; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
                         <span>Daftar Nama Tim (Authors)</span>
-                        <button class="btn-secondary" style="font-size:0.75rem; padding:4px 12px;" onclick="openAddMemberModal()">+ Tambah Anggota</button>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size:0.6rem; color:var(--text-muted); background:var(--background); padding:2px 8px; border-radius:10px; border:1px solid var(--border);">DRAG BARIS UNTUK URUTAN</span>
+                            <button class="btn-secondary" style="font-size:0.75rem; padding:4px 12px;" onclick="openAddMemberModal()">+ Tambah Anggota</button>
+                        </div>
                     </div>
                     <div id="authors-table-wrapper" class="glass" style="border-radius:16px; overflow:hidden; border:1px solid var(--border);">
                         <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
@@ -526,16 +529,13 @@
                         <label class="f-label">Unit / Afiliasi</label>
                         <input type="text" id="member-unit" class="f-input" placeholder="Fakultas Kedokteran">
                     </div>
-                    <div class="f-group">
-                        <label class="f-label">Peran (Role)</label>
-                        <select id="member-role" class="f-input">
-                            <option value="Anggota">Anggota</option>
-                            <option value="Corresponding Author">Corresponding Author</option>
-                        </select>
+                    <div class="f-group" style="display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0;">
+                        <input type="checkbox" id="member-corresponding" style="width:1.25rem; height:1.25rem; accent-color:var(--primary);">
+                        <label class="f-label" for="member-corresponding" style="margin:0; cursor:pointer;">Set sebagai Corresponding Author</label>
                     </div>
                 </div>
                 <div style="margin-top:2rem; display:flex; justify-content:flex-end;">
-                    <button class="btn-primary" onclick="addMemberToTeam()">Tambah ke Daftar</button>
+                    <button id="btn-save-member" class="btn-primary" onclick="addMemberToTeam()">Tambah ke Daftar</button>
                 </div>
              </div>
         </div>
@@ -790,12 +790,16 @@
                 name: (c.prefix ? c.prefix + ' ' : '') + c.fullname + (c.suffix ? ', ' + c.suffix : ''),
                 email: c.email,
                 unit: c.unit,
-                role: 'First Author'
+                isCorresponding: false
             };
             
             // Check if First Author already exists, replace it
-            teamMembers = teamMembers.filter(m => m.role !== 'First Author');
-            teamMembers.unshift(firstAuthor);
+            // In the new logic, the first element is always First Author
+            if (teamMembers.length > 0) {
+                teamMembers[0] = firstAuthor;
+            } else {
+                teamMembers.unshift(firstAuthor);
+            }
             
             searchResults.style.display = 'none';
             document.getElementById('author-main-selection').style.display = 'none';
@@ -805,34 +809,60 @@
             validateCurrentStep();
         }
 
+        let editingMemberIndex = -1;
+
         window.openAddMemberModal = function() {
+            editingMemberIndex = -1;
             document.getElementById('member-modal').style.display = 'flex';
+            document.querySelector('#member-modal h3').innerText = 'Tambah Anggota Tim';
+            document.getElementById('btn-save-member').innerText = 'Tambah ke Daftar';
+            ['member-name', 'member-email', 'member-unit'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('member-corresponding').checked = false;
         };
 
         window.closeMemberModal = function() {
              document.getElementById('member-modal').style.display = 'none';
-             ['member-name', 'member-email', 'member-unit'].forEach(id => document.getElementById(id).value = '');
+        };
+
+        window.editMember = function(index) {
+            editingMemberIndex = index;
+            const m = teamMembers[index];
+            document.getElementById('member-name').value = m.name;
+            document.getElementById('member-email').value = m.email;
+            document.getElementById('member-unit').value = m.unit || '';
+            document.getElementById('member-corresponding').checked = !!m.isCorresponding;
+            
+            document.getElementById('member-modal').style.display = 'flex';
+            document.querySelector('#member-modal h3').innerText = 'Edit Anggota Tim';
+            document.getElementById('btn-save-member').innerText = 'Simpan Perubahan';
         };
 
         window.addMemberToTeam = function() {
-            const name = document.getElementById('member-name').value;
-            const email = document.getElementById('member-email').value;
-            const unit = document.getElementById('member-unit').value;
-            const role = document.getElementById('member-role').value;
+            const name = document.getElementById('member-name').value.trim();
+            const email = document.getElementById('member-email').value.trim();
+            const unit = document.getElementById('member-unit').value.trim();
+            const isCorresponding = document.getElementById('member-corresponding').checked;
 
             if (!name || !email) {
                 alert('Nama dan Email wajib diisi');
                 return;
             }
 
-            teamMembers.push({ name, email, unit, role });
+            const memberData = { name, email, unit, isCorresponding };
+
+            if (editingMemberIndex > -1) {
+                teamMembers[editingMemberIndex] = memberData;
+            } else {
+                teamMembers.push(memberData);
+            }
+            
             renderTeamTable();
             closeMemberModal();
         };
 
         window.removeMember = function(index) {
             const member = teamMembers[index];
-            if (member.role === 'First Author') {
+            if (index === 0) {
                 if (confirm('Menghapus Ketua Peneliti akan me-reset daftar tim. Lanjutkan?')) {
                     teamMembers = [];
                     document.getElementById('author-main-selection').style.display = 'block';
@@ -845,26 +875,68 @@
             validateCurrentStep();
         };
 
+        function toggleCorresponding(idx) {
+            teamMembers[idx].isCorresponding = !teamMembers[idx].isCorresponding;
+            renderTeamTable();
+        }
+
+
+        window.onTeamMemberDragStart = function(e, idx) {
+            e.dataTransfer.setData('team_idx', idx);
+            e.target.style.opacity = '0.4';
+        };
+        window.onTeamMemberDragEnd = function(e) {
+            e.target.style.opacity = '1';
+        };
+        window.onTeamMemberDrop = function(e, targetIdx) {
+            e.preventDefault();
+            const sourceIdx = parseInt(e.dataTransfer.getData('team_idx'));
+            if (isNaN(sourceIdx) || sourceIdx === targetIdx) return;
+            const item = teamMembers.splice(sourceIdx, 1)[0];
+            teamMembers.splice(targetIdx, 0, item);
+            renderTeamTable();
+        };
+
         function renderTeamTable() {
             const tbody = document.getElementById('authors-tbody');
-            tbody.innerHTML = teamMembers.map((m, idx) => `
-                <tr>
+            tbody.innerHTML = teamMembers.map((m, idx) => {
+                const roleName = idx === 0 ? 'First Author' : 'Anggota';
+                return `
+                <tr draggable="true" ondragstart="window.onTeamMemberDragStart(event, ${idx})" ondragend="window.onTeamMemberDragEnd(event)" ondragover="event.preventDefault()" ondrop="window.onTeamMemberDrop(event, ${idx})" style="cursor:grab;">
                     <td style="padding:12px 16px; border-bottom:1px solid var(--border);">
-                        <div style="font-weight:700;">${m.name}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">${m.unit}</div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted); cursor:grab;">drag_indicator</span>
+                            <div>
+                                <div style="font-weight:700;">${m.name}</div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${m.unit || '-'}</div>
+                            </div>
+                        </div>
                     </td>
                     <td style="padding:12px 16px; border-bottom:1px solid var(--border); color:var(--text-muted);">${m.email}</td>
                     <td style="padding:12px 16px; border-bottom:1px solid var(--border);">
-                       <span class="status-badge" style="background:${m.role === 'First Author' ? 'var(--primary-soft)' : (m.role === 'Corresponding Author' ? 'rgba(99,102,241,0.1)' : 'var(--background)')}; 
-                                                        color:${m.role === 'First Author' ? 'var(--primary)' : (m.role === 'Corresponding Author' ? 'var(--primary)' : 'var(--text-muted)')}; font-size:0.7rem;">
-                         ${m.role}
-                       </span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="status-badge" style="background:${idx === 0 ? 'var(--primary-soft)' : 'var(--background)'}; 
+                                                             color:${idx === 0 ? 'var(--primary)' : 'var(--text-muted)'}; font-size:0.7rem;">
+                              ${roleName}
+                            </span>
+                            <label style="display:flex; align-items:center; gap:4px; font-size:0.7rem; color:var(--primary); cursor:pointer;">
+                                <input type="checkbox" ${m.isCorresponding ? 'checked' : ''} onchange="toggleCorresponding(${idx})" style="accent-color:var(--primary);">
+                                Corresponding
+                            </label>
+                        </div>
                     </td>
                     <td style="padding:12px 16px; border-bottom:1px solid var(--border); text-align:center;">
-                        <button class="btn-icon" style="color:var(--error); width:32px; height:32px;" onclick="removeMember(${idx})"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>
+                        <div style="display:flex; justify-content:center; gap:4px;">
+                            <button class="btn-icon" style="color:var(--primary); width:32px; height:32px;" onclick="editMember(${idx})">
+                                <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+                            </button>
+                            <button class="btn-icon" style="color:var(--error); width:32px; height:32px;" onclick="removeMember(${idx})">
+                                <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
-            `).join('');
+            `;}).join('');
         }
 
         function validateCurrentStep() {
@@ -872,7 +944,7 @@
             const s2Next = document.getElementById('btn-next-2');
             
             if (document.getElementById('step-1').style.display !== 'none') {
-                const hasFirstAuthor = teamMembers.some(m => m.role === 'First Author');
+                const hasFirstAuthor = teamMembers.length > 0;
                 if (s1Next) {
                     s1Next.disabled = !hasFirstAuthor;
                     s1Next.style.opacity = hasFirstAuthor ? '1' : '0.5';
@@ -944,13 +1016,16 @@
                 validateCurrentStep();
             }, 10);
             if (step === 3) {
-                document.getElementById('rev-authors-list').innerHTML = teamMembers.map(m => `
+                document.getElementById('rev-authors-list').innerHTML = teamMembers.map((m, idx) => `
                     <div class="glass" style="padding:12px; border-radius:12px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <div style="font-weight:800; font-size:0.95rem;">${m.name}</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">${m.unit} • ${m.email}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${m.unit || '-'} • ${m.email}</div>
                         </div>
-                        <span class="status-badge" style="font-size:0.65rem;">${m.role}</span>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            <span class="status-badge" style="font-size:0.65rem;">${idx === 0 ? 'First Author' : 'Anggota'}</span>
+                            ${m.isCorresponding ? '<span style="font-size:0.6rem; color:var(--primary); font-weight:700;">Corresponding</span>' : ''}
+                        </div>
                     </div>
                 `).join('');
 
@@ -972,9 +1047,9 @@
                 if (idx !== -1) {
                     proposals[idx].title = titleInput.value;
                     proposals[idx].authors = teamMembers;
-                    proposals[idx].proposer = teamMembers.find(m => m.role === 'First Author')?.name || 'Anonim';
-                    proposals[idx].unit = teamMembers.find(m => m.role === 'First Author')?.unit || '-';
-                    proposals[idx].email = teamMembers.find(m => m.role === 'First Author')?.email || '-';
+                    proposals[idx].proposer = teamMembers[0]?.name || 'Anonim';
+                    proposals[idx].unit = teamMembers[0]?.unit || '-';
+                    proposals[idx].email = teamMembers[0]?.email || '-';
                 }
                 saveProposals();
                 window.location.href = 'index.html';
@@ -982,13 +1057,13 @@
                 const rand = Math.floor(1000 + Math.random() * 9000);
                 const regNo = `GR-2026-${rand}`;
                 document.getElementById('reg-number').innerText = regNo;
-                document.getElementById('sum-name').innerText = teamMembers.find(m => m.role === 'First Author')?.name || '-';
-                document.getElementById('sum-unit').innerText = teamMembers.find(m => m.role === 'First Author')?.unit || '-';
+                document.getElementById('sum-name').innerText = teamMembers[0]?.name || '-';
+                document.getElementById('sum-unit').innerText = teamMembers[0]?.unit || '-';
                 document.getElementById('sum-title').innerHTML = titleInput.value;
                 
                 document.getElementById('sum-time').innerText = now.toLocaleString('id-ID');
 
-                const firstAuthor = teamMembers.find(m => m.role === 'First Author');
+                const firstAuthor = teamMembers[0];
                 const blacklistedData = (currentProgMeta.blacklist || []).find(b => 
                     b.user.toLowerCase() === firstAuthor.name.toLowerCase().trim() || 
                     b.user.toLowerCase() === firstAuthor.email.toLowerCase().trim()
