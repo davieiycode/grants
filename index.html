@@ -678,19 +678,6 @@
                                 <span class="material-symbols-outlined">history</span> Log
                             </button>
                         </div>                         <div style="display:flex; gap:12px; align-items:center;">
-                            ${(globalPermissions[currentUser.role] || {}).import_export_data >= 2 ? `
-                                <button class="btn-secondary" onclick="triggerImportExcel()" 
-                                        style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
-                                    <span class="material-symbols-outlined" style="font-size:18px; color:var(--primary);">upload</span> Impor (.xlsx)
-                                </button>
-                                <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
-                                
-                                <button class="btn-secondary" onclick="exportProposalsToExcel()"
-                                    style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.8rem; border:1px solid var(--border); box-shadow:var(--shadow-sm); background:white;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size:18px; color:var(--primary);">download</span> Ekspor (.xlsx)
-                                </button>
-                            ` : ''}
                             <button id="btn-add-proposal" class="btn-primary" onclick="openProposalModal()"
                                 style="height:40px; padding:0 20px; border-radius:10px; font-weight:800; font-size:0.85rem; flex-shrink:0;">
                                 <span class="material-symbols-outlined" style="font-size:20px;">add_circle</span> Usulan
@@ -2996,9 +2983,22 @@
             if (sub === 'info') {
                 container.innerHTML = `
                     <div class="glass animate-fade-in" style="max-width:850px; background:white; border-radius:var(--radius-xl); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-float);">
-                        <div style="padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.01);">
-                            <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px;">info</span>
-                            <h3 style="margin:0; font-family:'Outfit'; font-size:1.15rem; font-weight:800; color:var(--text-main);">Informasi & Batasan</h3>
+                        <div style="padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.01);">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px;">info</span>
+                                <h3 style="margin:0; font-family:'Outfit'; font-size:1.15rem; font-weight:800; color:var(--text-main);">Informasi & Batasan</h3>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                ${(globalPermissions[currentUser.role] || {}).import_export_data >= 2 ? `
+                                    <button class="btn-secondary" onclick="triggerImportExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:white;">
+                                        <span class="material-symbols-outlined" style="font-size:16px;">upload</span> IMPOR MS EXCEL
+                                    </button>
+                                    <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
+                                    <button class="btn-secondary" onclick="exportProposalsToExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:white;">
+                                        <span class="material-symbols-outlined" style="font-size:16px;">download</span> EKSPOR
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
                         <div style="padding:2rem; display:flex; flex-direction:column; gap:2rem;">
                             <div class="f-row" style="gap:1.5rem; align-items:flex-start;">
