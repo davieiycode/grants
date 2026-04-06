@@ -539,152 +539,19 @@
             <!-- Global User Guide View -->
             <div id="global-guide-view" style="display:none; animation:fadeIn 0.4s ease;">
                 <header class="hero" style="text-align:left; margin-bottom:40px;">
-                    <h1 style="margin:0; font-size:2.5rem; font-weight:900;">Pusat Panduan Portal Hibah</h1>
-                    <p style="margin:0; color:var(--text-muted); font-size:1.1rem; margin-top:0.5rem;">Pelajari cara
-                        menggunakan sistem Grants Portal sesuai dengan peran Anda.</p>
+                    <h1 style="margin:0; font-size:2.5rem; font-weight:900;">Pusat Tanya Jawab (Q&A)</h1>
+                    <p style="margin:0; color:var(--text-muted); font-size:1.1rem; margin-top:0.5rem;">Cari solusi cepat untuk pertanyaan seputar penggunaan Grants Portal.</p>
+                    
+                    <div style="margin-top:2rem; position:relative; max-width:600px;">
+                        <span class="material-symbols-outlined" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-muted);">search</span>
+                        <input type="text" placeholder="Ketik kata kunci pertanyaan (misal: password, hapus, sinkron)..." 
+                               onkeyup="renderQA(this.value)"
+                               style="width:100%; padding:16px 16px 16px 52px; border-radius:16px; border:1.5px solid var(--border); font-size:1rem; box-shadow:var(--shadow-sm); outline:none; transition:all 0.2s; background:white;">
+                    </div>
                 </header>
 
-                <div class="grid-cols-2" style="gap:2rem;">
-                    <!-- 1. Program Creation -->
-                    <div class="glass"
-                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                        <div
-                            style="width:64px; height:64px; border-radius:18px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center;">
-                            <span class="material-symbols-outlined"
-                                style="font-size:32px; color:var(--primary);">add_home</span>
-                        </div>
-                        <div>
-                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">A. Membuat Program
-                                Baru
-                            </h3>
-                            <p
-                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                                Langkah bagi **Superadmin/Admin** untuk merancang skema hibah baru di dalam sistem.</p>
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                        style="font-size:0.9rem;">Klik tombol <b>Tambah Program</b> di Dashboard
-                                        utama.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                        style="font-size:0.9rem;">Isi Nama Skema, pilih Ikon, dan Deskripsi.</span>
-                                </div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                        style="font-size:0.9rem;">Di Dashboard Program, atur <b>Periode</b>
-                                        (Open/Close).</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                        style="font-size:0.9rem;">Atur Syarat <b>Berkas</b> dan <b>Atribut Data</b> di
-                                        menu
-                                        Pengaturan.</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. Submission -->
-                    <div class="glass"
-                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                        <div
-                            style="width:64px; height:64px; border-radius:18px; background:rgba(16,185,129,0.1); display:flex; align-items:center; justify-content:center;">
-                            <span class="material-symbols-outlined"
-                                style="font-size:32px; color:var(--secondary);">description</span>
-                        </div>
-                        <div>
-                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">B. Mengajukan Proposal
-                            </h3>
-                            <p
-                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                                Panduan bagi **Pengusul** untuk mengirimkan usulan proposal mereka ke sistem.</p>
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                        style="font-size:0.9rem;">Buka dashboard program hibah yang dituju.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                        style="font-size:0.9rem;">Klik tombol <b>Usulan Baru</b>.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                        style="font-size:0.9rem;">Isi judul, data atribut kustom, dan upload lampiran
-                                        wajib.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--secondary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                        style="font-size:0.9rem;">Pastikan semua mandatory terisi lalu klik <b>Kirim
-                                            Proposal</b>.</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Assign Reviewer -->
-                    <div class="glass"
-                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                        <div
-                            style="width:64px; height:64px; border-radius:18px; background:rgba(99,102,241,0.1); display:flex; align-items:center; justify-content:center;">
-                            <span class="material-symbols-outlined"
-                                style="font-size:32px; color:var(--primary);">person_add</span>
-                        </div>
-                        <div>
-                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">C. Assign Reviewer
-                            </h3>
-                            <p
-                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                                Proses penugasan evaluator oleh **Admin/Manager** ke usulan yang masuk.</p>
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                        style="font-size:0.9rem;">Buka tab <b>Usulan</b> di dashboard program
-                                        tertentu.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                        style="font-size:0.9rem;">Klik ikon menu di samping kanan nama pengusul.</span>
-                                </div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                        style="font-size:0.9rem;">Pilih <b>Assign Reviewer</b> pada baris data
-                                        usulan.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:var(--primary); color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                        style="font-size:0.9rem;">Centang daftar Reviewer yang diinginkan lalu
-                                        <b>Simpan</b>.</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. Review Process -->
-                    <div class="glass"
-                        style="padding:2.5rem; border-radius:24px; border:1px solid var(--border); display:flex; flex-direction:column; gap:1.5rem; background:white;">
-                        <div
-                            style="width:64px; height:64px; border-radius:18px; background:rgba(217,119,6,0.1); display:flex; align-items:center; justify-content:center;">
-                            <span class="material-symbols-outlined"
-                                style="font-size:32px; color:#d97706;">rate_review</span>
-                        </div>
-                        <div>
-                            <h3 style="font-size:1.5rem; font-weight:900; margin-bottom:0.75rem;">D. Evaluasi (Review)
-                            </h3>
-                            <p
-                                style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
-                                Langkah bagi **Reviewer** untuk memberikan skor dan rekomendasi akhir.</p>
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">1</span><span
-                                        style="font-size:0.9rem;">Buka daftar usulan yang ditugaskan kepada Anda.</span>
-                                </div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">2</span><span
-                                        style="font-size:0.9rem;">Klik usulan untuk melihat detail dan download
-                                        berkas.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">3</span><span
-                                        style="font-size:0.9rem;">Buka tab <b>Penilaian</b> lalu isi skor
-                                        per-indikator.</span></div>
-                                <div style="display:flex; gap:12px; align-items:start;"><span class="chip"
-                                        style="background:#d97706; color:white; width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:0.7rem;">4</span><span
-                                        style="font-size:0.9rem;">Simpan draft atau kirim penilaian final ke
-                                        Admin.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="qa-container" style="display:grid; gap:1rem;">
+                    <!-- Q&A Content here -->
                 </div>
             </div>
 
@@ -892,6 +759,7 @@
         let currentUser = JSON.parse(localStorage.getItem('grants_current_user')) || registeredUsers[0];
 
         var globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
+        var globalLogs = []; // Global Logs always pulled fresh from cloud
         let recycleBin = JSON.parse(localStorage.getItem('grants_recycle_bin')) || [];
 
         const defaultPermissions = {
@@ -1353,9 +1221,15 @@
                         globalBlacklist = data.globalBlacklist;
                         localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
                     }
-                    if (data.global_permissions) {
-                        globalPermissions = data.global_permissions;
+                    if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
+                        data.globalPermissions.forEach(p => {
+                           const role = Object.keys(defaultPermissions).find(k => k.toString() === p.id); 
+                           if (role) globalPermissions[role] = p;
+                        });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+                    }
+                    if (data.globalLogs) {
+                        window.globalLogs = data.globalLogs;
                     }
 
                     checkAdminVisibility();
@@ -1449,9 +1323,8 @@
         // PREVENT DATA LOSS ON REFRESH DURING SYNC
         window.onbeforeunload = function(e) {
             if (cloudSync.isSyncing) {
-                const msg = "Sinkronisasi sedang berlangsung. Jika Anda keluar, perubahan mungkin tidak tersimpan secara permanen di cloud.";
-                e.returnValue = msg;
-                return msg;
+                e.preventDefault();
+                return "Sedang sinkron...";
             }
         };
 
@@ -1603,6 +1476,39 @@
                 if (mainApp) mainApp.style.display = 'none';
             }
         });
+
+        const qaList = [
+            { q: "Bagaimana cara membuat program hibah baru?", a: "Klik menu <b>Program</b> di sidebar, lalu klik tombol <b>Tambah Program</b> di pojok kanan atas. Isi nama skema dan deskripsi, lalu klik Buat Program." },
+            { q: "Mengapa data yang saya edit tidak muncul di teman saya?", a: "Pastikan Anda melihat indikator <b>SyncHub</b> di pojok kanan atas. Jika tertulis 'Baru saja', berarti data sudah di-push ke Cloud. Teman Anda harus me-refresh halaman untuk menarik data terbaru tersebut." },
+            { q: "Bagaimana cara memulihkan program yang tidak sengaja dihapus?", a: "Program yang dihapus masuk ke tab <b>Arsip & Sampah</b> di menu User & Kebijakan. Superadmin bisa klik tombol Restore (panah berputar) untuk mengaktifkannya kembali." },
+            { q: "Apa bedanya peran Admin dan Reviewer?", a: "<b>Admin</b> bisa mengatur konfigurasi program dan melihat semua usulan. sedangkan <b>Reviewer</b> hanya bisa melihat usulan yang ditugaskan kepada mereka dan memberikan nilai penilaian." },
+            { q: "Dapatkah saya mengganti password user lain?", a: "Bisa, peran Superadmin dapat melakukan ini melalui menu <b>Daftar User</b>. Klik ikon Pensil pada user terkait, isi password baru di kolom bawah, dan klik Simpan." },
+            { q: "Bagaimana cara memfilter usulan berdasarkan status?", a: "Di dalam Dashboard Program, gunakan bar pencarian atau klik tab kategori yang tersedia (misal: Lolos, Revisi) untuk menyaring data secara otomatis." },
+            { q: "Bagaimana cara mencetak/ekspor data ke Excel?", a: "Gunakan fitur <b>Ekspor Excel</b> yang ada di setiap daftar usulan. Sistem akan mengonversi data tabel langsung menjadi file .xlsx yang kompatibel dengan Microsoft Excel." }
+        ];
+
+        window.renderQA = function(filter = "") {
+            const container = document.getElementById('qa-container');
+            const search = filter.toLowerCase();
+            const filtered = qaList.filter(item => item.q.toLowerCase().includes(search) || item.a.toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-muted);">Tidak ditemukan jawaban untuk kata kunci tersebut.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => `
+                <div class="glass animate-fade-in" style="padding:1.5rem; border-radius:18px; border:1px solid var(--border); background:white;">
+                    <div style="font-weight:900; font-size:1.1rem; color:var(--text-main); margin-bottom:0.75rem; display:flex; gap:12px; align-items:start;">
+                        <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px; margin-top:3px;">help</span>
+                        ${item.q}
+                    </div>
+                    <div style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; padding-left:32px;">
+                        ${item.a}
+                    </div>
+                </div>
+            `).join('');
+        };
     </script>
     <script>
         function init() {
@@ -1615,6 +1521,7 @@
             } else {
                 renderDashboard();
             }
+            renderQA();
             checkAdminVisibility();
 
             // Check for impersonation alert
@@ -1733,7 +1640,8 @@
                     const url = new URL(window.location);
                     url.searchParams.set('p', prog.id);
                     url.searchParams.set('tab', 'usulan');
-                    window.location.href = url.toString();
+                    window.history.pushState({}, "", url.toString());
+                    renderProgramDashboard(prog.id, 'usulan');
                 };
 
                 card.innerHTML = `
@@ -1753,7 +1661,7 @@
                             <span class="stats-value">${count}</span>
                             <span class="stats-label"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">description</span>Usulan Masuk</span>
                         </div>
-                        <button class="btn-apply" onclick="event.stopPropagation(); const url = new URL(window.location); url.searchParams.set('p', '${prog.id}'); url.searchParams.set('tab', 'usulan'); window.location.href = url.toString();">
+                        <button class="btn-apply" onclick="event.stopPropagation(); const url = new URL(window.location); url.searchParams.set('p', '${prog.id}'); url.searchParams.set('tab', 'usulan'); window.history.pushState({}, '', url.toString()); renderProgramDashboard('${prog.id}', 'usulan');">
                             Buka Program
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
@@ -1767,7 +1675,7 @@
             progId = id;
             const program = programs.find(p => p.id == id);
             if (!program) {
-                window.location.href = 'index.html';
+                switchMainView('program');
                 return;
             }
 
@@ -2269,7 +2177,8 @@
                     "UNIT KERJA": p.unit || "Fakultas Teknik",
                     "TANGGAL SUBMIT": p.date || p.submittedAt,
                     "STATUS": p.status.toUpperCase(),
-                    "PERIODE": p.period || "-"
+                    "PERIODE": p.period || "-",
+                    "TIM PENELITI": p.members ? JSON.stringify(p.members) : ""
                 };
 
                 // Inject custom attributes as columns
@@ -2351,7 +2260,7 @@
                             date: row["TANGGAL SUBMIT"] || new Date().toISOString().split('T')[0],
                             period: row["PERIODE"] || "-",
                             program: program.name,
-                            members: [],
+                            members: row["TIM PENELITI"] ? (row["TIM PENELITI"].startsWith('[') ? JSON.parse(row["TIM PENELITI"]) : row["TIM PENELITI"].split(',').map(n => ({name: n.trim(), role: 'Anggota'}))) : [],
                             attributes: attributes, // Integrated custom attributes
                             logs: [{ date: new Date().toISOString(), action: 'Imported via Excel', user: currentUser.name }]
                         };
