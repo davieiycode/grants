@@ -5429,8 +5429,7 @@
                 attributes: [{ label: "Judul Riset", type: "text", required: true }]
             };
 
-            programs.push(newProg);
-            window.fbSave('programs', program.id, program);
+            window.fbSave('programs', newProg.id, newProg);
             closeModal();
             showToast('Program berhasil dibuat!');
             renderDashboard();
