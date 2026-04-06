@@ -1431,11 +1431,29 @@
             location.reload();
         };
 
-        // On Start: Check Session
+        // On Start: Check Session & URL Params
         document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('grants_current_user');
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
+
+            // Handle URL Parameters for Quick Config
+            const urlParams = new URLSearchParams(window.location.search);
+            const scriptParam = urlParams.get('script') || urlParams.get('url');
+            const nameParam = urlParams.get('name');
+            const emailParam = urlParams.get('email');
+
+            if (scriptParam) {
+                const urlInput = document.getElementById('login-appscript-url');
+                if (urlInput) urlInput.value = scriptParam;
+            }
+            if (nameParam && document.getElementById('login-name')) document.getElementById('login-name').value = nameParam;
+            if (emailParam && document.getElementById('login-email')) document.getElementById('login-email').value = emailParam;
+
+            // Auto-Login if all params provided
+            if (!savedUser && scriptParam && nameParam && emailParam) {
+                startAppWithSync();
+            }
 
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
