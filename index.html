@@ -1244,9 +1244,19 @@
                              const normalizedP = {};
                              Object.keys(p).forEach(key => {
                                  const val = p[key];
-                                 normalizedP[key] = isNaN(val) ? val : Number(val);
+                                 // Only convert values that exist and are relevant to permissions
+                                 if (key !== 'id' && key !== 'ID') {
+                                    normalizedP[key] = isNaN(val) || val === "" || val === null ? (defaultPermissions[roleKey][key] || 0) : Number(val);
+                                 }
                              });
+                             
+                             // MERGE with defaults first, then cloud data
                              globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...normalizedP };
+                             
+                             // ABSOLUTE OVERRIDE: Superadmin always has full access (Level 2)
+                             if (roleKey.toLowerCase() === 'superadmin') {
+                                Object.keys(defaultPermissions['Superadmin']).forEach(f => globalPermissions[roleKey][f] = 2);
+                             }
                            }
                         });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
@@ -2909,14 +2919,12 @@
                             </div>
                         </div>
                         <div class="f-group">
-                            <label class="f-label">Log & Bukti Dukung</label>
-                            <textarea class="f-input" id="tx-notes" style="height:100px; resize:none; font-size:0.85rem;" placeholder="Berikan catatan tambahan jika perlu...">${data.notes || ''}</textarea>
-                            <div id="finance-file-cont" style="display:flex; align-items:center; gap:10px; border:1px dashed var(--border); padding:0.75rem; border-radius:var(--radius-md); background:var(--surface); margin-top:0.75rem;">
-                                <span class="material-symbols-outlined" style="color:var(--text-muted); font-size:20px;">${data.file ? 'attach_file' : 'upload_file'}</span>
-                                <span style="font-size:0.75rem; flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${data.file || 'Unggah Bukti (PDF/JPG)'}</span>
-                                <button type="button" onclick="triggerFinanceUpload()" class="btn-icon" style="width:28px; height:28px;"><span class="material-symbols-outlined" style="font-size:16px;">cloud_upload</span></button>
-                                <input type="hidden" id="tx-file" value="${data.file || ''}">
-                            </div>
+                            <label class="f-label">Log & Bukti Dukung (Multi-File)</label>
+                            <textarea class="f-input" id="tx-notes" style="height:80px; resize:none; font-size:0.85rem;" placeholder="Berikan catatan tambahan jika perlu...">${data.notes || ''}</textarea>
+                            <div id="finance-files-list" style="margin-top:12px; display:flex; flex-direction:column; gap:8px;"></div>
+                            <button type="button" onclick="window.triggerFinanceUpload()" class="btn-secondary" style="width:100%; height:42px; margin-top:10px; border-style:dashed; background:rgba(99,102,241,0.02); text-transform:uppercase; font-size:0.7rem; font-weight:900;">
+                                <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> TAMBAH LAMPIRAN BERKAS
+                            </button>
                         </div>
                     </div>
 
@@ -2934,11 +2942,12 @@
                         <button class="btn-primary" onclick="saveFinanceTx(${idx})">Simpan Laporan</button>
                     </div>
                 </div>
+                </div>
             `);
         }
 
 
-        function triggerFinanceUpload() {
+        window.triggerFinanceUpload = function() {
             let tempInput = document.getElementById('finance-temp-file-input');
             if (!tempInput) {
                 tempInput = document.createElement('input');
@@ -2951,15 +2960,12 @@
             tempInput.onchange = e => {
                 const file = e.target.files[0];
                 if (file) {
-                    const name = file.name;
-                    document.getElementById('tx-file').value = name;
-                    const cont = document.getElementById('finance-file-cont');
-                    const textSpan = cont.querySelector('span[style*="flex:1"]');
-                    const iconSpan = cont.querySelector('.material-symbols-outlined');
-
-                    if (textSpan) textSpan.innerText = name;
-                    if (iconSpan) iconSpan.innerText = 'description';
-                    showToast('Berkas terpilih: ' + name);
+                    window.tempFinanceFiles.push({
+                        name: file.name,
+                        url: '#' // Dummy URL for local demo
+                    });
+                    window.renderFinanceFilesList();
+                    showToast('Lampiran ditambahkan: ' + file.name, 'success');
                 }
             };
             tempInput.click();
@@ -2984,7 +2990,7 @@
                 linkedProposals: linked,
                 linkedPeriod: document.getElementById('tx-period').value,
                 notes: document.getElementById('tx-notes').value,
-                file: document.getElementById('tx-file').value
+                files: window.tempFinanceFiles
             };
 
             if (idx !== null) {
