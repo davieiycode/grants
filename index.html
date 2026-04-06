@@ -3,175 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProSpace | Manajemen Hibah Penelitian</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <title>ProSpace | Platform Manajemen Hibah Penelitian</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="index.css">
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
-        /* Component-Specific Overrides */
-        /* Layout & Grid System */
+        /* Modern Layout & Component Logic */
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem 5%; }
         .grid-cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
         @media (max-width: 1024px) { .grid-cols-3 { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) { .grid-cols-3 { grid-template-columns: 1fr; } }
 
-        /* Navigation Bar */
-        nav { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 5%; position: sticky; top: 0; z-index: 1000; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        nav { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 5%; position: sticky; top: 0; z-index: 1000; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
         [data-theme="dark"] nav { background: rgba(15, 23, 42, 0.85); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        
+
         .nav-links { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
         .nav-link { text-decoration: none; font-weight: 700; color: var(--text-muted); font-size: 0.95rem; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; letter-spacing: 0.02em; }
         .nav-link:hover { color: var(--primary); }
         .nav-link.active { color: var(--text-main); }
         .nav-link.active::after { content: ''; position: absolute; bottom: -28px; left: 0; width: 100%; height: 4px; background: var(--primary); border-radius: 10px; }
 
-        /* Global Tabs & Matrix Styles */
-        .main-tabs { display: flex; gap: 2rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem; padding: 0 1rem; }
-        .tab-item { padding: 1rem 0.5rem; font-weight: 800; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; position: relative; }
-        .tab-item:hover { color: var(--primary); }
-        .tab-item.active { color: var(--text-main); }
-        .tab-item.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 10px; }
-
-        /* Permission Matrix Selects */
-        .perm-select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--background); font-weight: 700; font-size: 0.75rem; cursor: pointer; outline: none; }
-        .perm-select.full { color: var(--secondary); border-color: var(--secondary-soft); background: var(--secondary-soft); }
-        .perm-select.read { color: var(--primary); border-color: var(--primary-soft); background: var(--primary-soft); }
-        .perm-select.none { color: var(--error); border-color: var(--error-soft); background: var(--error-soft); }
-
-        /* Data Tables */
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .data-table th { padding: 1.25rem 1.5rem; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; background: var(--background); }
-        .data-table td { padding: 1.5rem; border-top: 1px solid var(--border); }
-
-        /* Logo & Branding */
-        .logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; flex-shrink: 0; }
-        .logo-text-pro { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--primary); letter-spacing: -0.02em; }
-        .logo-text-space { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--text-main); font-style: italic; margin-left: -4px; }
-        .logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 20px var(--primary-soft); }
-
-        /* Program Cards & UI Elements */
         .program-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
         .program-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: var(--shadow-float); }
-        .program-card h2 { font-size: 1.6rem; font-weight: 900; margin-top: 0.5rem; }
         .program-icon { width: 56px; height: 56px; border-radius: 16px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
-        .program-icon span { font-size: 28px; }
-        .program-footer { margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .status-badge { font-size: 0.75rem; font-weight: 900; letter-spacing: 0.05em; padding: 6px 14px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); }
-        #login-gate { position: fixed; inset: 0; z-index: 10000; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; }
-        .login-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid white; border-radius: 32px; padding: 3rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); max-width: 420px; width: 100%; }
-        #main-app-container { display: none; }
+
+        #login-gate { position: fixed; inset: 0; z-index: 10000; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        [data-theme="dark"] #login-gate { background: linear-gradient(135deg, #020617 0%, #0f172a 100%); }
+        .login-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid white; border-radius: 32px; padding: 3rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); max-width: 420px; width: 100%; text-align: center; }
+        [data-theme="dark"] .login-card { background: rgba(30, 41, 59, 0.7); border-color: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-
 <body data-theme="light">
     <!-- LOGIN GATE -->
     <div id="login-gate">
-        <div class="login-card animate-fade-in">
-            <a href="index.html" class="logo" style="margin-bottom:2rem; justify-content:center;">
-                <div class="logo-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
-                <div><span class="logo-text-pro">Pro</span><span class="logo-text-space">Space</span></div>
-            </a>
-            <h1 style="font-size:2.2rem; font-weight:900; text-align:center; letter-spacing:-0.03em;">Elevate Research</h1>
-            <div style="display:grid; gap:1rem; margin-top:2rem;">
-                <input type="email" id="login-email" class="f-input" placeholder="Email">
-                <input type="password" id="login-password" class="f-input" placeholder="Password">
-                <input type="url" id="login-appscript-url" class="f-input" placeholder="Apps Script URL" style="display:none;">
-                <button onclick="startAppWithSync()" class="btn-primary" style="height:52px; width:100%;">Masuk Sekarang</button>
+        <div class="login-card glass animate-pop-in">
+            <div class="logo" style="justify-content:center; margin-bottom:2rem;">
+                <div class="logo-icon"><span class="material-symbols-outlined" style="font-size:32px;">rocket_launch</span></div>
+                <div style="display:flex; align-items:baseline;">
+                    <span class="logo-text-pro">Pro</span><span class="logo-text-space">Space</span>
+                </div>
             </div>
-            <p style="margin-top:2rem; text-align:center; font-size:0.75rem; color:var(--text-muted);">v2.7.0 &copy; 2026 Admin ProSpace</p>
+            <h2 style="font-family:'Outfit'; font-weight:800; margin-bottom:0.5rem;">Selamat Datang</h2>
+            <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem;">Masuk ke Dashboard Manajemen Hibah</p>
+            <div class="f-group">
+                <input type="email" id="login-email" class="f-input" placeholder="Alamat E-mail" style="text-align:center;">
+            </div>
+            <div id="url-config" style="margin-top:1rem; display:none;">
+                <input type="text" id="login-appscript-url" class="f-input" placeholder="Google Apps Script URL" style="text-align:center; font-size:0.8rem;">
+            </div>
+            <button class="btn-primary" onclick="startAppWithSync()" style="width:100%; height:52px; margin-top:1.5rem; border-radius:14px; font-weight:850;">Masuk Sekarang</button>
+            <p id="login-hint" style="margin-top:1.5rem; font-size:0.75rem; color:var(--text-muted); cursor:pointer;" onclick="document.getElementById('url-config').style.display='block'">Konfigurasi Server API</p>
         </div>
     </div>
 
-    <!-- MAIN APP -->
-    <div id="main-app-container">
+    <!-- MAIN APP CONTAINER -->
+    <div id="main-app-container" style="display:none;">
         <nav>
             <a href="index.html" class="logo">
                 <div class="logo-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
-                <div><span class="logo-text-pro">Pro</span><span class="logo-text-space">Space</span></div>
+                <div style="display:flex; align-items:baseline;">
+                    <span class="logo-text-pro">Pro</span><span class="logo-text-space">Space</span>
+                </div>
             </a>
             <div class="nav-links" id="main-nav-links">
                 <a href="#" onclick="switchMainView('program')" class="nav-link active">Program</a>
-                <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users">User & Kebijakan</a>
+                <a href="#" onclick="switchMainView('users')" class="nav-link">User & Kebijakan</a>
                 <a href="#" onclick="switchMainView('guide')" class="nav-link">Panduan</a>
             </div>
-            <div style="display:flex; align-items:center; gap:1rem;">
-                <div id="sync-hub-display" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--surface); border:1px solid var(--border); border-radius:12px;">
-                    <span class="material-symbols-outlined" id="sync-icon" style="color:var(--secondary);">cloud_done</span>
-                    <span id="sync-time-rel" style="font-size:0.75rem; font-weight:800; color:var(--text-main);">Baru saja</span>
+            <div style="display:flex; align-items:center; gap:1.5rem;">
+                <div id="sync-status" class="glass" style="padding:6px 14px; border-radius:12px; display:flex; align-items:center; gap:8px; font-size:0.75rem; font-weight:700;">
+                    <span class="material-symbols-outlined" id="sync-icon" style="font-size:18px; color:var(--secondary);">cloud_done</span>
+                    <span id="sync-time-rel">Baru saja</span>
+                    <div id="sync-status-dot" style="width:8px; height:8px; border-radius:50%; background:var(--secondary);"></div>
                 </div>
-                <div onclick="toggleProfileDropdown()" id="profile-dropdown-trigger" style="cursor:pointer; display:flex; align-items:center; gap:10px;">
-                    <div class="avatar-soft"><span class="material-symbols-outlined">person</span></div>
-                    <div style="text-align:left;"><div id="nav-user-name" style="font-weight:900; font-size:0.9rem;">...</div><div id="nav-user-role" style="font-size:0.7rem; color:var(--primary);">...</div></div>
+                <div onclick="toggleProfileDropdown()" id="profile-trigger" style="cursor:pointer; display:flex; align-items:center; gap:10px;">
+                    <div style="text-align:right;">
+                        <div id="nav-user-name" style="font-weight:900; font-size:0.9rem;">...</div>
+                        <div id="nav-user-role" style="font-size:0.65rem; font-weight:800; color:var(--primary); text-transform:uppercase;">Admin</div>
+                    </div>
+                    <div style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
                 </div>
+            </div>
+            <!-- Profile Dropdown -->
+            <div id="profile-menu" class="glass" style="display:none; position:absolute; top:85px; right:5%; width:220px; padding:10px; border-radius:20px; z-index:2000;">
+                <button onclick="toggleTheme()" class="btn-secondary" style="width:100%; justify-content:flex-start; height:44px; gap:10px; border:none;">
+                    <span class="material-symbols-outlined">dark_mode</span> Tema Tampilan
+                </button>
+                <button onclick="logoutSession()" class="btn-secondary" style="width:100%; justify-content:flex-start; height:44px; gap:10px; border:none; color:var(--error);">
+                    <span class="material-symbols-outlined">logout</span> Keluar
+                </button>
             </div>
         </nav>
 
         <main class="container">
-            <div id="dashboard-view">
-                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
+            <!-- VIEW: DASHBOARD PROGRAM -->
+            <div id="view-dashboard">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
                     <h1 style="font-family:'Outfit'; font-weight:950; font-size:2.8rem; letter-spacing:-0.03em;">Program Hibah</h1>
-                    <button id="btn-add-program" class="btn-primary" onclick="window.openAddProgramModal()" style="height:52px; padding:0 24px; border-radius:14px; font-weight:850; box-shadow:var(--shadow-lg);">
+                    <button class="btn-primary" onclick="openAddProgramModal()" style="height:52px; padding:0 24px; border-radius:14px; font-weight:850;">
                         <span class="material-symbols-outlined">add_circle</span> + Tambah Program
                     </button>
                 </div>
                 <div id="program-grid" class="grid-cols-3"></div>
             </div>
 
+            <!-- VIEW: USER & POLICY -->
             <div id="view-users" style="display:none;"></div>
-            <div id="global-guide-view" style="display:none;">
-                <div class="glass animate-fade-in" style="padding:3rem; border-radius:24px;">
-                    <h1 style="font-family:'Playfair Display'; font-size:2.5rem; margin-bottom:1.5rem;">Panduan Sistem ProSpace</h1>
-                    <div class="grid-cols-2" style="gap:2rem;">
+
+            <!-- VIEW: GUIDE -->
+            <div id="view-guide" style="display:none;">
+                <div class="glass" style="padding:4rem; border-radius:32px;">
+                    <h1 style="font-family:'Playfair Display'; font-size:2.5rem; margin-bottom:2rem;">Panduan Sistem ProSpace</h1>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:3rem;">
                         <div>
-                           <h3 style="color:var(--primary); margin-bottom:1rem;">1. Alur Program Hibah</h3>
-                           <p style="color:var(--text-muted); font-size:0.95rem;">Program dimulai dengan penetapan skema, atribut formulir, dan lini masa. Admin dapat membuka periode submisi pada menu Pengaturan Program.</p>
+                            <h3 style="color:var(--primary); margin-bottom:1rem;">1. Manajemen Program</h3>
+                            <p style="color:var(--text-muted);">Gunakan menu Tambah Program untuk membuat skema hibah baru. Atur atribut formulir dan kriteria penilaian di dalam masing-masing program.</p>
                         </div>
                         <div>
-                           <h3 style="color:var(--primary); margin-bottom:1rem;">2. Manajemen Pengusul</h3>
-                           <p style="color:var(--text-muted); font-size:0.95rem;">Ketua pengusul mendaftarkan diri lewat entry.html. Admin dapat meninjau semua data personel pada menu User & Kebijakan.</p>
+                            <h3 style="color:var(--primary); margin-bottom:1rem;">2. Kebijakan Akses</h3>
+                            <p style="color:var(--text-muted);">Gunakan Matriks Izin Akses untuk mengatur fitur mana saja yang bisa diakses oleh Admin, Manager, atau Reviewer.</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="program-dashboard" style="display:none;"></div>
-            <div id="proposal-detail-view" style="display:none;"></div>
+
+            <!-- VIEW: PROGRAM DETAIL (DASHBOARD DALAM) -->
+            <div id="view-program-detail" style="display:none;"></div>
+
+            <!-- VIEW: PROPOSAL DETAIL -->
+            <div id="view-proposal-detail" style="display:none;"></div>
         </main>
     </div>
 
-    <!-- Modals & Toasts -->
-    <div id="modal-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeModal()">
-        <div class="modal-card glass"><div class="modal-inner"><div class="modal-header"><h3 id="modal-title"></h3><button class="btn-icon" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button></div><div id="modal-body" class="modal-body"></div></div></div>
+    <!-- MODAL OVERLAY -->
+    <div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal-card glass animate-pop-in">
+            <div class="modal-header">
+                <h2 id="modal-title" style="font-family:'Outfit'; font-weight:800;">Modal Title</h2>
+                <button class="btn-icon" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
     </div>
-    <div id="toast" class="toast-container"><span class="material-symbols-outlined">check_circle</span> <span id="toast-msg"></span></div>
 
-    <!-- CORE LOGIC & MODULAR ENGINES -->
+    <div id="toast" class="toast-container"><span id="toast-msg"></span></div>
+
+    <!-- LOGIC HANDLERS -->
     <script>
-        // Global State
-        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
-        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
-        var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
-        var globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || {};
-        var currentUser = JSON.parse(localStorage.getItem('grants_current_user'));
-    </script>
+        // --- GLOBAL STATE & CONFIG ---
+        const VERSION = "v2.7.0";
+        let programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
+        let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
+        let registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
+        let globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || {};
+        let currentUser = JSON.parse(localStorage.getItem('grants_current_user'));
 
-    <script src="cloudSync.js"></script>
-    <script src="programManager.js"></script>
-    <script src="userManager.js"></script>
-    <script src="proposalManager.js"></script>
+        const defaultPermissions = {
+            'Superadmin': { programs: 2, users: 2, analysis: 2, settings: 2, view_logs: 2 },
+            'Admin': { programs: 2, users: 1, analysis: 2, settings: 1, view_logs: 1 },
+            'Reviewer': { programs: 0, users: 0, analysis: 1, settings: 0, view_logs: 0 }
+        };
 
-    <script>
-        // --- Glue Logic & Global Hubs ---
-        const APP_VERSION = "v2.7.0";
-
+        // --- CORE UI HANDLERS ---
         window.showToast = function(msg) {
             const t = document.getElementById('toast');
-            const m = document.getElementById('toast-msg');
-            if (t && m) {
-                m.innerText = msg;
-                t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
-                setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-100px)'; }, 3000);
-            }
+            document.getElementById('toast-msg').innerText = msg;
+            t.style.opacity = '1'; t.style.transform = 'translateY(0) translateX(-50%)';
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-100px) translateX(-50%)'; }, 3000);
+        };
+
+        window.openModal = function(title, content) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = content;
+            const overlay = document.getElementById('modal-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('show'), 10);
+        };
+
+        window.closeModal = function() {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.style.display = 'none', 300);
+        };
+
+        window.toggleProfileDropdown = function() {
+            const menu = document.getElementById('profile-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         };
 
         window.applyTheme = function(theme) {
@@ -184,114 +205,214 @@
             window.applyTheme(current);
         };
 
-        window.toggleProfileDropdown = function() {
-            const menu = document.getElementById('profile-dropdown-menu');
-            if (menu) {
-                const isShowing = menu.style.display === 'block';
-                menu.style.display = isShowing ? 'none' : 'block';
-            }
-        };
-
         window.switchMainView = function(view) {
-            document.getElementById('dashboard-view').style.display = view === 'program' ? 'block' : 'none';
-            document.getElementById('view-users').style.display = view === 'users' ? 'block' : 'none';
-            document.getElementById('global-guide-view').style.display = view === 'guide' ? 'block' : 'none';
-            document.getElementById('program-dashboard').style.display = 'none';
-            document.getElementById('proposal-detail-view').style.display = 'none';
+            const views = ['view-dashboard', 'view-users', 'view-guide', 'view-program-detail', 'view-proposal-detail'];
+            views.forEach(v => document.getElementById(v).style.display = 'none');
             
+            const targetId = view === 'program' ? 'view-dashboard' : view === 'users' ? 'view-users' : 'view-guide';
+            document.getElementById(targetId).style.display = 'block';
+
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if (view === 'program') {
-                const el = document.querySelector('.nav-link[onclick*="program"]');
-                if (el) el.classList.add('active');
-            }
+            if (view === 'program') document.querySelector('.nav-link[onclick*="program"]').classList.add('active');
             if (view === 'users') {
-                const el = document.querySelector('.nav-link[onclick*="users"]');
-                if (el) el.classList.add('active');
-                if (window.renderUsers) window.renderUsers();
+                document.querySelector('.nav-link[onclick*="users"]').classList.add('active');
+                renderUsersView();
             }
         };
 
-        window.openModal = function(title, contentHtml) {
-            const overlay = document.getElementById('modal-overlay');
-            const body = document.getElementById('modal-body');
-            const titleEl = document.getElementById('modal-title');
-            if (overlay && body && titleEl) {
-                titleEl.innerText = title;
-                body.innerHTML = contentHtml;
-                overlay.style.display = 'flex';
-                setTimeout(() => overlay.classList.add('show'), 10);
-            }
-        };
-
-        window.closeModal = function() {
-            const overlay = document.getElementById('modal-overlay');
-            if (overlay) {
-                overlay.classList.remove('show');
-                setTimeout(() => overlay.style.display = 'none', 300);
-            }
-        };
-
-        window.renderDashboard = function() {
-            const grid = document.getElementById('program-grid');
-            if (grid) {
-                grid.innerHTML = programs.map(p => `
-                    <div class="program-card glass animate-fade-in" onclick="renderProgramDashboard('${p.id}')">
-                        <div class="program-icon"><span class="material-symbols-outlined">${p.icon || 'rocket_launch'}</span></div>
-                        <h2 style="font-family:'Outfit';">${p.name}</h2>
-                        <p style="color:var(--text-muted); font-size:0.9rem;">${p.desc || 'No description available.'}</p>
-                        <div class="program-footer">
-                            <span class="status-badge">AKTIF</span>
-                            <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px;">arrow_forward</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        };
-
+        // --- AUTH & SYNC ENGINE ---
         window.startAppWithSync = async function() {
             const email = document.getElementById('login-email').value;
             const url = document.getElementById('login-appscript-url').value || localStorage.getItem('grants_appscript_url');
-            if (!email || !url) return alert("Silakan isi data login & Apps Script URL!");
-            
+            if (!email) return alert("Masukkan e-mail!");
+            if (!url) return alert("Apps Script URL tidak terdeteksi!");
+
             localStorage.setItem('grants_appscript_url', url);
-            window.cloudSync.url = url;
-            window.showToast("Menghubungkan ke server...");
+            showToast("Menghubungkan ke server...");
             
-            const data = await window.cloudSync.pull();
-            if (data) {
-                currentUser = (data.registeredUsers || []).find(u => u.email === email) || { name: email.split('@')[0], email, role: 'Superadmin' };
-                localStorage.setItem('grants_current_user', JSON.stringify(currentUser));
-                location.reload();
-            } else {
-                alert("Gagal sinkron! Pastikan URL Apps Script benar.");
+            try {
+                const res = await fetch(`${url}?action=pull`);
+                const data = await res.json();
+                if (data) {
+                    localStorage.setItem('grants_programs_meta', JSON.stringify(data.programs || []));
+                    localStorage.setItem('grants_proposals', JSON.stringify(data.proposals || []));
+                    localStorage.setItem('grants_registeredUsers', JSON.stringify(data.registeredUsers || []));
+                    
+                    const user = (data.registeredUsers || []).find(u => u.email === email) || { name: email.split('@')[0], email, role: 'Superadmin' };
+                    localStorage.setItem('grants_current_user', JSON.stringify(user));
+                    location.reload();
+                }
+            } catch (e) {
+                alert("Koneksi gagal! Periksa URL Apps Script Anda.");
             }
         };
 
         window.logoutSession = function() {
             localStorage.removeItem('grants_current_user');
-            localStorage.removeItem('grants_appscript_url');
             location.reload();
         };
 
+        // --- DASHBOARD RENDERING ---
+        window.renderDashboardGrid = function() {
+            const grid = document.getElementById('program-grid');
+            if (!grid) return;
+            grid.innerHTML = (programs || []).map(p => `
+                <div class="program-card glass animate-fade-in" onclick="openProgram('${p.id}')">
+                    <div class="program-icon"><span class="material-symbols-outlined">${p.icon || 'rocket_launch'}</span></div>
+                    <h2 style="font-family:'Outfit'; font-weight:800; font-size:1.5rem;">${p.name}</h2>
+                    <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">${p.desc || 'Kelola usulan penelitian dan hibah untuk skema ini.'}</p>
+                    <div style="margin-top:auto; padding-top:1.5rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <span class="status-badge">AKTIF</span>
+                        <span class="material-symbols-outlined" style="color:var(--primary);">arrow_forward</span>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.openProgram = function(progId) {
+            const p = programs.find(pg => String(pg.id) === String(progId));
+            const view = document.getElementById('view-program-detail');
+            document.getElementById('view-dashboard').style.display = 'none';
+            view.style.display = 'block';
+
+            view.innerHTML = `
+                <div class="animate-fade-in">
+                    <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:2rem;">
+                        <button class="btn-icon shadow-sm" onclick="switchMainView('program')"><span class="material-symbols-outlined">arrow_back</span></button>
+                        <h1 style="font-family:'Outfit'; font-weight:900; font-size:2.2rem;">${p.name}</h1>
+                    </div>
+                    <div class="tabs glass" style="display:flex; gap:1rem; padding:0.5rem 1rem; border-radius:18px; margin-bottom:2rem;">
+                        <button class="tab-btn active" onclick="switchProgTab('usulan', '${progId}', this)">Daftar Usulan</button>
+                        <button class="tab-btn" onclick="switchProgTab('setting', '${progId}', this)">Konfigurasi</button>
+                    </div>
+                    <div id="prog-tab-content"></div>
+                </div>
+            `;
+            window.switchProgTab('usulan', progId);
+        };
+
+        window.switchProgTab = function(tab, progId, btn) {
+            const container = document.getElementById('prog-tab-content');
+            if (btn) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            if (tab === 'usulan') {
+                const filtered = proposals.filter(pr => String(pr.programId) === String(progId));
+                container.innerHTML = `
+                    <div class="glass" style="border-radius:24px; overflow:hidden;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead style="background:var(--background);">
+                                <tr style="text-align:left;">
+                                    <th style="padding:1.5rem;">Judul Usulan</th>
+                                    <th style="padding:1.5rem;">Ketua</th>
+                                    <th style="padding:1.5rem;">Status</th>
+                                    <th style="padding:1.5rem;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filtered.map(pr => `
+                                    <tr style="border-top:1px solid var(--border);">
+                                        <td style="padding:1.5rem; font-weight:850;">${pr.title}</td>
+                                        <td style="padding:1.5rem; color:var(--text-muted);">${pr.leader}</td>
+                                        <td style="padding:1.5rem;"><span class="status-badge">${pr.status}</span></td>
+                                        <td style="padding:1.5rem;"><button class="btn-primary" onclick="openProposal('${pr.id}')" style="padding:8px 16px; border-radius:10px; font-size:0.8rem;">DETAIL</button></td>
+                                    </tr>
+                                `).join('') || '<tr><td colspan="4" style="padding:4rem; text-align:center; color:var(--text-muted);">Belum ada usulan.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<div class="glass" style="padding:3rem; text-align:center; border-radius:32px;">Konfigurasi skema program sedang disinkronkan...</div>`;
+            }
+        };
+
+        // --- USER & POLICY VIEW ---
+        window.renderUsersView = function() {
+            const view = document.getElementById('view-users');
+            view.innerHTML = `
+                <div class="glass animate-fade-in" style="padding:3rem; border-radius:32px;">
+                    <h1 style="font-family:'Outfit'; font-weight:900; font-size:2.5rem; margin-bottom:2rem;">User & Kebijakan Akses</h1>
+                    <div class="main-tabs">
+                        <div class="tab-item active" onclick="switchUserTab('list', this)">Daftar Pengguna</div>
+                        <div class="tab-item" onclick="switchUserTab('policy', this)">Matriks Izin Akses</div>
+                    </div>
+                    <div id="user-tab-content" style="margin-top:2rem;"></div>
+                </div>
+            `;
+            window.switchUserTab('list');
+        };
+
+        window.switchUserTab = function(tab, btn) {
+            const container = document.getElementById('user-tab-content');
+            if (btn) {
+                document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            if (tab === 'list') {
+                container.innerHTML = `
+                    <div class="glass" style="overflow:hidden; border-radius:20px; border:1px solid var(--border);">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead style="background:var(--background);">
+                                <tr style="text-align:left;">
+                                    <th style="padding:1.25rem 1.5rem; font-size:0.8rem;">Nama Personel</th>
+                                    <th style="padding:1.25rem 1.5rem; font-size:0.8rem;">Email & Unit</th>
+                                    <th style="padding:1.25rem 1.5rem; font-size:0.8rem;">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${registeredUsers.map(u => `
+                                    <tr style="border-top:1px solid var(--border);">
+                                        <td style="padding:1.5rem; font-weight:800;">${u.name}</td>
+                                        <td style="padding:1.5rem; color:var(--text-muted); font-size:0.9rem;">${u.email}<br><small>${u.unit}</small></td>
+                                        <td style="padding:1.5rem;"><span class="status-badge">${u.role}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="glass" style="padding:2rem; border-radius:24px;">
+                        <h3 style="margin-bottom:1.5rem;">Konfigurasi Hak Akses</h3>
+                        <p style="color:var(--text-muted);">Sesuaikan kemampuan tiap role dalam mengakses fitur manajemen hibah.</p>
+                        <div style="margin-top:2rem; text-align:center; padding:4rem; border:1px dashed var(--border); border-radius:20px;">Matriks izin sedang diverifikasi dengan server...</div>
+                    </div>
+                `;
+            }
+        };
+
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
                 document.getElementById('login-gate').style.display = 'none';
                 document.getElementById('main-app-container').style.display = 'block';
                 document.getElementById('nav-user-name').innerText = currentUser.name;
                 document.getElementById('nav-user-role').innerText = currentUser.role;
-                window.renderDashboard();
-                if (window.cloudSync.url) window.cloudSync.pull();
-            } else {
-                if (!localStorage.getItem('grants_appscript_url')) document.getElementById('login-appscript-url').style.display = 'block';
+                renderDashboardGrid();
+                
+                const url = localStorage.getItem('grants_appscript_url');
+                if (url) {
+                    fetch(`${url}?action=pull`).then(r => r.json()).then(data => {
+                        if (data) {
+                            programs = data.programs || [];
+                            proposals = data.proposals || [];
+                            registeredUsers = data.registeredUsers || [];
+                            renderDashboardGrid();
+                        }
+                    });
+                }
             }
-            const savedTheme = localStorage.getItem('grants_theme');
-            if (savedTheme) window.applyTheme(savedTheme);
+            const theme = localStorage.getItem('grants_theme') || 'light';
+            applyTheme(theme);
         });
 
         // Close dropdown when clicking outside
         window.onclick = function(event) {
-            if (!event.target.closest('#profile-dropdown-trigger') && !event.target.closest('#profile-dropdown-menu')) {
-                const menu = document.getElementById('profile-dropdown-menu');
+            if (!event.target.closest('#profile-trigger') && !event.target.closest('#profile-menu')) {
+                const menu = document.getElementById('profile-menu');
                 if (menu) menu.style.display = 'none';
             }
         };
