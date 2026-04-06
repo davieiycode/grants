@@ -456,17 +456,29 @@
                         </div>
 
                         <!-- Dropdown Menu -->
-                        <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:220px; padding:12px; border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow-lg); z-index:1000;">
-                            <div style="padding:4px 8px 12px; border-bottom:1px solid var(--border); margin-bottom:8px;">
-                                <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase;">PENGATURAN AKUN</span>
+                        <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:240px; padding:8px; border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow-xl); z-index:1000;">
+                            <div style="padding:10px 12px 14px; border-bottom:1px solid var(--border); margin-bottom:6px;">
+                                <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.05em;">PENGATURAN SISTEM</span>
                             </div>
-                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:12px; padding:10px; border:none; background:none; color:var(--text-main); border-radius:12px; cursor:pointer; font-weight:700; font-size:0.85rem; transition:all 0.2s;">
-                                <span class="material-symbols-outlined theme-icon" style="font-size:20px;">dark_mode</span>
-                                <span id="theme-text">Mode Gelap</span>
+                            
+                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--text-main); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
+                                <div style="width:36px; height:36px; border-radius:10px; background:var(--background); display:flex; align-items:center; justify-content:center; color:var(--text-muted);">
+                                    <span class="material-symbols-outlined theme-icon" style="font-size:20px;">dark_mode</span>
+                                </div>
+                                <div style="line-height:1.2;">
+                                    <span id="theme-text" style="display:block;">Mode Gelap</span>
+                                    <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Switch UI Theme</span>
+                                </div>
                             </button>
-                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:12px; padding:10px; border:none; background:none; color:var(--error); border-radius:12px; cursor:pointer; font-weight:700; font-size:0.85rem; transition:all 0.2s;">
-                                <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
-                                Keluar Sesi
+
+                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--error); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
+                                <div style="width:36px; height:36px; border-radius:10px; background:rgba(239, 68, 68, 0.05); display:flex; align-items:center; justify-content:center; color:var(--error);">
+                                    <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+                                </div>
+                                <div style="line-height:1.2;">
+                                    <span style="display:block;">Keluar Sesi</span>
+                                    <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Log out from account</span>
+                                </div>
                             </button>
                         </div>
                     </div>
