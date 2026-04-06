@@ -7,16 +7,19 @@ window.renderUsers = function() {
     const container = document.getElementById('view-users');
     container.innerHTML = `
         <div class="glass animate-fade-in" style="padding:2rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                <div>
-                    <h2 style="margin:0; font-family:'Playfair Display'; font-weight:700; font-size:1.8rem;">Manajemen Pengguna</h2>
-                    <p style="color:var(--text-muted); font-size:0.9rem;">Kelola akses, peran, dan unit kerja seluruh personel system.</p>
-                </div>
-                <div style="display:flex; gap:1rem;">
-                    <button class="btn-secondary" onclick="exportUsersToExcel()"><span class="material-symbols-outlined">download</span> EKSPOR</button>
-                    <button class="btn-primary" onclick="openAddUserModal()">+ Tambah Pengguna</button>
-                </div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem;">
+            <div>
+                <h2 style="font-family:'Playfair Display'; font-size:1.8rem; font-weight:700; color:var(--text-main); margin-bottom:0.1rem;">Daftar Anggota Aktif</h2>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Kelola seluruh pengguna yang terdaftar dalam sistem.</p>
             </div>
+            <div style="display:flex; gap:12px;">
+                <div class="glass" style="display:flex; align-items:center; padding:0 12px; border-radius:10px; border:1px solid var(--border); background:var(--background);">
+                    <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted);">search</span>
+                    <input type="text" placeholder="Cari user..." style="border:none; background:transparent; padding:8px; font-size:0.85rem; width:200px; outline:none; color:var(--text-main);" onkeyup="filterUsers(this.value)">
+                </div>
+                <button class="btn-primary" onclick="openAddUserModal()" style="height:40px; padding:0 18px; border-radius:10px; font-weight:800; font-size:0.85rem;">Tambah User</button>
+            </div>
+        </div>
             
             <div class="main-tabs" style="margin-bottom:2rem;">
                 <div class="tab-item active" onclick="switchGlobalUserSubTab('all-users', this)">Daftar Pengguna</div>
