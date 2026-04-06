@@ -1431,10 +1431,19 @@
             if (nameParam && document.getElementById('login-name')) document.getElementById('login-name').value = nameParam;
             if (emailParam && document.getElementById('login-email')) document.getElementById('login-email').value = emailParam;
 
-            // CLEAN URL ADDRESS BAR (Hide Params)
-            if (scriptParam || nameParam || emailParam) {
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
+            // CLEAN URL ADDRESS BAR (Only sensitive config params)
+            if (scriptParam || nameParam || emailParam || urlParams.get('id') || urlParams.get('password')) {
+                const paramsToKeep = new URLSearchParams(window.location.search);
+                paramsToKeep.delete('script');
+                paramsToKeep.delete('url');
+                paramsToKeep.delete('name');
+                paramsToKeep.delete('email');
+                paramsToKeep.delete('password');
+                paramsToKeep.delete('id'); // ID is also used in login params sometimes
+                
+                const newSearch = paramsToKeep.toString();
+                const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+                window.history.replaceState({}, document.title, newUrl);
             }
 
             // Auto-Login if all params provided
