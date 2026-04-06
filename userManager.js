@@ -1,5 +1,5 @@
 /**
- * ProSpace User Management Module (v2.6.9)
+ * ProSpace User Management Module (v2.7.0)
  * Handles user registration, administrative roles, and the dynamic permission matrix.
  */
 

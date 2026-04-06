@@ -1,5 +1,5 @@
 /**
- * ProSpace Proposal Management Module (v2.6.9)
+ * ProSpace Proposal Management Module (v2.7.0)
  * Handles the detailed view of individual proposals, reviews, and scoring logic.
  */
 

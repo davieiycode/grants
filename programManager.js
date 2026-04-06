@@ -1,5 +1,5 @@
 /**
- * ProSpace Program Management Module (v2.6.9)
+ * ProSpace Program Management Module (v2.7.0)
  * Handles all logic for program configuration, attributes, timelines, and settings.
  */
 

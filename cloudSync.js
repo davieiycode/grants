@@ -1,5 +1,5 @@
 /**
- * ProSpace Cloud Sync Engine (v2.6.9)
+ * ProSpace Cloud Sync & Data Engine (v2.7.0)
  * Manages bidirectional data flow between LocalStorage and Google Sheets / Firestore.
  */
 
