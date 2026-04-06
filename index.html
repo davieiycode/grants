@@ -1065,7 +1065,7 @@
 
             // Sync to Firestore
             const newEntry = blacklist[blacklist.length - 1];
-            window.fbSave('global_blacklist', newEntry.id, newEntry);
+            window.fbSave('globalBlacklist', newEntry.id, newEntry);
 
             const regIdx = registeredUsers.findIndex(u => u.email === email);
             if (regIdx !== -1) {
@@ -1080,26 +1080,6 @@
             showToast('User berhasil masuk daftar cekal');
         };
 
-        window.togglePermission = function (role, perm, val) {
-            if (!globalPermissions[role]) globalPermissions[role] = {};
-            globalPermissions[role][perm] = val;
-        };
-
-        window.saveGlobalPermissions = function () {
-            localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-            showToast('Kebijakan akses berhasil disimpan!');
-            checkAdminVisibility();
-        };
-
-        window.resetPermissions = function () {
-            if (confirm('Kembalikan semua kebijakan akses ke pengaturan awal sistem?')) {
-                globalPermissions = JSON.parse(JSON.stringify(defaultPermissions));
-                localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-                switchGlobalUserSubTab('hak-akses');
-                showToast('Kebijakan telah di-reset ke default');
-
-            }
-        };
 
 
 
@@ -1862,7 +1842,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button class="btn-secondary" onclick="globalBlacklist.splice(${idx}, 1); localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist)); switchGlobalUserSubTab('blacklist-global'); showToast('Blokir berhasil dicabut');" style="border-radius:10px; font-weight:800; font-size:0.7rem; padding:8px 16px;">
+                                    <button class="btn-secondary" onclick="const bid=globalBlacklist[${idx}].id; globalBlacklist.splice(${idx}, 1); localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist)); window.fbDelete('globalBlacklist', bid); switchGlobalUserSubTab('blacklist-global'); showToast('Blokir berhasil dicabut');" style="border-radius:10px; font-weight:800; font-size:0.7rem; padding:8px 16px;">
                                         CABUT BLOKIR
                                     </button>
                                 </div>
