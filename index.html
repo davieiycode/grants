@@ -1301,12 +1301,12 @@
                 localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
                 // For cloud, always use email as the persistent key
                 id = registeredUsers.find(u => (u.id == id || u.email == id))?.email || id;
-            } else if (collection === 'global_blacklist') {
+            } else if (collection === 'globalBlacklist') {
                 const idx = globalBlacklist.findIndex(b => b.id == id || b.email == id);
                 if (idx !== -1) globalBlacklist[idx] = { ...globalBlacklist[idx], ...data };
                 else globalBlacklist.push(data);
                 localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
-            } else if (collection === 'global_permissions') {
+            } else if (collection === 'globalPermissions') {
                 globalPermissions[id] = data; // id is the Role name
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             }
@@ -1345,7 +1345,7 @@
                 details
             };
             // Logs are pushed directly to cloud without local persistence to save memory
-            cloudSync.push("global_logs", logId, logData);
+            cloudSync.push("globalLogs", logId, logData);
         };
 
         window.startAppWithSync = async function() {
@@ -2118,10 +2118,10 @@
         window.saveGlobalPermissions = function () {
             localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             
-            // Sync each role as a separate document in 'global_permissions' sheet
+            // Sync each role as a separate document in 'globalPermissions' sheet
             Object.keys(globalPermissions).forEach(role => {
                 const payload = { ...globalPermissions[role], id: role };
-                window.fbSave('global_permissions', role, payload);
+                window.fbSave('globalPermissions', role, payload);
             });
             
             showToast('Kebijakan akses berhasil disimpan!');
