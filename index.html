@@ -430,34 +430,47 @@
 
                 <!-- Backend Sync UI -->
                 <div id="auth-container" style="display:flex; align-items:center; gap:1rem;">
-                    <div id="user-profile-nav" style="display:none; align-items:center; gap:12px;">
-                        <button class="btn-icon glass" onclick="cloudSync.pull()" title="Sync from Cloud" style="width:40px; height:40px; background:var(--primary-soft); color:var(--primary); border:1px solid rgba(99,102,241,0.2);">
-                            <span class="material-symbols-outlined" style="font-size:22px;">cloud_download</span>
-                        </button>
-                        <div style="text-align:right;">
-                            <div id="nav-user-name"
-                                style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...
+                    <div id="user-profile-nav" style="display:none; align-items:center; gap:12px; position:relative;">
+                        <!-- Last Sync Info Hub -->
+                        <div id="sync-hub-display" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; min-width:140px;">
+                            <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+                                <span class="material-symbols-outlined" id="sync-icon" style="font-size:20px; color:var(--secondary);">cloud_done</span>
+                                <span id="sync-status-dot" style="position:absolute; top:2px; right:2px; width:6px; height:6px; background:var(--secondary); border-radius:50%; border:1.5px solid var(--surface);"></span>
                             </div>
-                            <div id="nav-user-role"
-                                style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST
+                            <div style="display:flex; flex-direction:column; gap:0px;">
+                                <span style="font-size:0.65rem; font-weight:850; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.02em;">SINKRONISASI</span>
+                                <span id="sync-time-rel" style="font-size:0.75rem; font-weight:800; color:var(--text-main);">Baru saja</span>
                             </div>
                         </div>
-                        <img id="nav-user-photo"
-                            style="width:40px; height:40px; border-radius:12px; border:2px solid var(--primary-soft); background:var(--background);">
-                        <button class="btn-icon glass" id="sync-hub-btn" title="Sync Status" style="position:relative;">
-                            <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
-                            <span id="sync-status-dot" style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
-                        </button>
-                        <button class="btn-icon glass" onclick="logoutSession()" title="Logout"
-                            style="width:36px; height:36px; border-radius:10px; color:var(--text-muted);">
-                            <span class="material-symbols-outlined" style="font-size:18px;">power_settings_new</span>
-                        </button>
+
+                        <!-- Clickable Profile Trigger -->
+                        <div id="profile-dropdown-trigger" onclick="toggleProfileDropdown()" style="display:flex; align-items:center; gap:12px; cursor:pointer; padding:4px 8px; border-radius:14px; transition:all 0.2s;">
+                            <div style="text-align:right;">
+                                <div id="nav-user-name" style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...</div>
+                                <div id="nav-user-role" style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST</div>
+                            </div>
+                            <div style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
+                                <span class="material-symbols-outlined" style="font-size:24px;">person</span>
+                            </div>
+                            <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted);">expand_more</span>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:220px; padding:12px; border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow-lg); z-index:1000;">
+                            <div style="padding:4px 8px 12px; border-bottom:1px solid var(--border); margin-bottom:8px;">
+                                <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase;">PENGATURAN AKUN</span>
+                            </div>
+                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:12px; padding:10px; border:none; background:none; color:var(--text-main); border-radius:12px; cursor:pointer; font-weight:700; font-size:0.85rem; transition:all 0.2s;">
+                                <span class="material-symbols-outlined theme-icon" style="font-size:20px;">dark_mode</span>
+                                <span id="theme-text">Mode Gelap</span>
+                            </button>
+                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:12px; padding:10px; border:none; background:none; color:var(--error); border-radius:12px; cursor:pointer; font-weight:700; font-size:0.85rem; transition:all 0.2s;">
+                                <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+                                Keluar Sesi
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <button class="btn-icon" id="theme-toggle" title="Toggle Tema">
-                    <span class="material-symbols-outlined">dark_mode</span>
-                </button>
             </div>
         </nav>
 
@@ -1248,33 +1261,55 @@
         // --- Firebase Modular SDK Setup ---
         // --- SYNC HUB MANAGER ---
         const syncHub = {
-            state: 'synced',
-            pending: 0,
+            lastSynced: Date.now(),
             update(newState) {
-                this.state = newState;
                 const icon = document.getElementById('sync-icon');
                 const dot = document.getElementById('sync-status-dot');
+                const relTime = document.getElementById('sync-time-rel');
+                
                 if (!icon || !dot) return;
                 
                 if (newState === 'syncing') {
-                    icon.innerText = 'sync';
-                    icon.classList.add('animate-spin');
+                    icon.innerText = 'sync'; icon.classList.add('animate-spin');
                     dot.style.background = '#f59e0b';
-                    dot.style.boxShadow = '0 0 8px #f59e0b';
+                    if (relTime) relTime.innerText = 'Sinkronisasi...';
                 } else if (newState === 'error') {
-                    icon.innerText = 'cloud_off';
-                    icon.classList.remove('animate-spin');
+                    icon.innerText = 'cloud_off'; icon.classList.remove('animate-spin');
                     dot.style.background = 'var(--error)';
-                    dot.style.boxShadow = 'none';
+                    if (relTime) relTime.innerText = 'Gagal sinkron';
                 } else {
-                    icon.innerText = 'cloud_done';
-                    icon.classList.remove('animate-spin');
+                    icon.innerText = 'cloud_done'; icon.classList.remove('animate-spin');
                     dot.style.background = 'var(--secondary)';
-                    dot.style.boxShadow = 'none';
+                    this.lastSynced = Date.now();
+                    this.updateRelTime();
                 }
             },
-            start() { this.pending++; this.update('syncing'); },
-            end() { this.pending = Math.max(0, this.pending - 1); if (this.pending === 0) this.update('synced'); }
+            start() { this.update('syncing'); },
+            end() { this.update('synced'); },
+            updateRelTime() {
+                const relTime = document.getElementById('sync-time-rel');
+                if (!relTime) return;
+                const diff = Math.floor((Date.now() - this.lastSynced) / 60000); // minutes
+                if (diff < 1) relTime.innerText = 'Baru saja';
+                else relTime.innerText = `${diff} menit lalu`;
+            }
+        };
+
+        // Update relative time every minute
+        setInterval(() => syncHub.updateRelTime(), 60000);
+
+        window.toggleProfileDropdown = function() {
+            const menu = document.getElementById('profile-dropdown-menu');
+            const isShowing = menu.style.display === 'block';
+            menu.style.display = isShowing ? 'none' : 'block';
+        };
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.closest('#profile-dropdown-trigger') && !event.target.closest('#profile-dropdown-menu')) {
+                const menu = document.getElementById('profile-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
         };
 
         // --- APPS SCRIPT SYNC BRIDGE ---
@@ -1285,16 +1320,15 @@
                 syncHub.start();
                 try {
                     const res = await fetch(this.url + '?action=pull');
-                    if (!res.ok) throw new Error("Backend Error");
                     const data = await res.json();
                     
-                    if (data.proposals) {
-                        proposals = data.proposals;
-                        localStorage.setItem('grants_proposals', JSON.stringify(proposals));
-                    }
                     if (data.programs) {
                         programs = data.programs;
                         localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                    }
+                    if (data.proposals) {
+                        proposals = data.proposals;
+                        localStorage.setItem('grants_proposals', JSON.stringify(proposals));
                     }
                     if (data.registeredUsers) {
                         registeredUsers = data.registeredUsers;
@@ -1323,9 +1357,9 @@
                 if (!this.url) return;
                 syncHub.start();
                 try {
-                    const res = await fetch(this.url, {
+                    await fetch(this.url, {
                         method: 'POST',
-                        mode: 'no-cors', // Common for Apps Script
+                        mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'push', collection, id, data })
                     });
