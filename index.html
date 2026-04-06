@@ -1658,8 +1658,8 @@
                             <span class="stats-value">${count}</span>
                             <span class="stats-label"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">description</span>Usulan Masuk</span>
                         </div>
-                        <button class="btn-apply" onclick="event.stopPropagation(); window.location.href='entry.html?program=${encodeURIComponent(prog.name)}'">
-                            Daftar Usulan
+                        <button class="btn-apply" onclick="event.stopPropagation(); const url = new URL(window.location); url.searchParams.set('p', '${prog.id}'); url.searchParams.set('tab', 'usulan'); window.location.href = url.toString();">
+                            Buka Program
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </div>
