@@ -26,6 +26,24 @@
         .nav-link.active { color: var(--text-main); }
         .nav-link.active::after { content: ''; position: absolute; bottom: -28px; left: 0; width: 100%; height: 4px; background: var(--primary); border-radius: 10px; }
 
+        /* Global Tabs & Matrix Styles */
+        .main-tabs { display: flex; gap: 2rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem; padding: 0 1rem; }
+        .tab-item { padding: 1rem 0.5rem; font-weight: 800; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; position: relative; }
+        .tab-item:hover { color: var(--primary); }
+        .tab-item.active { color: var(--text-main); }
+        .tab-item.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 10px; }
+
+        /* Permission Matrix Selects */
+        .perm-select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--background); font-weight: 700; font-size: 0.75rem; cursor: pointer; outline: none; }
+        .perm-select.full { color: var(--secondary); border-color: var(--secondary-soft); background: var(--secondary-soft); }
+        .perm-select.read { color: var(--primary); border-color: var(--primary-soft); background: var(--primary-soft); }
+        .perm-select.none { color: var(--error); border-color: var(--error-soft); background: var(--error-soft); }
+
+        /* Data Tables */
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { padding: 1.25rem 1.5rem; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; background: var(--background); }
+        .data-table td { padding: 1.5rem; border-top: 1px solid var(--border); }
+
         /* Logo & Branding */
         .logo { display: flex; align-items: center; gap: 1rem; text-decoration: none; flex-shrink: 0; }
         .logo-text-pro { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--primary); letter-spacing: -0.02em; }
