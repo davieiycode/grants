@@ -40,14 +40,16 @@
 }
 
 [data-theme="dark"] {
+    --primary: #5A7EA0;
+    --primary-hover: #729BC4;
+    --primary-soft: rgba(90, 126, 160, 0.2);
     --background: #08080c;
-    --surface: #1a2331;
+    --surface: #121217;
     --text-main: #fef6eb;
-    --text-muted: #4A6A7A;
+    --text-muted: #8FA4B0;
     --border: #243044;
     --paper-edge: #1a2331;
-    --primary-soft: rgba(255, 178, 124, 0.15);
-    --shadow-paper: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --shadow-paper: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 /* Base Styles */
