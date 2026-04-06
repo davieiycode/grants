@@ -16,7 +16,7 @@
         /* Component Specific Overrides */
         nav {
             padding: 1rem 5%;
-            background: rgba(255, 255, 255, 0.85);
+            background: var(--surface);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -107,7 +107,7 @@
         .tab-header {
             display: flex;
             border-bottom: 1px solid var(--border);
-            background: rgba(0, 0, 0, 0.02);
+            background: var(--background);
             padding: 0 2rem;
         }
 
@@ -135,8 +135,13 @@
             transition: var(--transition);
             padding: 8px 16px;
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.02);
+            background: var(--background);
             border: 1px solid var(--border);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
         }
 
         .back-btn:hover {

@@ -7,7 +7,7 @@
     <title>Usulan Program Sederhana</title>
     <!-- Google Fonts & Icons -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
         rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
@@ -51,18 +51,58 @@
             border-color: rgba(255, 255, 255, 0.05);
         }
 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .logo-text-pro {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text-space {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--text-main);
+            font-style: italic;
+            margin-left: -2px;
+        }
+
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 6px 16px var(--primary-soft);
+        }
+
         header {
             text-align: center;
             margin-bottom: 3.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
         }
 
         header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
             color: var(--text-main);
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.02em;
+            font-size: 2.75rem;
+            margin: 0;
+            letter-spacing: -0.01em;
         }
 
         .subtitle {
@@ -204,8 +244,17 @@
         </div>
 
         <header>
-            <h1>Formulir Usulan</h1>
-            <p class="subtitle">Silakan isi detail usulan untuk memulai.</p>
+            <div class="logo">
+                <div class="logo-icon"><span class="material-symbols-outlined" style="font-size:32px;">rocket_launch</span></div>
+                <div style="display:flex; align-items:baseline;">
+                    <span class="logo-text-pro">Pro</span>
+                    <span class="logo-text-space">Space</span>
+                </div>
+            </div>
+            <div>
+                <h1>Formulir Usulan</h1>
+                <p class="subtitle">Silakan isi detail usulan melalui sistem terpadu <strong>ProSpace</strong>.</p>
+            </div>
         </header>
 
         <div class="stepper">
@@ -260,7 +309,7 @@
                 </div>
 
                 <!-- Name Preview Card -->
-                <div id="name-preview" class="stat-card glass" style="margin-top: 2rem; display: none; background: rgba(99, 102, 241, 0.05); padding: 1.25rem;">
+                <div id="name-preview" class="stat-card glass" style="margin-top: 2rem; display: none; background: var(--primary-soft); padding: 1.25rem;">
                     <div class="stat-icon" style="background: var(--primary); color: white;">
                         <span class="material-symbols-outlined">person</span>
                     </div>
@@ -517,7 +566,7 @@
 
         <!-- Modal Member -->
         <div id="member-modal" class="modal-overlay" style="display:none; align-items:center; justify-content:center;">
-             <div class="glass" style="width:500px; background:white; border-radius:24px; padding:2rem; border:1px solid var(--border); box-shadow:var(--shadow-lg);">
+             <div class="glass" style="width:500px; background:var(--surface); border-radius:24px; padding:2rem; border:1px solid var(--border); box-shadow:var(--shadow-lg);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                     <h3 style="margin:0; font-family:'Outfit'; font-weight:800;">Tambah Anggota Tim</h3>
                     <button class="btn-icon" onclick="closeMemberModal()"><span class="material-symbols-outlined">close</span></button>
