@@ -113,37 +113,49 @@
 
     <!-- CORE LOGIC & MODULAR ENGINES -->
     <script>
-        const APP_VERSION = "v2.7.0";
+        // Global State
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
         var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
         var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
-        var globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
         var globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || {};
         var currentUser = JSON.parse(localStorage.getItem('grants_current_user'));
-
-        const defaultPermissions = {
-            'Superadmin': { programs: 2, users: 2, analysis: 2, finance: 2, settings: 2, view_logs: 2 },
-            'Admin': { programs: 2, users: 1, analysis: 2, finance: 2, settings: 1, view_logs: 1 },
-            'Reviewer': { programs: 0, users: 0, analysis: 1, finance: 0, settings: 0, view_logs: 0 }
-        };
     </script>
+
     <script src="cloudSync.js"></script>
     <script src="programManager.js"></script>
     <script src="userManager.js"></script>
     <script src="proposalManager.js"></script>
 
     <script>
-        // --- Glue Logic & Initialization ---
-        function showToast(msg) {
+        // --- Glue Logic & Global Hubs ---
+        const APP_VERSION = "v2.7.0";
+
+        window.showToast = function(msg) {
             const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
-            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-100px)'; }, 3000);
-        }
+            const m = document.getElementById('toast-msg');
+            if (t && m) {
+                m.innerText = msg;
+                t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+                setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-100px)'; }, 3000);
+            }
+        };
 
         window.applyTheme = function(theme) {
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('grants_theme', theme);
+        };
+
+        window.toggleTheme = function() {
+            const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            window.applyTheme(current);
+        };
+
+        window.toggleProfileDropdown = function() {
+            const menu = document.getElementById('profile-dropdown-menu');
+            if (menu) {
+                const isShowing = menu.style.display === 'block';
+                menu.style.display = isShowing ? 'none' : 'block';
+            }
         };
 
         window.switchMainView = function(view) {
@@ -151,35 +163,77 @@
             document.getElementById('global-users-view').style.display = view === 'users' ? 'block' : 'none';
             document.getElementById('global-guide-view').style.display = view === 'guide' ? 'block' : 'none';
             document.getElementById('program-dashboard').style.display = 'none';
-            if (view === 'users') window.renderUsers();
+            document.getElementById('proposal-detail-view').style.display = 'none';
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            if (view === 'program') document.querySelector('.nav-link[onclick*="program"]').classList.add('active');
+            if (view === 'users') {
+                document.querySelector('.nav-link[onclick*="users"]').classList.add('active');
+                if (window.renderUsers) window.renderUsers();
+            }
+        };
+
+        window.openModal = function(title, contentHtml) {
+            const overlay = document.getElementById('modal-overlay');
+            const body = document.getElementById('modal-body');
+            const titleEl = document.getElementById('modal-title');
+            if (overlay && body && titleEl) {
+                titleEl.innerText = title;
+                body.innerHTML = contentHtml;
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('show'), 10);
+            }
+        };
+
+        window.closeModal = function() {
+            const overlay = document.getElementById('modal-overlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
         };
 
         window.renderDashboard = function() {
             const grid = document.getElementById('program-grid');
-            grid.innerHTML = programs.map(p => `
-                <div class="program-card glass animate-fade-in" onclick="renderProgramDashboard('${p.id}')">
-                    <div class="program-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
-                    <h2>${p.name}</h2>
-                    <p>${p.desc || ''}</p>
-                    <div class="program-footer"><span>${p.status || 'Aktif'}</span></div>
-                </div>
-            `).join('');
+            if (grid) {
+                grid.innerHTML = programs.map(p => `
+                    <div class="program-card glass animate-fade-in" onclick="renderProgramDashboard('${p.id}')">
+                        <div class="program-icon"><span class="material-symbols-outlined">${p.icon || 'rocket_launch'}</span></div>
+                        <h2 style="font-family:'Outfit';">${p.name}</h2>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">${p.desc || 'No description available.'}</p>
+                        <div class="program-footer">
+                            <span class="status-badge">AKTIF</span>
+                            <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px;">arrow_forward</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
         };
 
-        async function startAppWithSync() {
+        window.startAppWithSync = async function() {
             const email = document.getElementById('login-email').value;
-            const url = localStorage.getItem('grants_appscript_url') || document.getElementById('login-appscript-url').value;
-            if (!email || !url) return alert("Isi data login!");
+            const url = document.getElementById('login-appscript-url').value || localStorage.getItem('grants_appscript_url');
+            if (!email || !url) return alert("Silakan isi data login & Apps Script URL!");
             
             localStorage.setItem('grants_appscript_url', url);
-            cloudSync.url = url;
-            const data = await cloudSync.pull();
+            window.cloudSync.url = url;
+            window.showToast("Menghubungkan ke server...");
+            
+            const data = await window.cloudSync.pull();
             if (data) {
-                currentUser = data.registeredUsers.find(u => u.email === email) || { name: email, email, role: 'Superadmin' };
+                currentUser = (data.registeredUsers || []).find(u => u.email === email) || { name: email.split('@')[0], email, role: 'Superadmin' };
                 localStorage.setItem('grants_current_user', JSON.stringify(currentUser));
                 location.reload();
+            } else {
+                alert("Gagal sinkron! Pastikan URL Apps Script benar.");
             }
-        }
+        };
+
+        window.logoutSession = function() {
+            localStorage.removeItem('grants_current_user');
+            localStorage.removeItem('grants_appscript_url');
+            location.reload();
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
@@ -187,13 +241,22 @@
                 document.getElementById('main-app-container').style.display = 'block';
                 document.getElementById('nav-user-name').innerText = currentUser.name;
                 document.getElementById('nav-user-role').innerText = currentUser.role;
-                renderDashboard();
-                if (cloudSync.url) cloudSync.pull();
+                window.renderDashboard();
+                if (window.cloudSync.url) window.cloudSync.pull();
             } else {
                 if (!localStorage.getItem('grants_appscript_url')) document.getElementById('login-appscript-url').style.display = 'block';
             }
-            if (localStorage.getItem('grants_theme')) applyTheme(localStorage.getItem('grants_theme'));
+            const savedTheme = localStorage.getItem('grants_theme');
+            if (savedTheme) window.applyTheme(savedTheme);
         });
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.closest('#profile-dropdown-trigger') && !event.target.closest('#profile-dropdown-menu')) {
+                const menu = document.getElementById('profile-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>
