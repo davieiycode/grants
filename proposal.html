@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Usulan | Grants Portal</title>
+    <title>ProSpace | Detail Usulan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="index.css">
@@ -31,17 +31,30 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--primary);
             text-decoration: none;
+        }
+
+        .logo-text-pro {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text-space {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            font-style: italic;
+            margin-left: -2px;
         }
 
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -240,8 +253,11 @@
 <body>
     <nav>
         <a href="index.html" class="logo">
-            <div class="logo-icon"><span class="material-symbols-outlined">description</span></div>
-            <span>Grants Portal</span>
+            <div class="logo-icon"><span class="material-symbols-outlined" style="font-size:24px;">rocket_launch</span></div>
+            <div style="display:flex; align-items:baseline;">
+                <span class="logo-text-pro">Pro</span>
+                <span class="logo-text-space">Space</span>
+            </div>
         </a>
         <div class="nav-actions" style="display:flex; align-items:center; gap:1.25rem;">
             <div id="user-profile-nav" style="display:flex; align-items:center; gap:12px; position:relative;">
