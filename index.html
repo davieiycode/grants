@@ -1414,8 +1414,18 @@
             
             if (data && data.registeredUsers) {
                 // Find user by email and matching password (if present in sheet)
-                const user = data.registeredUsers.find(u => u.email === email);
-                if (!user) return alert("User tidak terdaftar di sistem!");
+                let user = data.registeredUsers.find(u => u.email === email);
+                
+                if (!user) {
+                    // AUTO-REGISTER FIRST USER
+                    if (data.registeredUsers.length === 0 || email === 'rafieiy.m@gmail.com') {
+                        showToast("Pendaftaran Superadmin Pertama...");
+                        user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
+                        await window.fbSave("registeredUsers", email, user);
+                    } else {
+                        return alert("Email tidak terdaftar di sistem Spreadsheet. Silakan hubungi admin!");
+                    }
+                }
                 
                 // If password column exists in sheet, check it
                 if (user.password && user.password != password) return alert("Password salah!");
@@ -1425,9 +1435,11 @@
                 showToast(`Selamat datang, ${user.name}!`);
                 location.reload();
             } else if (data) {
-                // Fallback if no users sheet yet
-                const userData = { id: Date.now(), name: email.split('@')[0], email, role: 'Pengusul', unit: 'Fakultas Teknik' };
-                if (email === 'rafieiy.m@gmail.com') userData.role = 'Superadmin';
+                // Fallback if NO registeredUsers array at all (e.g. empty spreadsheet)
+                showToast("Membuat profil Superadmin...");
+                const userData = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
+                await window.fbSave("registeredUsers", email, userData);
+                
                 currentUser = userData;
                 localStorage.setItem('grants_current_user', JSON.stringify(userData));
                 location.reload();
