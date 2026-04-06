@@ -412,7 +412,7 @@
                     <input type="password" id="login-password" class="f-input" placeholder="••••••••" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
                 <div class="f-group" id="group-appscript-url" style="display:none;">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Apps Script API URL</label>
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Apps Script API URL (Setup Administrator)</label>
                     <input type="url" id="login-appscript-url" class="f-input" placeholder="https://script.google.com/macros/s/.../exec" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
             </div>
@@ -1414,6 +1414,13 @@
 
         // On Start: Check Session & URL Params
         document.addEventListener('DOMContentLoaded', () => {
+            // Secret setups: index.html?pii or ?config=true
+            const params = new URLSearchParams(window.location.search);
+            const setupField = document.getElementById('group-appscript-url');
+            if (params.has('pii') || params.get('config') === 'true' || params.get('setup') === '1' || !localStorage.getItem('grants_appscript_url')) {
+                if(setupField) setupField.style.display = 'block';
+            }
+
             // Inject App Version
             document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
             
@@ -3408,7 +3415,7 @@
                                 </div>
                             </div>
                             <div style="flex-shrink:0;">
-                                <select id="program-review-mode" class="f-input" style="min-width:240px; height:48px; font-weight:800; border-radius:12px; border:2px solid var(--border);" onchange="enableSave()">
+                                <select id="program-review-mode" class="f-input" style="min-width:240px; height:48px; font-weight:800; border-radius:12px; border:2px solid var(--border);" onchange="saveReviewSettings()">
                                     <option value="open" ${program.reviewMode === 'open' ? 'selected' : ''}>Open (Terbuka Umum)</option>
                                     <option value="single-blind" ${program.reviewMode === 'single-blind' ? 'selected' : ''}>Single Blind (Reviewer melihat Pengusul)</option>
                                     <option value="double-blind" ${program.reviewMode === 'double-blind' ? 'selected' : ''}>Double Blind (Saling Rahasia)</option>
@@ -4028,12 +4035,17 @@
             const program = programs.find(p => p.id == progId);
             if (!program.reviewTemplate) program.reviewTemplate = [];
             program.reviewTemplate.push({ label: "Indikator Baru", type: "number", weight: 0, max: 100 });
+            saveReviewSettings(); // Auto-save on addition
             switchSettingSubTab('review');
         }
 
         function updateReviewInd(idx, key, val) {
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate[idx][key] = val;
+            
+            // Auto-save on every update
+            saveReviewSettings(); 
+            
             // Re-render if type, options, formula, or weight changed
             const keysToReRender = ['type', 'options', 'formula', 'weight'];
             if (keysToReRender.includes(key)) switchSettingSubTab('review');
@@ -4041,7 +4053,10 @@
 
         function deleteReviewInd(idx) {
             const program = programs.find(p => p.id == progId);
+            if (!confirm("Hapus indikator penilaian ini?")) return;
             program.reviewTemplate.splice(idx, 1);
+            showToast("Menghapus & mensinkronkan...");
+            saveReviewSettings(); // Auto-save to cloud
             switchSettingSubTab('review');
         }
 
@@ -4051,11 +4066,13 @@
                 const modeEl = document.getElementById('program-review-mode');
                 if (modeEl) program.reviewMode = modeEl.value;
 
+                console.log("CloudSync: Pushing review template update...");
                 window.fbSave('programs', program.id, program);
+                
                 if (typeof addProgramLog === 'function') {
-                    addProgramLog(progId, 'CONFIG', `Mengubah pengaturan penilaian dan mode review.`);
+                    addProgramLog(progId, 'CONFIG', `Mengaktifkan sinkronisasi otomatis untuk indikator penilaian.`);
                 }
-                showToast("Pengaturan penilaian berhasil disimpan!");
+                showToast("Pengaturan tersimpan & sinkron ke Spreadsheet!");
             }
         }
 
