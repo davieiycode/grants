@@ -5065,20 +5065,40 @@
         window.renderPropMembersList = function () {
             const list = document.getElementById('prop-members-list');
             if (!list) return '';
-            list.innerHTML = (window.tempProposalMembers || []).map((m, idx) => `
+            list.innerHTML = (window.tempProposalMembers || []).map((m, idx) => {
+                const isFirst = idx === 0;
+                const isCorr = m.isCorresponding;
+                const roleLabel = isFirst ? 'FIRST AUTHOR' : (isCorr ? 'CORRESPONDING' : '');
+                
+                return `
                 <div draggable="true" ondragstart="window.onPropMemberDragStart(event, ${idx})" ondragover="event.preventDefault()" ondrop="window.onPropMemberDrop(event, ${idx})" class="draggable-member" style="display:flex; align-items:center; gap:1rem; padding:0.75rem 1rem; background:white; border:1px solid var(--border); border-radius:12px; margin-bottom:8px; cursor:grab;">
                     <div style="width:24px; height:24px; color:var(--text-muted); cursor:grab;">
                         <span class="material-symbols-outlined" style="font-size:20px;">drag_indicator</span>
                     </div>
-                    <div style="width:32px; height:32px; border-radius:50%; background:${idx === 0 ? 'var(--primary)' : 'var(--primary-soft)'}; color:${idx === 0 ? 'white' : 'var(--primary)'}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.7rem;">${idx === 0 ? 'K' : idx + 1}</div>
+                    <div style="width:32px; height:32px; border-radius:50%; background:${isFirst ? 'var(--primary)' : 'var(--background)'}; color:${isFirst ? 'white' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; border:1px solid ${isFirst ? 'var(--primary)' : 'var(--border)'};">${idx + 1}</div>
                     <div style="flex:1;">
                         <div style="font-weight:800; font-size:0.85rem; color:var(--text-main);">${m.name}</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">${m.unit} • ${m.role}</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600; display:flex; align-items:center; gap:8px;">
+                            ${m.unit}
+                            ${isFirst ? '<span style="color:var(--primary); font-weight:900;">• FIRST AUTHOR</span>' : ''}
+                            ${isCorr ? '<span style="color:var(--secondary); font-weight:900;">• CORRESPONDING</span>' : ''}
+                        </div>
                     </div>
-                    ${idx === 0 ? '' : `<button class="btn-icon" onclick="window.tempProposalMembers.splice(${idx},1); window.renderPropMembersList();" style="color:var(--error); border:none;"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>`}
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <button class="btn-icon" onclick="window.toggleCorresponding(${idx})" title="Tandai Korespondensi" style="color:${isCorr ? 'var(--secondary)' : 'var(--text-muted)'}; border:none; opacity:${isCorr ? '1' : '0.4'};">
+                            <span class="material-symbols-outlined" style="font-size:18px;">mail</span>
+                        </button>
+                        ${isFirst ? '' : `<button class="btn-icon" onclick="window.tempProposalMembers.splice(${idx},1); window.renderPropMembersList();" style="color:var(--error); border:none; opacity:0.6;"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>`}
+                    </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             return list.innerHTML;
+        };
+
+        window.toggleCorresponding = function(idx) {
+            window.tempProposalMembers[idx].isCorresponding = !window.tempProposalMembers[idx].isCorresponding;
+            window.renderPropMembersList();
         };
 
         window.triggerPropFileUpload = function (inputId) {
@@ -5141,12 +5161,10 @@
                                 <div id="member-suggestions" class="glass" style="display:none; position:absolute; top:100%; left:0; right:0; z-index:100; margin-top:5px; border-radius:12px; border:1px solid var(--border); max-height:150px; overflow-y:auto; box-shadow:var(--shadow-lg);"></div>
                             </div>
                             <div class="f-group" style="margin-top:10px;">
-                                <label class="f-label">Peran Anggota</label>
-                                <select id="member-role" class="f-input">
-                                    <option value="Ketua Pengusul">Ketua Pengusul</option>
-                                    <option value="Anggota Pengusul">Anggota Pengusul</option>
-                                    <option value="Staff Pendukung">Staff Pendukung</option>
-                                </select>
+                                <label class="f-check-label" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                                    <input type="checkbox" id="member-is-corr" style="width:18px; height:18px;">
+                                    Set sebagai Corresponding Author
+                                </label>
                             </div>
                             <div style="display:flex; gap:10px; margin-top:15px;">
                                 <button class="btn-secondary" onclick="document.getElementById('add-member-form').style.display='none'" style="flex:1; height:36px; font-size:0.75rem;">Batal</button>

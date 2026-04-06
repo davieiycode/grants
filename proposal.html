@@ -1396,20 +1396,27 @@
 
                 if (members.length > 0) {
                     authorsList.innerHTML = members.map((m, idx) => {
-                        const isKetua = m.role && m.role.toLowerCase().includes('ketua');
+                        const isFirst = idx === 0;
+                        const isCorr = m.isCorresponding;
+                        
                         return `
                     <div class="glass" style="padding:16px; border-radius:12px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:white;">
                         <div style="display:flex; gap:12px; align-items:center;">
-                            <div style="width:36px; height:36px; border-radius:50%; background:${isKetua ? 'var(--primary-soft)' : 'var(--background)'}; color:${isKetua ? 'var(--primary)' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center;">
-                                <span class="material-symbols-outlined" style="font-size:18px;">${isKetua ? 'person' : 'person_outline'}</span>
+                            <div style="width:36px; height:36px; border-radius:50%; background:${isFirst ? 'var(--primary-soft)' : 'var(--background)'}; color:${isFirst ? 'var(--primary)' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center;">
+                                <span class="material-symbols-outlined" style="font-size:18px;">${isFirst ? 'person' : 'person_outline'}</span>
                             </div>
                             <div>
                                 <div style="font-weight:800; font-size:0.95rem; color:var(--text-main); line-height:1.2;">${m.name}</div>
-                                <div style="font-size:0.7rem; color:var(--text-muted);">${m.unit || '-'} • ${m.role || 'Anggota'}</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+                                    ${m.unit || '-'}
+                                    ${isCorr ? '<span class="material-symbols-outlined" style="font-size:14px; color:var(--secondary);">mail</span>' : ''}
+                                </div>
                             </div>
                         </div>
                         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                            <span class="status-badge" style="font-size:0.6rem; background:${isKetua ? 'var(--primary)' : 'var(--background)'}; color:${isKetua ? 'white' : 'var(--text-muted)'}; border:none;">${(m.role || 'ANGGOTA').toUpperCase()}</span>
+                            ${isFirst ? '<span class="status-badge" style="font-size:0.6rem; background:var(--primary); color:white; border:none;">FIRST AUTHOR</span>' : ''}
+                            ${isCorr ? '<span class="status-badge" style="font-size:0.6rem; background:var(--secondary-soft); color:var(--secondary); border:1px solid var(--secondary);">CORRESPONDING</span>' : ''}
+                            ${!isFirst && !isCorr ? '<span style="font-size:0.6rem; color:var(--text-muted); font-weight:600;">CO-AUTHOR</span>' : ''}
                         </div>
                     </div>
                 `;
@@ -1424,7 +1431,7 @@
                             <div style="font-weight:800; font-size:0.95rem; color:var(--text-main); line-height:1.2;">${currentProposal.proposer}</div>
                             <div style="font-size:0.7rem; color:var(--text-muted);">${currentProposal.unit || '-'}</div>
                         </div>
-                        <span class="status-badge" style="font-size:0.6rem; margin-left:auto;">KETUA PENGUSUL</span>
+                        <span class="status-badge" style="font-size:0.6rem; margin-left:auto;">FIRST AUTHOR</span>
                     </div>
                 `;
                 }
