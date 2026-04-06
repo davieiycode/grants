@@ -69,10 +69,18 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.1;
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
     line-height: 1.2;
     color: var(--text-main);
+    font-weight: 800;
 }
 
 a {
@@ -412,9 +420,9 @@ tr:last-child td {
 
 .stat-value {
     font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-main);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Playfair Display', serif;
 }
 
 /* Forms & Modals Spacing */
@@ -487,9 +495,9 @@ tr:last-child td {
 }
 
 #modal-title {
-    font-family: 'Outfit';
-    font-weight: 800;
-    font-size: 1.4rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.6rem;
 }
 
 /* Responsive Table Refinement */
@@ -690,8 +698,9 @@ input:checked + .slider:before {
 }
 
 .section-header h3 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 700;
+    font-family: 'Playfair Display', serif;
 }
 
 /* Settings Forms */
