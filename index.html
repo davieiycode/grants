@@ -405,29 +405,30 @@
                 Elevate your Research</h1>
             <p
                 style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2.5rem; font-weight:500; text-align:center;">
-                Masuk ke integrasi sistem <strong>ProSpace</strong> untuk kolaborasi hibah yang lebih cerdas.</p>
+                Enter the space to know more.</p>
 
             <!-- Sync Status Indicator -->
             <div id="login-sync-indicator"
                 style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:10px; background:rgba(0,0,0,0.03); margin-bottom:1.5rem; font-size:0.75rem; font-weight:800;">
                 <div id="login-sync-dot" style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></div>
-                <span id="login-sync-text" style="color:var(--text-muted);">Buku tidak ditemukan</span>
+                <span id="login-sync-text" style="color:var(--text-muted);">Book not found</span>
             </div>
 
             <div style="display:grid; gap:1rem; margin-bottom:2rem;">
                 <div class="f-group">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Alamat Email</label>
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Email address</label>
                     <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id"
                         style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
                 <div class="f-group">
                     <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Password</label>
                     <input type="password" id="login-password" class="f-input" placeholder="••••••••"
+                        onkeydown="if(event.key === 'Enter') startAppWithSync()"
                         style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
                 <div class="f-group" id="group-appscript-url" style="display:none;">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8; color:var(--primary);">Book URL (Apps
-                        Script)</label>
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8; color:var(--primary);">Book
+                        Code</label>
                     <input type="url" id="login-appscript-url" class="f-input"
                         placeholder="https://script.google.com/..."
                         style="height:52px; border-radius:14px; background:rgba(99,102,241,0.03); border:1px solid var(--primary-soft);">
@@ -444,7 +445,8 @@
                 © 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Powered by <span
                         class="logo-text-pro" style="font-size:0.7rem;">Pro</span><span class="logo-text-space"
                         style="font-size:0.75rem;">Space</span> <span class="app-version-text"
-                        style="font-style:normal; font-family:'Outfit';">v2.6.9</span></span></p>
+                        style="font-style:normal; font-family:'Outfit';">v2.7.2, developed by Piieroglyph</span></span>
+            </p>
         </div>
     </div>
 
@@ -546,7 +548,7 @@
                                 style="margin-top:12px; padding:12px; text-align:center; border-top:1px dashed var(--border);">
                                 <span
                                     style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM
-                                    MANAJEMEN HIBAH <span class="app-version-text">v2.6.9</span></span>
+                                    MANAJEMEN HIBAH <span class="app-version-text">v2.7.2</span></span>
                             </div>
                         </div>
                     </div>
@@ -818,7 +820,7 @@
         }
 
         // Data & State Management
-        const APP_VERSION = "v2.6.9";
+        const APP_VERSION = "v2.7.2";
 
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
