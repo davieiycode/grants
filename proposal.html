@@ -244,6 +244,10 @@
             <span>Grants Portal</span>
         </a>
         <div style="display:flex; align-items:center; gap:16px;">
+            <button id="sync-hub-btn" class="glass" title="Cloud Sync Status" style="width:40px; height:40px; border-radius:12px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer;">
+                <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
+                <span id="sync-status-dot" style="position:absolute; top:4px; right:4px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
+            </button>
             <span style="font-size:0.85rem; color:var(--text-muted);">Simulasi Login:</span>
             <select id="mock-login" onchange="changeMockUser()"
                 style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.85rem; outline:none;">
@@ -406,18 +410,61 @@
         </div>
     </div>
 
-    <div id="toast" class="toast-container">
-        <span class="material-symbols-outlined" style="font-size:20px;">check_circle</span>
-        <span id="toast-msg">Berhasil diperbarui!</span>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmQ75KAyCqe23COQjN076WKM5qycxAUqg",
+            authDomain: "portal-hibah-pwa.firebaseapp.com",
+            projectId: "portal-hibah-pwa",
+            storageBucket: "portal-hibah-pwa.firebasestorage.app",
+            messagingSenderId: "575171591283",
+            appId: "1:575171591283:web:26e7504bdde7f3fe67fe06",
+            measurementId: "G-J6264D0RHL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const syncHub = {
+            update(newState) {
+                const icon = document.getElementById('sync-icon');
+                const dot = document.getElementById('sync-status-dot');
+                if (!icon || !dot) return;
+                if (newState === 'syncing') {
+                    icon.innerText = 'sync'; icon.classList.add('animate-spin');
+                    dot.style.background = '#f59e0b';
+                } else if (newState === 'error') {
+                    icon.innerText = 'cloud_off'; icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--error)';
+                } else {
+                    icon.innerText = 'cloud_done'; icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--secondary)';
+                }
+            }
+        };
+
+        window.fbSave = async (col, id, data) => {
+            syncHub.update('syncing');
+            try {
+                await setDoc(doc(db, col, id.toString()), data);
+                syncHub.update('synced');
+            } catch (err) {
+                console.error("Firestore Save Error:", err);
+                syncHub.update('error');
+            }
+        };
+    </script>
     <script>
-        const proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
+        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
             { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Approved", allowMultiple: false },
             { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Under Review", allowMultiple: true },
             { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Completed", allowMultiple: false }
         ];
-        const programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
+        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
             {
                 id: '1',
                 name: "Grants 2025",
@@ -1088,9 +1135,12 @@
             }
 
             saveProposalSync();
-            closeModal();
             renderReviews();
-            showToast('Penilaian berhasil disimpan!');
+            closeModal();
+            showToast('Review berhasil disimpan');
+
+            // Sync to Firestore
+            if (window.fbSave) window.fbSave('proposals', currentProposal.id, currentProposal);
         }
 
         function deleteReview(idx) {
@@ -1523,6 +1573,9 @@
             document.getElementById('btn-save').style.opacity = '0.6';
             document.getElementById('btn-save').style.pointerEvents = 'none';
             document.getElementById('disp-status').innerText = newStatus;
+
+            // Sync to Firestore
+            if (window.fbSave) window.fbSave('proposals', currentProposal.id, currentProposal);
         }
 
         function showToast(msg = "Berhasil diperbarui!") {

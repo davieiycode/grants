@@ -434,6 +434,10 @@
                         </div>
                         <img id="nav-user-photo"
                             style="width:40px; height:40px; border-radius:12px; border:2px solid var(--primary-soft); background:var(--background);">
+                        <button class="btn-icon glass" id="sync-hub-btn" title="Cloud Sync Status" style="position:relative;">
+                            <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
+                            <span id="sync-status-dot" style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
+                        </button>
                         <button class="btn-icon glass" onclick="logoutFirebase()" title="Log out"
                             style="width:36px; height:36px; border-radius:10px; color:var(--text-muted);">
                             <span class="material-symbols-outlined" style="font-size:18px;">logout</span>
@@ -840,7 +844,7 @@
         }
 
         // Data & State Management
-        let programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
+        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
             {
                 id: '1',
                 name: "Grants 2025",
@@ -882,7 +886,7 @@
             }
         ];
 
-        let registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [
+        var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [
             { id: 1, name: "Superadmin UGM", unit: "Direktorat IT", role: "Superadmin", email: "rafieiy.m@gmail.com", phone: "08123456789", dept: "Infrastruktur", expertise: "Security" },
             { id: 2, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Editor", email: "siti@univ.ac.id", phone: "08123456788", dept: "Teknik Sipil", expertise: "Struktur Beton" },
             { id: 3, name: "Budi Santoso", unit: "Fakultas Ekonomi", role: "Pengusul", email: "budi@univ.ac.id", phone: "08123456787", dept: "Manajemen", expertise: "Fintech" },
@@ -893,7 +897,7 @@
 
         let currentUser = JSON.parse(localStorage.getItem('grants_currentUser')) || registeredUsers[0];
 
-        let globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
+        var globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
         let recycleBin = JSON.parse(localStorage.getItem('grants_recycle_bin')) || [];
 
         const defaultPermissions = {
@@ -1242,7 +1246,7 @@
 
 
 
-        let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
+        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
 
         // Save default programs if not exists
         if (!localStorage.getItem('grants_programs_meta')) {
@@ -1302,21 +1306,64 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- SYNC HUB MANAGER ---
+        const syncHub = {
+            state: 'synced',
+            pending: 0,
+            update(newState) {
+                this.state = newState;
+                const icon = document.getElementById('sync-icon');
+                const dot = document.getElementById('sync-status-dot');
+                if (!icon || !dot) return;
+                
+                if (newState === 'syncing') {
+                    icon.innerText = 'sync';
+                    icon.classList.add('animate-spin');
+                    dot.style.background = '#f59e0b'; // warning/orange
+                    dot.style.boxShadow = '0 0 8px #f59e0b';
+                } else if (newState === 'error') {
+                    icon.innerText = 'cloud_off';
+                    icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--error)';
+                    dot.style.boxShadow = 'none';
+                } else {
+                    icon.innerText = 'cloud_done';
+                    icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--secondary)'; // success/green
+                    dot.style.boxShadow = 'none';
+                }
+            },
+            start() { 
+                this.pending++; 
+                this.update('syncing'); 
+            },
+            end() { 
+                this.pending = Math.max(0, this.pending - 1);
+                if (this.pending === 0) this.update('synced');
+            }
+        };
+
         // --- CLOUD SYNC BRIDGE ---
         window.fbSave = async (col, id, data) => {
+            syncHub.start();
             try {
                 await setDoc(doc(db, col, id.toString()), data);
+                syncHub.end();
             } catch (err) {
                 console.error("Firestore Save Error:", err);
+                syncHub.update('error');
             }
         };
 
         window.fbDelete = async (col, id) => {
+            syncHub.start();
             try {
                 const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
                 await deleteDoc(doc(db, col, id.toString()));
+                syncHub.end();
             } catch (err) {
                 console.error("Firestore Delete Error:", err);
+                syncHub.update('error');
             }
         };
 
@@ -1330,18 +1377,45 @@
                 action: action,
                 details: details
             };
-            await setDoc(doc(db, "global_logs", logId), logData);
+            window.fbSave("global_logs", logId, logData);
         };
 
-        // Realtime Listeners for Auto-Sync Across Devices
-        onSnapshot(collection(db, "programs"), (snap) => {
-            const list = [];
-            snap.forEach(d => list.push(d.data()));
-            programs = list;
-            localStorage.setItem('grants_programs_meta', JSON.stringify(list));
-            
-            // Refresh UI contextually
-            if (document.getElementById('main-dashboard')?.style.display === 'block' || dashboardView.style.display === 'block') {
+        // Efficient Realtime Listeners using Incremental Updates
+        function setupIncrementalListener(collectionName, localArrayName, localStorageKey, refreshUI) {
+            onSnapshot(collection(db, collectionName), (snap) => {
+                syncHub.start();
+                
+                // Get current local data from the global variable (which should be in sync with localStorage)
+                let currentData = [...(window[localArrayName] || [])];
+                
+                snap.docChanges().forEach((change) => {
+                    const data = change.doc.data();
+                    const key = data.id || data.email;
+                    const idx = currentData.findIndex(item => (item.id || item.email) == key);
+                    
+                    if (change.type === "added" || change.type === "modified") {
+                        if (idx !== -1) currentData[idx] = data;
+                        else currentData.push(data);
+                    } else if (change.type === "removed") {
+                        if (idx !== -1) currentData.splice(idx, 1);
+                    }
+                });
+
+                // Update global variables
+                window[localArrayName] = currentData;
+                localStorage.setItem(localStorageKey, JSON.stringify(currentData));
+                
+                if (typeof refreshUI === 'function') refreshUI();
+                syncHub.end();
+            }, (err) => {
+                console.error(`Listener Error [${collectionName}]:`, err);
+                syncHub.update('error');
+            });
+        }
+
+        // Initialize Listeners
+        setupIncrementalListener("programs", "programs", 'grants_programs_meta', () => {
+             if (document.getElementById('main-dashboard')?.style.display === 'block' || dashboardView.style.display === 'block') {
                 if (typeof renderDashboard === 'function') renderDashboard();
             }
             if (document.getElementById('program-dashboard')?.style.display === 'block') {
@@ -1349,56 +1423,40 @@
             }
         });
 
-        onSnapshot(collection(db, "proposals"), (snap) => {
-            const list = [];
-            snap.forEach(d => list.push(d.data()));
-            proposals = list;
-            localStorage.setItem('grants_proposals', JSON.stringify(list));
-            
-            // Refresh UI contextually
-            if (document.getElementById('program-dashboard')?.style.display === 'block') {
+        setupIncrementalListener("proposals", "proposals", 'grants_proposals', () => {
+             if (document.getElementById('program-dashboard')?.style.display === 'block') {
                 if (typeof renderUsulanTab === 'function') renderUsulanTab();
                 if (typeof renderProgramHeader === 'function') renderProgramHeader();
             }
         });
 
-        onSnapshot(collection(db, "registeredUsers"), (snap) => {
-            const list = [];
-            snap.forEach(d => list.push(d.data()));
-            registeredUsers = list;
-            localStorage.setItem('grants_registeredUsers', JSON.stringify(list));
-            
+        setupIncrementalListener("registeredUsers", "registeredUsers", 'grants_registeredUsers', () => {
             if (document.getElementById('global-users-view')?.style.display === 'block') {
                 const sub = document.querySelector('.side-tab.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'pengelola';
                 if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab(sub);
             }
         });
 
+        setupIncrementalListener("global_blacklist", "globalBlacklist", 'grants_global_blacklist');
+
+        // Logs listener (keep standard query for ordering)
         onSnapshot(query(collection(db, "global_logs"), orderBy("timestamp", "desc")), (snap) => {
+            syncHub.start();
             const list = [];
             snap.forEach(d => list.push(d.data()));
             globalLogs = list;
             if (currentTab === 'logs' || document.getElementById('view-logs')?.style.display === 'block') {
                 if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab('log-akses');
             }
-        });
-
-        onSnapshot(collection(db, "global_blacklist"), (snap) => {
-            const list = [];
-            snap.forEach(d => list.push(d.data()));
-            globalBlacklist = list;
-            localStorage.setItem('grants_global_blacklist', JSON.stringify(list));
+            syncHub.end();
         });
 
         onSnapshot(doc(db, "settings", "global_permissions"), (snap) => {
             if (snap.exists()) {
                 globalPermissions = snap.data().permissions;
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-                // Optional: Refresh any active permission-heavy view
             }
         });
-
-        // Export Auth Functions to Global Window Scope
 
         // Export Auth Functions to Global Window Scope
         window.loginWithGoogle = function () {

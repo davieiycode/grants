@@ -193,9 +193,15 @@
 <body data-theme="light">
 
     <div class="container">
-        <button id="theme-toggle">
-            <span class="material-symbols-outlined">dark_mode</span>
-        </button>
+        <div style="position: absolute; top: 2rem; right: 2rem; display:flex; gap:12px;">
+            <button id="sync-hub-btn" class="glass" title="Cloud Sync Status" style="width:44px; height:44px; border-radius:50%; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; position:relative;">
+                <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
+                <span id="sync-status-dot" style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
+            </button>
+            <button id="theme-toggle">
+                <span class="material-symbols-outlined">dark_mode</span>
+            </button>
+        </div>
 
         <header>
             <h1>Formulir Usulan</h1>
@@ -552,13 +558,13 @@
         ];
 
         // Persistent Programs & Proposals meta
-        let programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
+        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
             { id: '1', name: "Grants 2025", allowMultiple: false },
             { id: '2', name: "Riset Unggulan", allowMultiple: true },
             { id: '3', name: "Abdimas 2024", allowMultiple: false }
         ];
 
-        let proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
+        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
             { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Approved", allowMultiple: false },
             { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Under Review", allowMultiple: true },
             { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Completed", allowMultiple: false }
@@ -1306,7 +1312,6 @@
             };
             tempInput.click();
         }
-
         function validateCurrentStep() {
             const step1Visible = document.getElementById('step-1').style.display !== 'none';
             const step2Visible = document.getElementById('step-2').style.display !== 'none';
@@ -1343,6 +1348,68 @@
             }
         }
 
+        // --- Firebase Modular SDK Setup ---
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmQ75KAyCqe23COQjN076WKM5qycxAUqg",
+            authDomain: "portal-hibah-pwa.firebaseapp.com",
+            projectId: "portal-hibah-pwa",
+            storageBucket: "portal-hibah-pwa.firebasestorage.app",
+            messagingSenderId: "575171591283",
+            appId: "1:575171591283:web:26e7504bdde7f3fe67fe06",
+            measurementId: "G-J6264D0RHL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const syncHub = {
+            update(newState) {
+                const icon = document.getElementById('sync-icon');
+                const dot = document.getElementById('sync-status-dot');
+                if (!icon || !dot) return;
+                if (newState === 'syncing') {
+                    icon.innerText = 'sync'; icon.classList.add('animate-spin');
+                    dot.style.background = '#f59e0b';
+                } else if (newState === 'error') {
+                    icon.innerText = 'cloud_off'; icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--error)';
+                } else {
+                    icon.innerText = 'cloud_done'; icon.classList.remove('animate-spin');
+                    dot.style.background = 'var(--secondary)';
+                }
+            }
+        };
+
+        window.fbSave = async (col, id, data) => {
+            syncHub.update('syncing');
+            try {
+                await setDoc(doc(db, col, id.toString()), data);
+                syncHub.update('synced');
+            } catch (err) {
+                console.error("Firestore Save Error:", err);
+                syncHub.update('error');
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // If not logged in, they can't sync, but we let them fill the form
+                // In a real app, maybe redirect to login
+            }
+        });
+
+        // Add to main global scope
+        window.db = db;
+    </script>
+    <script>
+
         const originalSubmitProposal = submitProposal;
         submitProposal = function() {
             // Collect custom data
@@ -1366,13 +1433,14 @@
                 const idx = proposals.findIndex(p => p.id == editId);
                 if (idx !== -1) {
                     proposals[idx].customData = customData;
+                    if (window.fbSave) window.fbSave('proposals', editId, proposals[idx]);
                 }
             } else {
-                // The actual push is inside originalSubmitProposal, but we don't have direct access to its closure nicely
-                // So we'll let it run and then update the last item
                 originalSubmitProposal();
-                proposals[proposals.length-1].customData = customData;
+                const newP = proposals[proposals.length-1];
+                newP.customData = customData;
                 saveProposals();
+                if (window.fbSave) window.fbSave('proposals', newP.id, newP);
                 return;
             }
             originalSubmitProposal();
