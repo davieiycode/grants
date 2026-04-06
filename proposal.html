@@ -410,25 +410,7 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDmQ75KAyCqe23COQjN076WKM5qycxAUqg",
-            authDomain: "portal-hibah-pwa.firebaseapp.com",
-            projectId: "portal-hibah-pwa",
-            storageBucket: "portal-hibah-pwa.firebasestorage.app",
-            messagingSenderId: "575171591283",
-            appId: "1:575171591283:web:26e7504bdde7f3fe67fe06",
-            measurementId: "G-J6264D0RHL"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
+    <script>
         const syncHub = {
             update(newState) {
                 const icon = document.getElementById('sync-icon');
@@ -447,16 +429,25 @@
             }
         };
 
-        window.fbSave = async (col, id, data) => {
-            syncHub.update('syncing');
-            try {
-                await setDoc(doc(db, col, id.toString()), data);
-                syncHub.update('synced');
-            } catch (err) {
-                console.error("Firestore Save Error:", err);
-                syncHub.update('error');
+        window.cloudSync = {
+            url: localStorage.getItem('grants_appscript_url'),
+            async push(collection, id, data) {
+                if (!this.url) return;
+                syncHub.update('syncing');
+                try {
+                    await fetch(this.url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify({ action: 'push', collection, id, data })
+                    });
+                    syncHub.update('synced');
+                } catch (e) {
+                    syncHub.update('error');
+                }
             }
         };
+
+        window.fbSave = (col, id, data) => cloudSync.push(col, id, data);
     </script>
     <script>
         var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [

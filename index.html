@@ -370,22 +370,35 @@
     <div id="login-gate">
         <div class="login-card animate-fade-in">
             <div
-                style="width:72px; height:72px; background:var(--primary); border-radius:22px; display:flex; align-items:center; justify-content:center; color:white; margin:0 auto 2rem; box-shadow:0 10px 20px var(--primary-soft);">
+                style="width:72px; height:72px; background:var(--primary); border-radius:24px; display:flex; align-items:center; justify-content:center; color:white; margin:0 auto 2rem; box-shadow:0 10px 30px var(--primary-soft);">
                 <span class="material-symbols-outlined" style="font-size:40px;">description</span>
             </div>
             <h1
-                style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.03em; color:var(--text-main); margin-bottom:0.5rem;">
-                Portal Hibah PWA</h1>
-            <p style="color:var(--text-muted); font-size:1rem; margin-bottom:2.5rem; font-weight:500;">Silakan login
-                dengan Google untuk mengakses sistem dashboard.</p>
+                style="font-family:'Outfit'; font-size:2.25rem; font-weight:900; letter-spacing:-0.03em; color:var(--text-main); margin-bottom:0.5rem; text-align:center;">
+                Grants Portal</h1>
+            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2.5rem; font-weight:500; text-align:center;">Selamat datang kembali! Silakan hubungkan dengan backend sistem Anda.</p>
 
-            <button onclick="loginWithGoogle()"
-                style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:white; color:var(--text-main); border:1px solid var(--border); padding:14px; border-radius:16px; font-weight:850; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); transition:all 0.2s;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
-                Login with Google Account
+            <div style="display:grid; gap:1rem; margin-bottom:2rem;">
+                <div class="f-group">
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Nama Lengkap</label>
+                    <input type="text" id="login-name" class="f-input" placeholder="Contoh: Dr. Andi Wijaya" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
+                </div>
+                <div class="f-group">
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Alamat Email</label>
+                    <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
+                </div>
+                <div class="f-group">
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Apps Script API URL</label>
+                    <input type="url" id="login-appscript-url" class="f-input" placeholder="https://script.google.com/macros/s/.../exec" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
+                </div>
+            </div>
+
+            <button onclick="startAppWithSync()" id="btn-login-sync"
+                style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:var(--primary); color:white; border:none; padding:16px; border-radius:16px; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft); transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+                <span class="material-symbols-outlined">sync</span>
+                Masuk & Sinkron Awal
             </button>
-            <p style="margin-top:2rem; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.6;">© 2026
-                Universitas Gadjah Mada. All rights reserved.</p>
+            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br>Sistem Manajemen Hibah Mandiri.</p>
         </div>
     </div>
 
@@ -415,15 +428,12 @@
                         style="background:var(--error); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.75rem; font-weight:900; letter-spacing:0.02em; transition:all 0.2s;">EXIT</button>
                 </div>
 
-                <!-- Firebase Auth UI -->
+                <!-- Backend Sync UI -->
                 <div id="auth-container" style="display:flex; align-items:center; gap:1rem;">
-                    <button id="btn-google-login" onclick="loginWithGoogle()"
-                        style="display:flex; align-items:center; gap:10px; background:white; color:var(--text-main); border:1px solid var(--border); padding:8px 16px; border-radius:12px; font-weight:800; font-size:0.85rem; cursor:pointer; box-shadow:var(--shadow-sm); transition:all 0.2s;">
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
-                            height="18">
-                        Login with Google
-                    </button>
                     <div id="user-profile-nav" style="display:none; align-items:center; gap:12px;">
+                        <button class="btn-icon glass" onclick="cloudSync.pull()" title="Sync from Cloud" style="width:40px; height:40px; background:var(--primary-soft); color:var(--primary); border:1px solid rgba(99,102,241,0.2);">
+                            <span class="material-symbols-outlined" style="font-size:22px;">cloud_download</span>
+                        </button>
                         <div style="text-align:right;">
                             <div id="nav-user-name"
                                 style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...
@@ -434,13 +444,13 @@
                         </div>
                         <img id="nav-user-photo"
                             style="width:40px; height:40px; border-radius:12px; border:2px solid var(--primary-soft); background:var(--background);">
-                        <button class="btn-icon glass" id="sync-hub-btn" title="Cloud Sync Status" style="position:relative;">
+                        <button class="btn-icon glass" id="sync-hub-btn" title="Sync Status" style="position:relative;">
                             <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
                             <span id="sync-status-dot" style="position:absolute; top:8px; right:8px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
                         </button>
-                        <button class="btn-icon glass" onclick="logoutFirebase()" title="Log out"
+                        <button class="btn-icon glass" onclick="logoutSession()" title="Logout"
                             style="width:36px; height:36px; border-radius:10px; color:var(--text-muted);">
-                            <span class="material-symbols-outlined" style="font-size:18px;">logout</span>
+                            <span class="material-symbols-outlined" style="font-size:18px;">power_settings_new</span>
                         </button>
                     </div>
                 </div>
@@ -1283,29 +1293,6 @@
 
         // Routing & Initialization
         // --- Firebase Modular SDK Setup ---
-    </script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDmQ75KAyCqe23COQjN076WKM5qycxAUqg",
-            authDomain: "portal-hibah-pwa.firebaseapp.com",
-            projectId: "portal-hibah-pwa",
-            storageBucket: "portal-hibah-pwa.firebasestorage.app",
-            messagingSenderId: "575171591283",
-            appId: "1:575171591283:web:26e7504bdde7f3fe67fe06",
-            measurementId: "G-J6264D0RHL"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
         // --- SYNC HUB MANAGER ---
         const syncHub = {
             state: 'synced',
@@ -1319,7 +1306,7 @@
                 if (newState === 'syncing') {
                     icon.innerText = 'sync';
                     icon.classList.add('animate-spin');
-                    dot.style.background = '#f59e0b'; // warning/orange
+                    dot.style.background = '#f59e0b';
                     dot.style.boxShadow = '0 0 8px #f59e0b';
                 } else if (newState === 'error') {
                     icon.innerText = 'cloud_off';
@@ -1329,235 +1316,147 @@
                 } else {
                     icon.innerText = 'cloud_done';
                     icon.classList.remove('animate-spin');
-                    dot.style.background = 'var(--secondary)'; // success/green
+                    dot.style.background = 'var(--secondary)';
                     dot.style.boxShadow = 'none';
                 }
             },
-            start() { 
-                this.pending++; 
-                this.update('syncing'); 
+            start() { this.pending++; this.update('syncing'); },
+            end() { this.pending = Math.max(0, this.pending - 1); if (this.pending === 0) this.update('synced'); }
+        };
+
+        // --- APPS SCRIPT SYNC BRIDGE ---
+        window.cloudSync = {
+            url: localStorage.getItem('grants_appscript_url'),
+            async pull() {
+                if (!this.url) return;
+                syncHub.start();
+                try {
+                    const res = await fetch(this.url + '?action=pull');
+                    if (!res.ok) throw new Error("Backend Error");
+                    const data = await res.json();
+                    
+                    if (data.proposals) {
+                        proposals = data.proposals;
+                        localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+                    }
+                    if (data.programs) {
+                        programs = data.programs;
+                        localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                    }
+                    if (data.registeredUsers) {
+                        registeredUsers = data.registeredUsers;
+                        localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+                    }
+                    if (data.global_blacklist) {
+                        globalBlacklist = data.global_blacklist;
+                        localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
+                    }
+                    if (data.global_permissions) {
+                        globalPermissions = data.global_permissions;
+                        localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+                    }
+
+                    renderDashboard();
+                    syncHub.end();
+                    return data;
+                } catch (e) {
+                    console.error("Pull Sync Failed:", e);
+                    syncHub.update('error');
+                    return null;
+                }
             },
-            end() { 
-                this.pending = Math.max(0, this.pending - 1);
-                if (this.pending === 0) this.update('synced');
+            async push(collection, id, data) {
+                if (!this.url) return;
+                syncHub.start();
+                try {
+                    const res = await fetch(this.url, {
+                        method: 'POST',
+                        mode: 'no-cors', // Common for Apps Script
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'push', collection, id, data })
+                    });
+                    syncHub.end();
+                } catch (e) {
+                    console.error("Push Sync Failed:", e);
+                    syncHub.update('error');
+                }
             }
         };
 
-        // --- CLOUD SYNC BRIDGE ---
-        window.fbSave = async (col, id, data) => {
-            syncHub.start();
-            try {
-                await setDoc(doc(db, col, id.toString()), data);
-                syncHub.end();
-            } catch (err) {
-                console.error("Firestore Save Error:", err);
-                syncHub.update('error');
-            }
-        };
+        window.fbSave = (col, id, data) => cloudSync.push(col, id, data);
+        window.fbDelete = (col, id) => cloudSync.push(col, id, { deleted: true });
 
-        window.fbDelete = async (col, id) => {
-            syncHub.start();
-            try {
-                const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
-                await deleteDoc(doc(db, col, id.toString()));
-                syncHub.end();
-            } catch (err) {
-                console.error("Firestore Delete Error:", err);
-                syncHub.update('error');
-            }
-        };
-
-        window.addGlobalLog = async (action, details = "") => {
+        window.addGlobalLog = (action, details = "") => {
             const logId = Date.now().toString();
             const logData = {
                 id: logId,
                 timestamp: new Date().toISOString(),
                 user: currentUser?.name || "System",
                 email: currentUser?.email || "-",
-                action: action,
-                details: details
+                action,
+                details
             };
             window.fbSave("global_logs", logId, logData);
         };
 
-        // Efficient Realtime Listeners using Incremental Updates
-        function setupIncrementalListener(collectionName, localArrayName, localStorageKey, refreshUI) {
-            onSnapshot(collection(db, collectionName), (snap) => {
-                syncHub.start();
-                
-                // Get current local data from the global variable (which should be in sync with localStorage)
-                let currentData = [...(window[localArrayName] || [])];
-                
-                snap.docChanges().forEach((change) => {
-                    const data = change.doc.data();
-                    const key = data.id || data.email;
-                    const idx = currentData.findIndex(item => (item.id || item.email) == key);
-                    
-                    if (change.type === "added" || change.type === "modified") {
-                        if (idx !== -1) currentData[idx] = data;
-                        else currentData.push(data);
-                    } else if (change.type === "removed") {
-                        if (idx !== -1) currentData.splice(idx, 1);
-                    }
-                });
+        window.startAppWithSync = async function() {
+            const name = document.getElementById('login-name').value;
+            const email = document.getElementById('login-email').value;
+            const url = document.getElementById('login-appscript-url').value;
 
-                // Update global variables
-                window[localArrayName] = currentData;
-                localStorage.setItem(localStorageKey, JSON.stringify(currentData));
-                
-                if (typeof refreshUI === 'function') refreshUI();
-                syncHub.end();
-            }, (err) => {
-                console.error(`Listener Error [${collectionName}]:`, err);
-                syncHub.update('error');
-            });
-        }
+            if (!name || !email || !url) return alert("Silakan isi Nama, Email, dan Apps Script URL!");
+            
+            localStorage.setItem('grants_appscript_url', url);
+            cloudSync.url = url;
 
-        // Initialize Listeners
-        setupIncrementalListener("programs", "programs", 'grants_programs_meta', () => {
-             if (document.getElementById('main-dashboard')?.style.display === 'block' || dashboardView.style.display === 'block') {
-                if (typeof renderDashboard === 'function') renderDashboard();
-            }
-            if (document.getElementById('program-dashboard')?.style.display === 'block') {
-                if (typeof renderProgramHeader === 'function') renderProgramHeader();
-            }
-        });
-
-        setupIncrementalListener("proposals", "proposals", 'grants_proposals', () => {
-             if (document.getElementById('program-dashboard')?.style.display === 'block') {
-                if (typeof renderUsulanTab === 'function') renderUsulanTab();
-                if (typeof renderProgramHeader === 'function') renderProgramHeader();
-            }
-        });
-
-        setupIncrementalListener("registeredUsers", "registeredUsers", 'grants_registeredUsers', () => {
-            if (document.getElementById('global-users-view')?.style.display === 'block') {
-                const sub = document.querySelector('.side-tab.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'pengelola';
-                if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab(sub);
-            }
-        });
-
-        setupIncrementalListener("global_blacklist", "globalBlacklist", 'grants_global_blacklist');
-
-        // Logs listener (keep standard query for ordering)
-        onSnapshot(query(collection(db, "global_logs"), orderBy("timestamp", "desc")), (snap) => {
-            syncHub.start();
-            const list = [];
-            snap.forEach(d => list.push(d.data()));
-            globalLogs = list;
-            if (currentTab === 'logs' || document.getElementById('view-logs')?.style.display === 'block') {
-                if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab('log-akses');
-            }
-            syncHub.end();
-        });
-
-        onSnapshot(doc(db, "settings", "global_permissions"), (snap) => {
-            if (snap.exists()) {
-                globalPermissions = snap.data().permissions;
-                localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-            }
-        });
-
-        // Export Auth Functions to Global Window Scope
-        window.loginWithGoogle = function () {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider).then((result) => {
-                showToast(`Halo ${result.user.displayName}, sedang menyinkronkan peran...`);
-                addGlobalLog("LOGIN", `User logged in via Google: ${result.user.email}`);
-                syncFirebaseUser(result.user);
-            }).catch((error) => {
-                showToast("Login gagal: " + error.message, "error");
-            });
-        };
-
-        window.logoutFirebase = function () {
-            signOut(auth).then(() => {
-                localStorage.removeItem('grants_current_user');
-                localStorage.removeItem('grants_real_user');
+            const userData = { id: Date.now(), name, email, role: 'Pengusul', unit: 'Fakultas Teknik' };
+            if (email === 'rafieiy.m@gmail.com') userData.role = 'Superadmin';
+            
+            currentUser = userData;
+            localStorage.setItem('grants_current_user', JSON.stringify(userData));
+            
+            showToast("Menyambungkan ke Spreadsheet...");
+            const data = await cloudSync.pull();
+            if (data) {
+                showToast("Sinkronisasi Awal Berhasil!");
                 location.reload();
-            });
+            } else {
+                alert("Gagal sinkron. Pastikan Apps Script URL benar dan mengizinkan akses!");
+            }
         };
 
-        // Listen for Auth State Changes
-        onAuthStateChanged(auth, async (user) => {
+        window.logoutSession = function() {
+            localStorage.removeItem('grants_current_user');
+            localStorage.removeItem('grants_appscript_url');
+            location.reload();
+        };
+
+        // On Start: Check Session
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('grants_current_user');
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
 
-            if (user) {
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
 
-                const gLoginBtn = document.getElementById('btn-google-login');
                 const profileNav = document.getElementById('user-profile-nav');
-                if (gLoginBtn) gLoginBtn.style.display = 'none';
-
-                // Initial UI Setup (Responsive & Instant)
                 if (profileNav) {
                     profileNav.style.display = 'flex';
-                    document.getElementById('nav-user-name').innerText = user.displayName;
-                    document.getElementById('nav-user-photo').src = user.photoURL || '';
-                    document.getElementById('nav-user-role').innerText = 'SYNKRON...';
+                    document.getElementById('nav-user-name').innerText = currentUser.name;
+                    document.getElementById('nav-user-role').innerText = currentUser.role.toUpperCase();
                 }
-
-                // 1. Fetch Latest Profile from Cloud (Sync roles, etc.)
-                let systemUser;
-                try {
-                    const userDoc = await getDoc(doc(db, "registeredUsers", user.email));
-                    if (userDoc.exists()) {
-                        systemUser = { ...userDoc.data(), photoURL: user.photoURL };
-                    } else {
-                        const found = registeredUsers.find(u => u.email === user.email);
-                        systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
-                    }
-                } catch (e) {
-                    console.error("Profile Fetch Failed:", e);
-                    // Fallback to local
-                    const found = registeredUsers.find(u => u.email === user.email);
-                    systemUser = found ? { ...found, photoURL: user.photoURL } : { id: Date.now(), name: user.displayName, email: user.email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: user.photoURL };
-                }
-
-                // FORCE SUPERADMIN for owner email
-                if (user.email === 'rafieiy.m@gmail.com') {
-                    systemUser.role = 'Superadmin';
-                }
-
-                // 2. Finalize Identity
-                currentUser = systemUser;
-                localStorage.setItem('grants_current_user', JSON.stringify(systemUser));
-
-                // 3. Update Profile UI with Correct Role
-                if (profileNav) {
-                    document.getElementById('nav-user-name').innerText = systemUser.name;
-                    document.getElementById('nav-user-role').innerText = systemUser.role.toUpperCase();
-                }
-
+                
                 init();
+                // Auto-pull every time app starts if URL exists
+                if (cloudSync.url) cloudSync.pull();
             } else {
                 if (loginGate) loginGate.style.display = 'flex';
                 if (mainApp) mainApp.style.display = 'none';
             }
         });
-
-        async function syncFirebaseUser(fbUser) {
-            if (!fbUser) return;
-            const email = fbUser.email;
-            
-            // Explicitly pull from Firestore to get the newest ROLE
-            const userDoc = await getDoc(doc(db, "registeredUsers", email));
-            let sessionUser;
-            if (userDoc.exists()) {
-                sessionUser = { ...userDoc.data(), photoURL: fbUser.photoURL };
-            } else {
-                const found = registeredUsers.find(u => u.email === email);
-                sessionUser = found
-                    ? { ...found, photoURL: fbUser.photoURL }
-                    : { id: Date.now(), name: fbUser.displayName, email: email, role: 'Pengusul', unit: 'Fakultas Teknik', photoURL: fbUser.photoURL };
-            }
-
-            currentUser = sessionUser;
-            localStorage.setItem('grants_current_user', JSON.stringify(sessionUser));
-            location.reload();
-        }
     </script>
     <script>
         function init() {
