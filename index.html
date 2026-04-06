@@ -387,7 +387,7 @@
                     <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Alamat Email</label>
                     <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
-                <div class="f-group">
+                <div class="f-group" id="group-appscript-url" style="display:none;">
                     <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Apps Script API URL</label>
                     <input type="url" id="login-appscript-url" class="f-input" placeholder="https://script.google.com/macros/s/.../exec" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
@@ -395,8 +395,8 @@
 
             <button onclick="startAppWithSync()" id="btn-login-sync"
                 style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:var(--primary); color:white; border:none; padding:16px; border-radius:16px; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft); transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-                <span class="material-symbols-outlined">sync</span>
-                Masuk & Sinkron Awal
+                <span class="material-symbols-outlined">login</span>
+                Masuk ke Dashboard
             </button>
             <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br>Sistem Manajemen Hibah Mandiri.</p>
         </div>
@@ -1446,6 +1446,10 @@
             if (scriptParam) {
                 const urlInput = document.getElementById('login-appscript-url');
                 if (urlInput) urlInput.value = scriptParam;
+            } else if (!localStorage.getItem('grants_appscript_url')) {
+                // Show URL field ONLY if it's completely missing everywhere
+                document.getElementById('group-appscript-url').style.display = 'block';
+                document.getElementById('btn-login-sync').innerHTML = `<span class="material-symbols-outlined">settings_suggest</span> Hubungkan & Masuk`;
             }
             if (nameParam && document.getElementById('login-name')) document.getElementById('login-name').value = nameParam;
             if (emailParam && document.getElementById('login-email')) document.getElementById('login-email').value = emailParam;
