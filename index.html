@@ -1356,7 +1356,7 @@
                     }
 
                     checkAdminVisibility();
-                    renderDashboard();
+                    init(); // SMART RE-INITIALIZE (Keeps current view/tab)
                     syncHub.end();
                     return data;
                 } catch (e) {
