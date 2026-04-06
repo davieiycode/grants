@@ -1223,8 +1223,9 @@
                     }
                     if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
                         data.globalPermissions.forEach(p => {
-                           const role = Object.keys(defaultPermissions).find(k => k.toString() === p.id); 
-                           if (role) globalPermissions[role] = p;
+                           const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
+                           const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId); 
+                           if (roleKey) globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...p };
                         });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                     }
@@ -2119,7 +2120,8 @@
             
             // Sync each role as a separate document in 'global_permissions' sheet
             Object.keys(globalPermissions).forEach(role => {
-                window.fbSave('global_permissions', role, globalPermissions[role]);
+                const payload = { ...globalPermissions[role], id: role };
+                window.fbSave('global_permissions', role, payload);
             });
             
             showToast('Kebijakan akses berhasil disimpan!');
