@@ -1479,7 +1479,6 @@
                 showToast("Membuat profil Superadmin...");
                 const userData = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
                 await window.fbSave("registeredUsers", email, userData);
-                
                 currentUser = userData;
                 localStorage.setItem('grants_current_user', JSON.stringify(userData));
                 location.reload();
@@ -2980,6 +2979,7 @@
             }
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             renderKeuanganTab();
             showToast('Data keuangan diperbarui');
@@ -2990,6 +2990,7 @@
             const program = programs.find(p => p.id == progId);
             program.financeLogs.splice(idx, 1);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             renderKeuanganTab();
             showToast('Transaksi dihapus');
         }
@@ -3675,898 +3676,6 @@
             const container = document.getElementById('user-sub-content');
             const program = programs.find(p => p.id == progId);
 
-            document.querySelectorAll('#view-users .side-tab').forEach(b => {
-                const label = b.innerText.toLowerCase();
-                if (label.includes(sub)) b.classList.add('active');
-                else b.classList.remove('active');
-            });
-
-            if (sub === 'pengelola') {
-                const team = program.team || { pic: [], staff: [] };
-                container.innerHTML = `
-                    <div class="glass config-card animate-fade-in">
-                        <div class="section-header">
-                            <h3>Tim Pengelola Program</h3>
-                            <button class="btn-primary" onclick="openAddTeamMemberModal()">+ Tambah Tim</button>
-                        </div>
-                        <div class="grid" style="gap:1rem;">
-                            ${(team.pic || []).map(name => `
-                                <div class="glass" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:var(--radius-lg); background:var(--primary-soft); border:1px solid var(--primary);">
-                                    <span class="material-symbols-outlined" style="color:var(--primary);">verified_user</span>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:700;">${name}</div>
-                                        <div class="chip" style="font-size:0.6rem; background:var(--primary); color:white;">PIC / ADMIN</div>
-                                    </div>
-                                    <button class="btn-icon" onclick="removeTeamMember('${name}', 'pic')"><span class="material-symbols-outlined">close</span></button>
-                                </div>
-                            `).join('')}
-                            ${(team.staff || []).map(name => `
-                                <div class="glass" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:var(--radius-lg); background:var(--surface);">
-                                    <span class="material-symbols-outlined" style="color:var(--text-muted);">person</span>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:700;">${name}</div>
-                                        <div class="chip" style="font-size:0.6rem; background:var(--secondary); color:white;">STAF OPERASIONAL</div>
-                                    </div>
-                                    <button class="btn-icon" onclick="removeTeamMember('${name}', 'staff')"><span class="material-symbols-outlined">close</span></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } else if (sub === 'reviewer') {
-                const reviewers = program.reviewers || [];
-                container.innerHTML = `
-                    <div class="glass config-card animate-fade-in">
-                        <div class="section-header">
-                            <h3>Daftar Reviewer (Penilai)</h3>
-                            <button class="btn-primary" onclick="openAddReviewerModal()">+ Assign Reviewer</button>
-                        </div>
-                        <div class="grid" style="gap:1rem;">
-                            ${reviewers.length === 0 ? '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">Belum ada reviewer yang ditugaskan.</div>' : reviewers.map(name => `
-                                <div class="glass" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:var(--radius-lg); background:var(--surface);">
-                                    <span class="material-symbols-outlined" style="color:var(--secondary);">rate_review</span>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:700;">${name}</div>
-                                        <div style="font-size:0.75rem; color:var(--text-muted);">Reviewer Aktif</div>
-                                    </div>
-                                    <button class="btn-icon" onclick="removeReviewer('${name}')"><span class="material-symbols-outlined">close</span></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // Action Handlers for Settings
-        function addAttribute() {
-            const program = programs.find(p => p.id == progId);
-            const label = prompt("Masukkan Label Atribut Baru:");
-            if (!label) return;
-
-            const type = prompt("Pilih Tipe (text, number, url, longtext, dropdown, multiple options, radio, formula):", "text");
-            if (!type) return;
-
-            if (!program.attributes) program.attributes = [];
-            program.attributes.push({
-                label: label,
-                type: type,
-                required: false,
-                desc: ""
-            });
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('atribut');
-        }
-
-        function editAttribute(idx) {
-            const program = programs.find(p => p.id == progId);
-            const attr = program.attributes[idx];
-            const newLabel = prompt("Edit Label Atribut:", attr.label);
-            if (newLabel) attr.label = newLabel;
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('atribut');
-        }
-
-        function deleteAttribute(idx) {
-            if (!confirm("Hapus atribut ini?")) return;
-            const program = programs.find(p => p.id == progId);
-            program.attributes.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('atribut');
-        }
-
-
-        function openAddTeamMemberModal() {
-            showModal('Tambah Tim Pengelola', `
-                <div class="settings-form">
-                    <div class="f-group">
-                        <label class="f-label">Pilih Pengguna</label>
-                        ${renderUserSearchSelect("this.dataset.selected=arguments[1]", "Cari nama pengelola...")}
-                    </div>
-                    <div class="f-group">
-                        <label class="f-label">Role Akses</label>
-                        <select id="new-team-role" class="f-input">
-                            <option value="pic">PIC / ADMIN</option>
-                            <option value="staff">STAF OPERASIONAL</option>
-                        </select>
-                    </div>
-                    <div style="margin-top:2rem; display:flex; justify-content:flex-end; gap:12px;">
-                        <button class="btn-secondary" onclick="closeModal()">Batal</button>
-                        <button class="btn-primary" onclick="addTeamMember()">Tambahkan ke Tim</button>
-                    </div>
-                </div>
-            `);
-        }
-
-        function addTeamMember() {
-            const name = document.querySelector('.dropdown-item.selected')?.innerText || document.querySelector('.searchable-select input').value;
-            const role = document.getElementById('new-team-role').value;
-            const program = programs.find(p => p.id == progId);
-
-            if (!program.team) program.team = { pic: [], staff: [] };
-            if (role === 'pic') program.team.pic.push(name);
-            else program.team.staff.push(name);
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            closeModal();
-            showToast('Anggota tim berhasil ditambahkan');
-            switchUserSubTab('pengelola');
-        }
-
-        function removeTeamMember(name, role) {
-            if (!confirm(`Hapus ${name} dari tim pengelola?`)) return;
-            const program = programs.find(p => p.id == progId);
-            program.team[role] = program.team[role].filter(n => n !== name);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchUserSubTab('pengelola');
-        }
-
-        function openAddReviewerModal() {
-            showModal('Assign Reviewer', `
-                <div class="settings-form">
-                    <div class="f-group">
-                        <label class="f-label">Pilih Reviewer</label>
-                        ${renderUserSearchSelect("this.dataset.selected=arguments[1]", "Cari nama reviewer...")}
-                    </div>
-                    <div style="margin-top:2rem; display:flex; justify-content:flex-end; gap:12px;">
-                        <button class="btn-secondary" onclick="closeModal()">Batal</button>
-                        <button class="btn-primary" onclick="addReviewer()">Tugaskan Reviewer</button>
-                    </div>
-                </div>
-            `);
-        }
-
-        function addReviewer() {
-            const name = document.querySelector('.searchable-select input').value;
-            const program = programs.find(p => p.id == progId);
-
-            if (!program.reviewers) program.reviewers = [];
-            if (!program.reviewers.includes(name)) program.reviewers.push(name);
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            closeModal();
-            showToast('Reviewer berhasil ditugaskan');
-            switchUserSubTab('reviewer');
-        }
-
-        function removeReviewer(name) {
-            if (!confirm(`Cabut penugasan ${name}?`)) return;
-            const program = programs.find(p => p.id == progId);
-            program.reviewers = program.reviewers.filter(n => n !== name);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchUserSubTab('reviewer');
-        }
-
-        function addStatus() {
-            const program = programs.find(p => p.id == progId);
-            if (!program.statuses) {
-                program.statuses = [
-                    { label: "Submitted", color: "#6366f1" },
-                    { label: "Internal Review", color: "#f59e0b" },
-                    { label: "Received", color: "#10b981" },
-                    { label: "Needs Revision", color: "#ef4444" },
-                    { label: "Rejected", color: "#1e293b" }
-                ];
-            }
-            program.statuses.push({ label: "Status Baru", color: "#6366f1", trigger: "" });
-            switchSettingSubTab('status');
-        }
-
-        function updateStatusData(idx, key, val) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.statuses) return;
-            program.statuses[idx][key] = val;
-            // No save here to avoid too many writes, user clicks Save at bottom
-        }
-
-        function deleteStatus(idx) {
-            if (!confirm("Hapus status ini dari alur program?")) return;
-            const program = programs.find(p => p.id == progId);
-            program.statuses.splice(idx, 1);
-            switchSettingSubTab('status');
-        }
-
-        function saveStatusSettings() {
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast("Konfigurasi status berhasil disimpan!");
-        }
-
-        function resetStatuses() {
-            if (!confirm("Reset alur status ke pengaturan awal? Semua formula otomatis yang telah dibuat akan dihapus.")) return;
-            const program = programs.find(p => p.id == progId);
-            program.statuses = [
-                { label: "Submitted", color: "#6366f1" },
-                { label: "Internal Review", color: "#f59e0b" },
-                { label: "Received", color: "#10b981" },
-                { label: "Needs Revision", color: "#ef4444" },
-                { label: "Rejected", color: "#1e293b" }
-            ];
-            switchSettingSubTab('status');
-        }
-
-        function onStatusDragStart(e, idx) {
-            draggedIdx = idx;
-            e.dataTransfer.effectAllowed = 'move';
-            e.target.closest('.draggable-item').classList.add('dragging');
-        }
-
-        function onStatusDrop(e, targetIdx) {
-            e.preventDefault();
-            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-            if (draggedIdx === -1 || draggedIdx === targetIdx) return;
-
-            const program = programs.find(p => p.id == progId);
-            if (!program.statuses) return;
-
-            const item = program.statuses.splice(draggedIdx, 1)[0];
-            program.statuses.splice(targetIdx, 0, item);
-
-            switchSettingSubTab('status');
-        }
-
-        function updateNotifData(type, key, val) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.notifications) {
-                program.notifications = {
-                    submission: { subject: "", body: "" },
-                    statusChange: { subject: "", body: "" }
-                };
-            }
-            if (!program.notifications[type]) program.notifications[type] = {};
-            program.notifications[type][key] = val;
-        }
-
-        function updateCustomNotifData(statusLabel, key, val) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.notifications) program.notifications = {};
-            if (!program.notifications.status) program.notifications.status = {};
-            if (!program.notifications.status[statusLabel]) program.notifications.status[statusLabel] = { subject: "", body: "" };
-
-            program.notifications.status[statusLabel][key] = val;
-        }
-
-        function saveNotifSettings() {
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast("Templat notifikasi berhasil diperbarui!");
-        }
-
-        function addPeriod() {
-            const program = programs.find(p => p.id == progId);
-            if (!program.periods) program.periods = [];
-            program.periods.push({ name: "Periode Baru", timeline: [] });
-            switchSettingSubTab('timeline');
-        }
-
-        function deletePeriod(pIdx) {
-            if (!confirm("Yakin ingin menghapus periode ini?")) return;
-            const program = programs.find(p => p.id == progId);
-            program.periods.splice(pIdx, 1);
-            switchSettingSubTab('timeline');
-        }
-
-        function updatePeriodData(pIdx, key, val) {
-            const program = programs.find(p => p.id == progId);
-            program.periods[pIdx][key] = val;
-        }
-
-        function updateTimelineData(pIdx, sIdx, key, val) {
-            const program = programs.find(p => p.id == progId);
-            if (program.periods[pIdx] && program.periods[pIdx].timeline[sIdx]) {
-                program.periods[pIdx].timeline[sIdx][key] = val;
-            }
-        }
-
-        function addTimelineStage(pIdx) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.periods[pIdx].timeline) program.periods[pIdx].timeline = [];
-            program.periods[pIdx].timeline.push({ label: "Tahapan Baru", start: "", end: "", status: "Waiting" });
-            switchSettingSubTab('timeline');
-        }
-
-        // --- File Settings Handlers ---
-        window.addProgramFile = function () {
-            let program = programs.find(p => p.id == progId);
-            if (!program.files) program.files = [];
-            program.files.push({ label: 'Dokumen Baru', exts: ['pdf'], maxSize: 5, required: false, statusRequired: '', roles: ['Superadmin', 'Admin', 'Manager', 'Reviewer', 'Editor', 'Pengusul'] });
-            switchSettingSubTab('berkas');
-        };
-        window.deleteProgramFile = function (idx) {
-            let program = programs.find(p => p.id == progId);
-            program.files.splice(idx, 1);
-            switchSettingSubTab('berkas');
-        };
-        window.updateFileData = function (idx, key, val) {
-            let program = programs.find(p => p.id == progId);
-            program.files[idx][key] = val;
-        };
-        window.updateFileExts = function (idx, ext, isChecked) {
-            let program = programs.find(p => p.id == progId);
-            if (!program.files[idx].exts) program.files[idx].exts = ['pdf'];
-            if (isChecked) {
-                if (!program.files[idx].exts.includes(ext)) program.files[idx].exts.push(ext);
-            } else {
-                program.files[idx].exts = program.files[idx].exts.filter(e => e !== ext);
-            }
-        };
-        window.updateFileRoles = function (idx, role, isChecked) {
-            let program = programs.find(p => p.id == progId);
-            if (!program.files[idx].roles) program.files[idx].roles = ['Superadmin', 'Admin', 'Manager', 'Reviewer', 'Editor', 'Pengusul'];
-            if (isChecked) {
-                if (!program.files[idx].roles.includes(role)) program.files[idx].roles.push(role);
-            } else {
-                program.files[idx].roles = program.files[idx].roles.filter(r => r !== role);
-            }
-        };
-        window.saveFileSettings = function () {
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast('Konfigurasi berkas berhasil disimpan');
-        };
-
-        // --- Review Template Handlers ---
-
-        function deleteTimelineStage(pIdx, sIdx) {
-            const program = programs.find(p => p.id == progId);
-            program.periods[pIdx].timeline.splice(sIdx, 1);
-            switchSettingSubTab('timeline');
-        }
-
-        function addReviewIndicator() {
-            const program = programs.find(p => p.id == progId);
-            if (!program.reviewTemplate) program.reviewTemplate = [];
-            program.reviewTemplate.push({ label: "Indikator Baru", type: "number", weight: 0, max: 100 });
-            switchSettingSubTab('review');
-        }
-
-        function updateReviewInd(idx, key, val) {
-            const program = programs.find(p => p.id == progId);
-            program.reviewTemplate[idx][key] = val;
-            // Re-render if type, options, formula, or weight changed
-            const keysToReRender = ['type', 'options', 'formula', 'weight'];
-            if (keysToReRender.includes(key)) switchSettingSubTab('review');
-        }
-
-        function deleteReviewInd(idx) {
-            const program = programs.find(p => p.id == progId);
-            program.reviewTemplate.splice(idx, 1);
-            switchSettingSubTab('review');
-        }
-
-        function saveReviewSettings() {
-            const program = programs.find(p => p.id == progId);
-            if (program) {
-                const modeEl = document.getElementById('program-review-mode');
-                if (modeEl) program.reviewMode = modeEl.value;
-
-                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-                if (typeof addProgramLog === 'function') {
-                    addProgramLog(progId, 'CONFIG', `Mengubah pengaturan penilaian dan mode review.`);
-                }
-                showToast("Pengaturan penilaian berhasil disimpan!");
-            }
-        }
-
-        function allowDrop(e) {
-            e.preventDefault();
-        }
-
-        function saveTimelineSettings() {
-            addProgramLog('update', 'Memperbarui lini masa dan periode program');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast("Lini masa program berhasil diperbarui!");
-            switchSettingSubTab('timeline');
-        }
-
-        function saveFileSettings() {
-            addProgramLog('update', 'Memperbarui konfigurasi berkas persyaratan');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast("Konfigurasi berkas berhasil disimpan!");
-            switchSettingSubTab('berkas');
-        }
-
-        function saveNotifSettings() {
-            addProgramLog('update', 'Memperbarui templat notifikasi sistem');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            showToast("Templat notifikasi berhasil diperbarui!");
-            switchSettingSubTab('notif');
-        }
-
-        // Timeline Drag & Drop
-        let draggedPeriodIdx = -1;
-        function onPeriodDragStart(e, idx) {
-            draggedPeriodIdx = idx;
-            e.dataTransfer.effectAllowed = 'move';
-            e.target.classList.add('dragging');
-        }
-        function onPeriodDrop(e, targetIdx) {
-            e.preventDefault();
-            document.querySelectorAll('.drag-over, .dragging').forEach(el => el.classList.remove('drag-over', 'dragging'));
-            if (draggedPeriodIdx === -1 || draggedPeriodIdx === targetIdx) return;
-            const program = programs.find(p => p.id == progId);
-            const item = program.periods.splice(draggedPeriodIdx, 1)[0];
-            program.periods.splice(targetIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('timeline');
-        }
-
-        let draggedTimelineIdx = { p: -1, s: -1 };
-        function onTimelineDragStart(e, pIdx, sIdx) {
-            draggedTimelineIdx = { p: pIdx, s: sIdx };
-            e.dataTransfer.effectAllowed = 'move';
-            e.target.classList.add('dragging');
-        }
-        function onTimelineDrop(e, pIdx, sIdx) {
-            e.preventDefault();
-            document.querySelectorAll('.drag-over, .dragging').forEach(el => el.classList.remove('drag-over', 'dragging'));
-            if (draggedTimelineIdx.p === -1 || (draggedTimelineIdx.p === pIdx && draggedTimelineIdx.s === sIdx)) return;
-            const program = programs.find(p => p.id == progId);
-            const item = program.periods[draggedTimelineIdx.p].timeline.splice(draggedTimelineIdx.s, 1)[0];
-            program.periods[pIdx].timeline.splice(sIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('timeline');
-        }
-
-        // Reviewer Group Drag & Drop
-        let draggedReviewGroup = "";
-        function onReviewGroupDragStart(e, groupName) {
-            draggedReviewGroup = groupName;
-            e.dataTransfer.effectAllowed = 'move';
-            e.target.classList.add('dragging');
-        }
-        function onReviewGroupDrop(e, targetGroupName) {
-            e.preventDefault();
-            document.querySelectorAll('.drag-over, .dragging').forEach(el => el.classList.remove('drag-over', 'dragging'));
-            if (!draggedReviewGroup || draggedReviewGroup === targetGroupName) return;
-            const program = programs.find(p => p.id == progId);
-            const others = program.reviewTemplate.filter(i => (i.group || 'Tanpa Grup') !== draggedReviewGroup);
-            const items = program.reviewTemplate.filter(i => (i.group || 'Tanpa Grup') === draggedReviewGroup);
-            const targetIdx = others.findIndex(i => (i.group || 'Tanpa Grup') === targetGroupName);
-            if (targetIdx !== -1) others.splice(targetIdx, 0, ...items); else others.push(...items);
-            program.reviewTemplate = others;
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('review');
-        }
-
-        let draggedReviewIndIdx = -1;
-        function onReviewIndDragStart(e, idx) {
-            draggedReviewIndIdx = idx;
-            e.dataTransfer.effectAllowed = 'move';
-            e.target.classList.add('dragging');
-        }
-        function onReviewIndDrop(e, targetIdx) {
-            e.preventDefault();
-            document.querySelectorAll('.drag-over, .dragging').forEach(el => el.classList.remove('drag-over', 'dragging'));
-            if (draggedReviewIndIdx === -1 || draggedReviewIndIdx === targetIdx) return;
-            const program = programs.find(p => p.id == progId);
-            const item = program.reviewTemplate.splice(draggedReviewIndIdx, 1)[0];
-            program.reviewTemplate.splice(targetIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchSettingSubTab('review');
-        }
-
-        // Unified indicators update
-        function updateReviewIndicator(idx, key, val) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.reviewTemplate) program.reviewTemplate = [];
-            program.reviewTemplate[idx][key] = (key === 'weight') ? parseInt(val) : val;
-            if (key === 'type' || key === 'group') switchSettingSubTab('review');
-        }
-        function deleteReviewIndicator(idx) {
-            if (!confirm("Hapus indikator penilaian ini?")) return;
-            const program = programs.find(p => p.id == progId);
-            program.reviewTemplate.splice(idx, 1);
-            switchSettingSubTab('review');
-        }
-
-        function toggleConfigCard(checkbox, cardId) {
-            const card = document.getElementById(cardId);
-            if (checkbox.checked) {
-                card.classList.add('expanded');
-            } else {
-                card.classList.remove('expanded');
-            }
-        }
-
-        function addMappingRow(containerId) {
-            const container = document.getElementById(containerId);
-            const program = programs.find(p => p.id == progId);
-            const row = document.createElement('div');
-            row.className = "mapping-row";
-            row.style = "display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;";
-
-            let sourceHtml = '';
-            if (containerId.includes('sheet')) {
-                sourceHtml = `<input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">`;
-            } else {
-                sourceHtml = `<select style="font-size:0.75rem; padding:4px 8px;"><option>Atribut Sumber</option></select>`;
-            }
-
-            row.innerHTML = `
-                ${sourceHtml}
-                ${renderSearchableAttrSelect(program)}
-                <button class="btn-icon" onclick="this.parentElement.remove()" style="width:28px; height:28px; color:var(--error); border-color:var(--error); opacity:0.7;">
-                    <span class="material-symbols-outlined" style="font-size:16px">delete</span>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        function addFullIntegrationBlock(type) {
-            const containerId = type === 'sheet' ? 'spreadsheet-blocks-container' : 'program-blocks-container';
-            const container = document.getElementById(containerId);
-            const program = programs.find(p => p.id == progId);
-            const iden = Math.random().toString(36).substr(2, 5);
-
-            const block = document.createElement('div');
-            block.className = 'integration-block';
-            block.style = "margin-top:16px; border-top:1px dashed var(--border); padding-top:16px;";
-
-            if (type === 'sheet') {
-                block.innerHTML = `
-                    <div class="toggle-row" style="border:none; padding:8px 0;">
-                        <div>
-                            <div style="font-weight:600; font-size:0.9rem;">Pencarian tambahan data dari Spreadsheet</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Cari data tambahan melalui URL Google Sheets</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <label class="switch">
-                                <input type="checkbox" onchange="toggleConfigCard(this, 'card-${iden}')" checked>
-                                <span class="slider"></span>
-                            </label>
-                            <button class="btn-icon" onclick="this.closest('.integration-block').remove()" style="color:var(--error); border:none;"><span class="material-symbols-outlined">delete</span></button>
-                        </div>
-                    </div>
-                    <div id="card-${iden}" class="collapsible-card expanded" style="padding:16px;">
-                        <div class="form-group">
-                            <label>Spreadsheet URL</label>
-                            <input type="url" placeholder="https://docs.google.com/spreadsheets/d/..." style="font-size:0.85rem;">
-                        </div>
-                        <div style="margin-top:12px;">
-                                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT</label>
-                                            <div id="sheet-mapping-list-${iden}" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                                                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
-                                                    <input type="text" placeholder="Nama Kolom Sheet" style="font-size:0.75rem; padding:4px 8px;">
-                                                    ${renderSearchableAttrSelect(program)}
-                                                    <button class="btn-icon" onclick="addMappingRow('sheet-mapping-list-${iden}')" style="width:28px; height:28px;"><span class="material-symbols-outlined" style="font-size:16px">add</span></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                    </div>
-                `;
-            } else {
-                block.innerHTML = `
-                    <div class="toggle-row" style="border:none; padding:8px 0;">
-                        <div>
-                            <div style="font-weight:600; font-size:0.9rem;">Program Rujukan Tambahan</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Lookup data dari skema program berbeda lainnya</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <label class="switch">
-                                <input type="checkbox" onchange="toggleConfigCard(this, 'card-${iden}')" checked>
-                                <span class="slider"></span>
-                            </label>
-                            <button class="btn-icon" onclick="this.closest('.integration-block').remove()" style="color:var(--error); border:none;"><span class="material-symbols-outlined">delete</span></button>
-                        </div>
-                    </div>
-                    <div id="card-${iden}" class="collapsible-card expanded" style="padding:16px;">
-                        <div class="form-group">
-                            <label>Pilih Program Sumber</label>
-                            <div class="searchable-select">
-                                <input type="text" placeholder="Cari program..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)">
-                                <div class="dropdown-list">
-                                    ${programs.filter(p => p.id != progId).map(p => `<div onclick="selectProgram(this, '${p.id}')">${p.name}</div>`).join('')}
-                                </div>
-                                <input type="hidden" class="val-target">
-                            </div>
-                        </div>
-                        <div style="margin-top:12px;">
-                            <label style="font-size: 0.7rem; font-weight:700; color:var(--primary);">PETA ATRIBUT RELASI</label>
-                            <div id="list-${iden}" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
-                                    <select style="font-size:0.75rem; padding:4px 8px;"><option>Atribut Sumber</option></select>
-                                    ${renderSearchableAttrSelect(program)}
-                                    <button class="btn-icon" onclick="addMappingRow('list-${iden}')" style="width:28px; height:28px;"><span class="material-symbols-outlined" style="font-size:16px">add</span></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            container.appendChild(block);
-        }
-
-        function filterGeneric(input) {
-            const val = input.value.toLowerCase();
-            const list = input.nextElementSibling;
-            const items = list.querySelectorAll('div');
-            items.forEach(it => {
-                if (it.innerText.toLowerCase().includes(val)) it.style.display = 'block';
-                else it.style.display = 'none';
-            });
-        }
-
-        function filterLinkedProposals(input) {
-            const query = input.value.toLowerCase();
-            const listContainer = document.getElementById("linked-proposals-list");
-            if (!listContainer) return;
-            const labels = listContainer.querySelectorAll("label");
-            labels.forEach(label => {
-                const text = label.innerText.toLowerCase();
-                label.style.display = text.includes(query) ? "flex" : "none";
-            });
-        }
-
-        function selectGeneric(el, val) {
-            const container = el.closest('.searchable-select');
-            const input = container.querySelector('input[type="text"]');
-            input.value = val;
-            // Add value to dataset so callbacks can use it
-            el.dataset.val = val;
-
-            // Hide list
-            el.parentElement.style.display = 'none';
-            setTimeout(() => {
-                el.parentElement.style.display = '';
-                // Trigger callback if data-val is used in dynamic calls
-                const hiddenInput = container.querySelector('.val-target');
-                if (hiddenInput) hiddenInput.value = val;
-            }, 100);
-        }
-
-        function selectProgram(el, targetId) {
-            selectGeneric(el, targetId);
-            const program = programs.find(p => p.id == targetId);
-            if (!program) return;
-
-            // Trigger mapping update if we are in an integration block
-            const block = el.closest('.integration-block');
-            const selectList = block.querySelectorAll('select');
-
-            const optionsHtml = (program.attributes || []).map(a => `<option value="${a.label}">${a.label}</option>`).join('');
-            selectList.forEach(sel => {
-                sel.innerHTML = `<option value="">Atribut Sumber</option>` + optionsHtml;
-            });
-        }
-
-        function showModal(title, contentHtml) {
-            const overlay = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-body').innerHTML = contentHtml;
-            overlay.style.display = 'flex';
-            setTimeout(() => overlay.classList.add('show'), 10);
-        }
-
-        function closeModal() {
-            const overlay = document.getElementById('modal-overlay');
-            overlay.classList.remove('show');
-            setTimeout(() => overlay.style.display = 'none', 300);
-        }
-
-        function updateTeam(userName, role, isAdd) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.team) program.team = { pic: [], staff: [] };
-
-            const list = program.team[role];
-            if (isAdd) {
-                if (!list.includes(userName)) list.push(userName);
-            } else {
-                program.team[role] = list.filter(u => u !== userName);
-            }
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchUserSubTab('pengelola');
-        }
-
-        function updateReviewer(userName, isAdd) {
-            const program = programs.find(p => p.id == progId);
-            if (!program.reviewers) program.reviewers = [];
-
-            if (isAdd) {
-                if (!program.reviewers.includes(userName)) program.reviewers.push(userName);
-            } else {
-                program.reviewers = program.reviewers.filter(u => u !== userName);
-            }
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            switchUserSubTab('reviewer');
-        }
-
-        let editingAttrIdx = -1;
-        function openAttrModal(idx = -1) {
-            editingAttrIdx = idx;
-            const program = programs.find(p => p.id == progId);
-            const attr = idx >= 0 ? program.attributes[idx] : { label: '', type: 'text', group: '', required: false, desc: '' };
-            const allRoles = ['Superadmin', 'Admin', 'Manager', 'Reviewer', 'Editor', 'Pengusul'];
-            const viewRoles = attr.viewRoles || allRoles;
-
-            const body = `
-                <div class="settings-form" style="gap:2rem;">
-                    <div style="background:var(--background); padding:1.5rem; border-radius:var(--radius-xl); border:1px solid var(--border);">
-                        <label class="info-label" style="color:var(--primary); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
-                            <span class="material-symbols-outlined" style="font-size:18px;">info</span> INFORMASI DASAR
-                        </label>
-                        <div class="f-row" style="gap:1.5rem;">
-                            <div class="f-group" style="flex:1.5;">
-                                <label class="f-label">Nama Atribut</label>
-                                <input type="text" id="attr-label" value="${attr.label}" class="f-input" placeholder="Contoh: Rumpun Ilmu">
-                            </div>
-                            <div class="f-group" style="flex:1;">
-                                <label class="f-label">Tipe Data</label>
-                                <select id="attr-type" class="f-input" onchange="toggleAttrOptions(this.value)">
-                                    <option value="text" ${attr.type === 'text' ? 'selected' : ''}>Teks Pendek</option>
-                                    <option value="longtext" ${attr.type === 'longtext' ? 'selected' : ''}>Teks Panjang</option>
-                                    <option value="number" ${attr.type === 'number' ? 'selected' : ''}>Angka</option>
-                                    <option value="dropdown" ${attr.type === 'dropdown' ? 'selected' : ''}>Pilihan Dropdown</option>
-                                    <option value="radio" ${attr.type === 'radio' ? 'selected' : ''}>Pilihan Tunggal (Radio)</option>
-                                    <option value="multiple options" ${attr.type === 'multiple options' ? 'selected' : ''}>Pilihan Ganda (Checklist)</option>
-                                    <option value="yes no" ${attr.type === 'yes no' ? 'selected' : ''}>Ya / Tidak</option>
-                                    <option value="date" ${attr.type === 'date' ? 'selected' : ''}>Tanggal</option>
-                                    <option value="url" ${attr.type === 'url' ? 'selected' : ''}>Link / URL</option>
-                                    <option value="formula" ${attr.type === 'formula' ? 'selected' : ''}>Formula (Otomaits)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="f-row" style="gap:1.5rem;">
-                        <div style="flex:1; background:rgba(0,0,0,0.02); padding:1.5rem; border-radius:var(--radius-xl); border:1px solid var(--border);">
-                            <label class="info-label" style="color:var(--text-main); margin-bottom:1rem;">HAK AKSES LIHAT</label>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                                ${allRoles.map(r => `
-                                    <label class="f-check-label" style="display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
-                                        <input type="checkbox" name="view-roles" value="${r}" ${(attr.roles || allRoles).includes(r) ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--primary);">
-                                        ${r}
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                        <div style="flex:1; background:rgba(0,0,0,0.02); padding:1.5rem; border-radius:var(--radius-xl); border:1px solid var(--border);">
-                            <label class="info-label" style="color:var(--text-main); margin-bottom:1rem;">HAK AKSES EDIT</label>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                                ${allRoles.map(r => `
-                                    <label class="f-check-label" style="display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
-                                        <input type="checkbox" name="edit-roles" value="${r}" ${(attr.editRoles || ['Admin', 'Manager', 'Staf']).includes(r) ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--secondary);">
-                                        ${r}
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="f-group">
-                        <label class="f-label">Grup Atribut</label>
-                        <input type="text" id="attr-group" value="${attr.group || ''}" class="f-input" placeholder="Contoh: Identitas atau Luaran">
-                    </div>
-
-                    <div class="f-row" style="align-items:flex-end; gap:1.5rem;">
-                        <div class="f-group" style="flex:2;">
-                            <label class="f-label">Validasi (Regex)</label>
-                            <input type="text" id="attr-validation" value="${attr.validation || ''}" class="f-input" placeholder="^.+$ untuk wajib diisi">
-                        </div>
-                        <div class="f-group" style="flex:1;">
-                            <label class="f-check-label" style="padding:12px; border:1px solid var(--border); border-radius:12px; background:white; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700;">
-                                <input type="checkbox" id="attr-required" ${attr.required ? 'checked' : ''} style="width:20px; height:20px; accent-color:var(--primary);">
-                                Status Wajib
-                            </label>
-                        </div>
-                    </div>
-
-                    <div id="attr-options-group" class="f-group" style="display: ${['dropdown', 'radio', 'multiple options'].includes(attr.type) ? 'block' : 'none'};">
-                        <label class="f-label">Opsi Pilihan (Satu per baris)</label>
-                        <textarea id="attr-options" rows="4" class="f-input">${(attr.options || []).join('\n')}</textarea>
-                    </div>
-
-                    <div id="attr-formula-group" class="f-group" style="display: ${attr.type === 'formula' ? 'block' : 'none'};">
-                        <label class="f-label">Formula (Gunakan {NamaAtribut})</label>
-                        <input type="text" id="attr-formula" value="${attr.formula || ''}" class="f-input" placeholder="Contoh: {DANA} * 0.1">
-                    </div>
-
-                    <div class="f-group">
-                        <label class="f-label">Panduan Pengisian</label>
-                        <textarea id="attr-desc" rows="2" class="f-input" placeholder="Teks bantuan untuk pengusul...">${attr.desc || ''}</textarea>
-                    </div>
-
-                    <div style="margin-top:2rem; display:flex; justify-content:flex-end; gap:1rem;">
-                        <button class="btn-icon" onclick="closeModal()" style="width:auto; padding:0 24px; border:none; color:var(--text-muted);">Batal</button>
-                        <button class="btn-primary" onclick="saveAttribute(${idx})" style="padding:0 32px; height:52px; border-radius:14px; font-weight:700; gap:10px; box-shadow:var(--shadow-lg);">
-                            <span class="material-symbols-outlined">save</span> Simpan Atribut
-                        </button>
-                    </div>
-                </div>
-            `;
-            showModal(idx !== null ? 'Edit Konfigurasi Atribut' : 'Tambah Atribut Baru', body);
-        }
-
-        function saveAttribute() {
-            const program = programs.find(p => p.id == progId);
-            const rawOptions = document.getElementById('attr-options').value;
-            const options = rawOptions ? rawOptions.split(/[\n]/).map(o => o.trim()).filter(o => o) : [];
-
-            const viewRoles = Array.from(document.querySelectorAll('input[name="attr-view-role"]:checked')).map(cb => cb.value);
-            const editRoles = Array.from(document.querySelectorAll('input[name="attr-edit-role"]:checked')).map(cb => cb.value);
-
-            const newAttr = {
-                label: document.getElementById('attr-label').value,
-                type: document.getElementById('attr-type').value,
-                group: document.getElementById('attr-group').value || 'Tanpa Grup',
-                desc: document.getElementById('attr-desc').value,
-                required: document.getElementById('attr-required').checked,
-                validation: document.getElementById('attr-validation').value,
-                options: options,
-                formula: document.getElementById('attr-formula').value,
-                viewRoles: viewRoles,
-                editRoles: editRoles
-            };
-
-            if (editingAttrIdx >= 0) {
-                program.attributes[editingAttrIdx] = newAttr;
-            } else {
-                if (!program.attributes) program.attributes = [];
-                program.attributes.push(newAttr);
-            }
-
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-            closeModal();
-            switchSettingSubTab('atribut');
-        }
-
-        function openBlacklistModal() {
-            showModal('Tambah Blacklist User', `
-                <div class="settings-form">
-                    <div class="f-group">
-                        <label class="f-label">Identitas User</label>
-                        ${renderUserSearchSelect("this.dataset.selectedUser = this.dataset.val", "Pilih user yang ingin dicekal...")}
-                        <input type="hidden" id="blacklist-user-target">
-                    </div>
-                    <div class="f-row">
-                        <div class="f-group">
-                            <label class="f-label">Mulai Tanggal</label>
-                            <input type="date" id="blacklist-start" class="f-input">
-                        </div>
-                        <div class="f-group">
-                            <label class="f-label">Hingga Tanggal</label>
-                            <input type="date" id="blacklist-end" class="f-input" placeholder="Kosongkan untuk selamanya">
-                        </div>
-                    </div>
-                    <div class="f-group">
-                        <label class="f-label">Alasan / Catatan Cekal</label>
-                        <textarea id="blacklist-note" rows="3" class="f-input" placeholder="Tuliskan alasan pencekalan..."></textarea>
-                    </div>
-                    <div style="margin-top:32px; display:flex; gap:12px; justify-content:flex-end;">
-                        <button class="btn-icon" onclick="closeModal()" style="width:auto; padding:0 24px; border-radius:10px; border-color:var(--border);">Batal</button>
-                        <button class="btn-apply" onclick="saveBlacklist()" style="width:auto; padding:0 32px; border-radius:10px; background:var(--error);">CEKAL USER</button>
-                    </div>
-                </div>
-            `);
-        }
-
-
-        // --- USER MANAGEMENT TABS ---
-        function switchUserSubTab(sub) {
-            const container = document.getElementById('user-sub-content');
-            const program = programs.find(p => p.id == progId);
-
             document.querySelectorAll('#users-sidebar .side-tab').forEach(b => {
                 const label = b.innerText.toLowerCase();
                 if (label.includes(sub)) b.classList.add('active');
@@ -4723,6 +3832,7 @@
             }
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('pengelola');
         }
 
@@ -4737,6 +3847,7 @@
             }
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('reviewer');
         }
 
@@ -4745,6 +3856,7 @@
             if (!program.reviewTemplate) program.reviewTemplate = [];
             program.reviewTemplate.push({ label: "Kriteria Baru", type: "number", weight: 0, max: 100 });
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
@@ -4752,6 +3864,7 @@
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate[idx][key] = val;
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             if (key === 'type' || key === 'options') switchSettingSubTab('review');
         }
 
@@ -4759,6 +3872,7 @@
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate.splice(idx, 1);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
@@ -4774,6 +3888,7 @@
                 note: document.getElementById('blacklist-note').value
             });
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             switchUserSubTab('blacklist');
             showToast('User berhasil masuk daftar cekal');
@@ -4789,6 +3904,7 @@
             program.attributes[target] = temp;
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4797,6 +3913,7 @@
             const program = programs.find(p => p.id == progId);
             program.attributes.splice(idx, 1);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4820,6 +3937,7 @@
             program.attributes.splice(targetIdx, 0, item);
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4853,6 +3971,7 @@
             program.attributes = others;
 
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4870,6 +3989,7 @@
                 const program = programs.find(p => p.id == progId);
                 program.excludeDuplication = [];
                 localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
             } else {
                 listEl.style.display = 'block';
             }
@@ -4897,6 +4017,7 @@
             addProgramLog('update', `Memperbarui informasi umum ${oldName !== program.name ? '(Nama berubah dari ' + oldName + ')' : ''}`);
             showToast('Informasi program berhasil diperbarui');
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             renderProgramHeader();
             switchSettingSubTab('info');
         }
@@ -4909,6 +4030,7 @@
                 program.status = isArchived ? 'active' : 'archived';
                 addProgramLog('archive', `Status program diubah menjadi: ${program.status.toUpperCase()}`);
                 localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
                 showToast(`Program berhasil ${isArchived ? 'diaktifkan' : 'dinonaktifkan'}`);
                 switchSettingSubTab('info');
             }
@@ -4924,6 +4046,7 @@
                 recycleBin.push(deletedItem);
                 localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
                 localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, { deleted: true });
 
                 showToast('Program dipindahkan ke Tempat Sampah');
                 window.location.href = 'index.html';
@@ -4940,6 +4063,7 @@
             programs.push(program);
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
             localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
+            window.fbSave('programs', program.id, program);
 
             showToast('Program berhasil di-restore ke Arsip');
             switchGlobalUserSubTab('arsip-program');
@@ -4950,6 +4074,7 @@
             if (!program) return;
             program.status = 'active';
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast('Program berhasil diaktifkan kembali');
             switchGlobalUserSubTab('arsip-program');
         }
@@ -4965,6 +4090,7 @@
             // Final cleanup of proposals if any (optional as they are already disconnected usually)
             proposals = proposals.filter(p => p.program !== program.name);
             localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+            window.fbDelete('programs', id);
 
             showToast('Program dihapus selamanya');
             switchGlobalUserSubTab('arsip-program');
@@ -5372,7 +4498,7 @@
             };
 
             programs.push(newProg);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', newProg.id, newProg);
             closeModal();
             showToast('Program berhasil dibuat!');
             renderDashboard();
@@ -5387,6 +4513,7 @@
                 program.excludeDuplication = program.excludeDuplication.filter(id => id != targetId);
             }
             localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('info');
         }
 
