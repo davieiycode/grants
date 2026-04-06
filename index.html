@@ -1373,7 +1373,14 @@
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'push', collection, id, data })
+                        body: JSON.stringify({ 
+                            action: 'push', 
+                            collection, 
+                            id, 
+                            data,
+                            user_email: currentUser?.email || 'system',
+                            timestamp: new Date().toISOString()
+                        })
                     });
                     syncHub.end();
                 } catch (e) {
@@ -1383,8 +1390,40 @@
             }
         };
 
-        window.fbSave = (col, id, data) => cloudSync.push(col, id, data);
-        window.fbDelete = (col, id) => cloudSync.push(col, id, { deleted: true });
+        window.fbSave = (collection, id, data) => {
+            // 1. UPDATE LOCAL STATE IMMEDIATELY (Reactive UI)
+            if (collection === 'programs') {
+                const idx = programs.findIndex(p => p.id == id);
+                if (idx !== -1) programs[idx] = data; else programs.push(data);
+                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            } else if (collection === 'proposals') {
+                const idx = proposals.findIndex(p => p.id == id);
+                if (idx !== -1) proposals[idx] = data; else proposals.push(data);
+                localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+            } else if (collection === 'registeredUsers') {
+                const idx = registeredUsers.findIndex(u => (u.id || u.email) == id);
+                if (idx !== -1) registeredUsers[idx] = data; else registeredUsers.push(data);
+                localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+            } else if (collection === 'global_blacklist') {
+                localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
+            } else if (collection === 'global_permissions') {
+                localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+            }
+
+            // 2. PUSH TO CLOUD (With Logging)
+            cloudSync.push(collection, id, data);
+            
+            // 3. LOG THE CHANGE
+            if (collection !== 'global_logs') {
+                const details = `Update ${collection} ID:${id}`;
+                window.addGlobalLog('DATA_CHANGE', details);
+            }
+        };
+
+        window.fbDelete = (col, id) => {
+            const data = { deleted: true };
+            window.fbSave(col, id, data);
+        };
 
         window.addGlobalLog = (action, details = "") => {
             const logId = Date.now().toString();
@@ -1396,7 +1435,8 @@
                 action,
                 details
             };
-            window.fbSave("global_logs", logId, logData);
+            // Logs are pushed directly to cloud without local persistence to save memory
+            cloudSync.push("global_logs", logId, logData);
         };
 
         window.startAppWithSync = async function() {
