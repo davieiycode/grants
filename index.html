@@ -1337,54 +1337,64 @@
         onSnapshot(collection(db, "programs"), (snap) => {
             const list = [];
             snap.forEach(d => list.push(d.data()));
-            if (list.length > 0) {
-                window.programs = list;
-                localStorage.setItem('grants_programs_meta', JSON.stringify(list));
+            programs = list;
+            localStorage.setItem('grants_programs_meta', JSON.stringify(list));
+            
+            // Refresh UI contextually
+            if (document.getElementById('main-dashboard')?.style.display === 'block' || dashboardView.style.display === 'block') {
                 if (typeof renderDashboard === 'function') renderDashboard();
+            }
+            if (document.getElementById('program-dashboard')?.style.display === 'block') {
+                if (typeof renderProgramHeader === 'function') renderProgramHeader();
             }
         });
 
         onSnapshot(collection(db, "proposals"), (snap) => {
             const list = [];
             snap.forEach(d => list.push(d.data()));
-            if (list.length > 0) {
-                window.proposals = list;
-                localStorage.setItem('grants_proposals', JSON.stringify(list));
-                // Only refresh if we are currently viewing the proposals
-                if (document.getElementById('program-dashboard')?.style.display === 'block') {
-                    if (typeof renderUsulanTab === 'function') renderUsulanTab();
-                }
+            proposals = list;
+            localStorage.setItem('grants_proposals', JSON.stringify(list));
+            
+            // Refresh UI contextually
+            if (document.getElementById('program-dashboard')?.style.display === 'block') {
+                if (typeof renderUsulanTab === 'function') renderUsulanTab();
+                if (typeof renderProgramHeader === 'function') renderProgramHeader();
             }
         });
 
         onSnapshot(collection(db, "registeredUsers"), (snap) => {
             const list = [];
             snap.forEach(d => list.push(d.data()));
-            if (list.length > 0) {
-                window.registeredUsers = list;
-                localStorage.setItem('grants_registeredUsers', JSON.stringify(list));
+            registeredUsers = list;
+            localStorage.setItem('grants_registeredUsers', JSON.stringify(list));
+            
+            if (document.getElementById('global-users-view')?.style.display === 'block') {
+                const sub = document.querySelector('.side-tab.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'pengelola';
+                if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab(sub);
             }
         });
 
         onSnapshot(query(collection(db, "global_logs"), orderBy("timestamp", "desc")), (snap) => {
             const list = [];
             snap.forEach(d => list.push(d.data()));
-            window.globalLogs = list;
+            globalLogs = list;
+            if (currentTab === 'logs' || document.getElementById('view-logs')?.style.display === 'block') {
+                if (typeof switchGlobalUserSubTab === 'function') switchGlobalUserSubTab('log-akses');
+            }
         });
 
         onSnapshot(collection(db, "global_blacklist"), (snap) => {
             const list = [];
             snap.forEach(d => list.push(d.data()));
-            if (list.length > 0) {
-                window.globalBlacklist = list;
-                localStorage.setItem('grants_global_blacklist', JSON.stringify(list));
-            }
+            globalBlacklist = list;
+            localStorage.setItem('grants_global_blacklist', JSON.stringify(list));
         });
 
         onSnapshot(doc(db, "settings", "global_permissions"), (snap) => {
             if (snap.exists()) {
-                window.globalPermissions = snap.data().permissions;
-                localStorage.setItem('grants_global_permissions', JSON.stringify(window.globalPermissions));
+                globalPermissions = snap.data().permissions;
+                localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+                // Optional: Refresh any active permission-heavy view
             }
         });
 
