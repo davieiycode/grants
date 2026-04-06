@@ -380,12 +380,12 @@
 
             <div style="display:grid; gap:1rem; margin-bottom:2rem;">
                 <div class="f-group">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Nama Lengkap</label>
-                    <input type="text" id="login-name" class="f-input" placeholder="Contoh: Dr. Andi Wijaya" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
-                </div>
-                <div class="f-group">
                     <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Alamat Email</label>
                     <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
+                </div>
+                <div class="f-group">
+                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Password</label>
+                    <input type="password" id="login-password" class="f-input" placeholder="••••••••" style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
                 </div>
                 <div class="f-group" id="group-appscript-url" style="display:none;">
                     <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Apps Script API URL</label>
@@ -1400,28 +1400,39 @@
         };
 
         window.startAppWithSync = async function() {
-            const name = document.getElementById('login-name').value;
             const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
             const url = document.getElementById('login-appscript-url').value;
 
-            if (!name || !email || !url) return alert("Silakan isi Nama, Email, dan Apps Script URL!");
+            if (!email || !password || !url) return alert("Silakan isi Email, Password, dan Apps Script URL!");
             
             localStorage.setItem('grants_appscript_url', url);
             cloudSync.url = url;
 
-            const userData = { id: Date.now(), name, email, role: 'Pengusul', unit: 'Fakultas Teknik' };
-            if (email === 'rafieiy.m@gmail.com') userData.role = 'Superadmin';
-            
-            currentUser = userData;
-            localStorage.setItem('grants_current_user', JSON.stringify(userData));
-            
-            showToast("Menyambungkan ke Spreadsheet...");
+            showToast("Memverifikasi kredensial...");
             const data = await cloudSync.pull();
-            if (data) {
-                showToast("Sinkronisasi Awal Berhasil!");
+            
+            if (data && data.registeredUsers) {
+                // Find user by email and matching password (if present in sheet)
+                const user = data.registeredUsers.find(u => u.email === email);
+                if (!user) return alert("User tidak terdaftar di sistem!");
+                
+                // If password column exists in sheet, check it
+                if (user.password && user.password != password) return alert("Password salah!");
+                
+                currentUser = user;
+                localStorage.setItem('grants_current_user', JSON.stringify(user));
+                showToast(`Selamat datang, ${user.name}!`);
+                location.reload();
+            } else if (data) {
+                // Fallback if no users sheet yet
+                const userData = { id: Date.now(), name: email.split('@')[0], email, role: 'Pengusul', unit: 'Fakultas Teknik' };
+                if (email === 'rafieiy.m@gmail.com') userData.role = 'Superadmin';
+                currentUser = userData;
+                localStorage.setItem('grants_current_user', JSON.stringify(userData));
                 location.reload();
             } else {
-                alert("Gagal sinkron. Pastikan Apps Script URL benar dan mengizinkan akses!");
+                alert("Gagal terhubung ke Spreadsheet!");
             }
         };
 
