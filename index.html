@@ -3099,7 +3099,7 @@
 
             if (sub === 'info') {
                 container.innerHTML = `
-                    <div class="glass animate-fade-in" style="max-width:850px; background:white; border-radius:var(--radius-xl); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-float);">
+                    <div class="glass animate-fade-in" style="max-width:850px; background:var(--surface); border-radius:var(--radius-xl); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-float);">
                         <div style="padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.01);">
                             <div style="display:flex; align-items:center; gap:12px;">
                                 <span class="material-symbols-outlined" style="color:var(--primary); font-size:20px;">info</span>
@@ -3107,11 +3107,11 @@
                             </div>
                             <div style="display:flex; gap:10px;">
                                 ${(globalPermissions[currentUser.role] || {}).import_export_data >= 2 ? `
-                                    <button class="btn-secondary" onclick="triggerImportExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:white;">
+                                    <button class="btn-secondary" onclick="triggerImportExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:var(--background);">
                                         <span class="material-symbols-outlined" style="font-size:16px;">upload</span> IMPOR MS EXCEL
                                     </button>
                                     <input type="file" id="import-excel-input" style="display:none;" accept=".xlsx, .xls" onchange="importProposalsFromExcel(event)">
-                                    <button class="btn-secondary" onclick="exportProposalsToExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:white;">
+                                    <button class="btn-secondary" onclick="exportProposalsToExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:var(--background);">
                                         <span class="material-symbols-outlined" style="font-size:16px;">download</span> EKSPOR
                                     </button>
                                 ` : ''}
@@ -3146,14 +3146,14 @@
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
-                                <div id="cross-program-list" style="display:${program.excludeDuplication && program.excludeDuplication.length > 0 ? 'block' : 'none'}; background:rgba(0,0,0,0.02); padding:1.25rem; border-radius:12px; border:1px solid var(--border);">
+                                <div id="cross-program-list" style="display:${program.excludeDuplication && program.excludeDuplication.length > 0 ? 'block' : 'none'}; background:var(--background); padding:1.25rem; border-radius:12px; border:1px solid var(--border);">
                                     <div class="chip-container" id="exclusion-chips" style="margin-bottom:12px;">
                                         ${(program.excludeDuplication || []).map(pid => `
-                                            <span class="chip" style="background:white; border:1px solid var(--border);">${programs.find(p => p.id == pid)?.name || 'Unknown'} <span class="material-symbols-outlined remove" onclick="updateExclusion('${pid}', false)">close</span></span>
+                                            <span class="chip" style="background:var(--background); border:1px solid var(--border);">${programs.find(p => p.id == pid)?.name || 'Unknown'} <span class="material-symbols-outlined remove" onclick="updateExclusion('${pid}', false)">close</span></span>
                                         `).join('')}
                                     </div>
                                     <div class="searchable-select" style="max-width:100%;">
-                                        <input type="text" placeholder="Pilih program untuk dilarang duplikasi..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" class="f-input" style="padding: 6px 10px; font-size: 0.8rem; background:white;">
+                                        <input type="text" placeholder="Pilih program untuk dilarang duplikasi..." onfocus="this.nextElementSibling.style.display='block'" onkeyup="filterGeneric(this)" class="f-input" style="padding: 6px 10px; font-size: 0.8rem; background:var(--background);">
                                         <div class="dropdown-list">
                                             ${programs.filter(p => p.id != progId && !(program.excludeDuplication || []).includes(p.id)).map(p => `
                                                 <div onclick="updateExclusion('${p.id}', true)">${p.name}</div>
@@ -3193,7 +3193,7 @@
 
                     <!-- Danger Zone -->
                     <div class="glass animate-fade-in" style="max-width:850px; margin-top:2rem; background:rgba(239, 68, 68, 0.03); border-radius:var(--radius-xl); border:1px solid rgba(239, 68, 68, 0.15); overflow:hidden;">
-                        <div style="padding:1.25rem 2rem; border-bottom:1px solid rgba(239, 68, 68, 0.1); display:flex; align-items:center; gap:12px; background:white;">
+                        <div style="padding:1.25rem 2rem; border-bottom:1px solid rgba(239, 68, 68, 0.1); display:flex; align-items:center; gap:12px; background:var(--surface);">
                             <span class="material-symbols-outlined" style="color:var(--error); font-size:20px;">dangerous</span>
                             <h3 style="margin:0; font-family:'Outfit'; font-size:1.15rem; font-weight:800; color:var(--error);">Zona Bahaya</h3>
                         </div>
@@ -3229,7 +3229,7 @@
                 });
 
                 let groupsHtml = Object.keys(groupsMap).map(gName => `
-                    <div class="f-group draggable-item" draggable="true" ondragstart="onGroupDragStart(event, '${gName}')" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onGroupDrop(event, '${gName}')" style="background:rgba(0,0,0,0.02); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border);">
+                    <div class="f-group draggable-item" draggable="true" ondragstart="onGroupDragStart(event, '${gName}')" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onGroupDrop(event, '${gName}')" style="background:var(--background); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border);">
                         <div style="font-weight:800; font-family:'Outfit'; color:var(--primary); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
                             <span class="material-symbols-outlined" style="cursor:grab;">drag_indicator</span>
                             ${gName}
@@ -3284,7 +3284,7 @@
                             ${programStatuses.map((s, idx) => `
                                 <div class="glass" style="padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border); background:var(--surface); display:flex; flex-direction:column; gap:12px;">
                                     <div style="display:flex; align-items:center; gap:1.25rem;">
-                                        <div style="width:20px; height:20px; border-radius:50%; background:${s.color || '#6366f1'}; flex-shrink:0; border:2px solid white; box-shadow:0 0 0 1px var(--border);"></div>
+                                        <div style="width:20px; height:20px; border-radius:50%; background:${s.color || '#6366f1'}; flex-shrink:0; border:2px solid var(--surface); box-shadow:0 0 0 1px var(--border);"></div>
                                         <div style="flex:1;">
                                             <input type="text" value="${s.label}" placeholder="Label Status" class="f-input" style="font-weight:800; padding:6px 12px;" onchange="updateStatusData(${idx}, 'label', this.value)">
                                         </div>
@@ -3327,7 +3327,7 @@
                                     <div style="display:flex; flex-direction:column; gap:0.75rem;">
                                         ${(period.timeline || []).map((stage, sIdx) => `
                                             <div class="glass draggable-item" draggable="true" ondragstart="onTimelineDragStart(event, ${pIdx}, ${sIdx})" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onTimelineDrop(event, ${pIdx}, ${sIdx})"
-                                                 style="padding:1rem; border-radius:var(--radius-md); display:grid; grid-template-columns: auto 2fr 1.5fr 1fr 1fr auto; gap:1rem; align-items:center; background:white;">
+                                                 style="padding:1rem; border-radius:var(--radius-md); display:grid; grid-template-columns: auto 2fr 1.5fr 1fr 1fr auto; gap:1rem; align-items:center; background:var(--surface);">
                                                 <span class="material-symbols-outlined" style="cursor:grab; color:var(--text-muted); font-size:18px;">drag_indicator</span>
                                                 <input type="text" value="${stage.label}" class="f-input" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'label', this.value)">
                                                 <select class="f-input" onchange="updateTimelineData(${pIdx}, ${sIdx}, 'status', this.value)">
@@ -3456,7 +3456,7 @@
                         </div>
 
                         <!-- Review Mode Setting -->
-                        <div class="glass" style="padding:1.5rem; border-radius:var(--radius-xl); border:1.5px solid var(--primary-soft); background:linear-gradient(135deg, rgba(99,102,241,0.02) 0%, rgba(255,255,255,0.8) 100%); margin-bottom:2rem; display:flex; align-items:center; justify-content:space-between; gap:2rem;">
+                        <div class="glass" style="padding:1.5rem; border-radius:var(--radius-xl); border:1.5px solid var(--primary-soft); background:linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 100%); margin-bottom:2rem; display:flex; align-items:center; justify-content:space-between; gap:2rem;">
                             <div style="display:flex; align-items:center; gap:1.25rem;">
                                 <div style="width:56px; height:56px; border-radius:18px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-md);">
                                     <span class="material-symbols-outlined" style="font-size:28px;">visibility_off</span>
@@ -3490,7 +3490,7 @@
 
                         return Object.keys(groupsMap).map(gName => `
                                     <div class="f-group draggable-item" draggable="true" ondragstart="onReviewGroupDragStart(event, '${gName}')" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onReviewGroupDrop(event, '${gName}')" 
-                                         style="background:rgba(0,0,0,0.02); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border);">
+                                         style="background:var(--background); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border);">
                                         <div style="font-weight:800; font-family:'Outfit'; color:var(--primary); margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
                                             <span class="material-symbols-outlined" style="cursor:grab;">drag_indicator</span>
                                             ${gName}
@@ -3498,7 +3498,7 @@
                                         <div style="display:flex; flex-direction:column; gap:0.75rem;">
                                             ${groupsMap[gName].map(item => `
                                                 <div class="glass draggable-item" draggable="true" ondragstart="onReviewIndDragStart(event, ${item.idx})" ondragover="allowDrop(event); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onReviewIndDrop(event, ${item.idx})"
-                                                     style="display:flex; flex-direction:column; gap:1rem; padding:1.25rem; border-radius:var(--radius-md); background:white; border:1px solid var(--border);">
+                                                     style="display:flex; flex-direction:column; gap:1rem; padding:1.25rem; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border);">
                                                     <div style="display:flex; align-items:center; gap:1rem;">
                                                         <span class="material-symbols-outlined" style="cursor:grab; color:var(--text-muted); font-size:18px;">drag_indicator</span>
                                                         <input type="text" value="${item.data.label}" class="f-input" style="flex:1; font-weight:700;" onchange="updateReviewIndicator(${item.idx}, 'label', this.value)">
