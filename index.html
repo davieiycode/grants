@@ -818,7 +818,7 @@
             }
         };
 
-        let globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || defaultPermissions;
+        let globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || JSON.parse(JSON.stringify(defaultPermissions));
 
         // Modal functions
         window.openUserModal = function (id = null) {
@@ -1239,7 +1239,15 @@
                         data.globalPermissions.forEach(p => {
                            const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
                            const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId); 
-                           if (roleKey) globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...p };
+                           if (roleKey) {
+                             // Force all permission values to be Numbers to avoid string comparison issues
+                             const normalizedP = {};
+                             Object.keys(p).forEach(key => {
+                                 const val = p[key];
+                                 normalizedP[key] = isNaN(val) ? val : Number(val);
+                             });
+                             globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...normalizedP };
+                           }
                         });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                     }
