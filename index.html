@@ -1490,7 +1490,11 @@
         function checkAdminVisibility() {
             const navLinks = document.getElementById('main-nav-links');
             if (!navLinks) return;
-            const rolePerms = (globalPermissions[currentUser.role]) || (defaultPermissions[currentUser.role]) || defaultPermissions['Pengusul'];
+            // Role Lookup - Case Insensitive
+            const userRoleTitleCase = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase();
+            const rolePerms = (globalPermissions[currentUser.role] || globalPermissions[userRoleTitleCase]) || 
+                              (defaultPermissions[currentUser.role] || defaultPermissions[userRoleTitleCase]) || 
+                              defaultPermissions['Pengusul'];
 
             // 1. Navbar & Activity Buttons (Only for Edit Level 2)
             const addProgBtn = document.getElementById('btn-add-program');
