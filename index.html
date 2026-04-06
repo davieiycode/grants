@@ -91,15 +91,31 @@
 
         <main class="container">
             <div id="dashboard-view">
-                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h1>Program Hibah</h1>
-                    <button id="btn-add-program" class="btn-primary" onclick="openAddProgramModal()">+ Tambah Program</button>
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
+                    <h1 style="font-family:'Outfit'; font-weight:950; font-size:2.8rem; letter-spacing:-0.03em;">Program Hibah</h1>
+                    <button id="btn-add-program" class="btn-primary" onclick="window.openAddProgramModal()" style="height:52px; padding:0 24px; border-radius:14px; font-weight:850; box-shadow:var(--shadow-lg);">
+                        <span class="material-symbols-outlined">add_circle</span> + Tambah Program
+                    </button>
                 </div>
                 <div id="program-grid" class="grid-cols-3"></div>
             </div>
 
-            <div id="global-users-view" style="display:none;"></div>
-            <div id="global-guide-view" style="display:none;"></div>
+            <div id="view-users" style="display:none;"></div>
+            <div id="global-guide-view" style="display:none;">
+                <div class="glass animate-fade-in" style="padding:3rem; border-radius:24px;">
+                    <h1 style="font-family:'Playfair Display'; font-size:2.5rem; margin-bottom:1.5rem;">Panduan Sistem ProSpace</h1>
+                    <div class="grid-cols-2" style="gap:2rem;">
+                        <div>
+                           <h3 style="color:var(--primary); margin-bottom:1rem;">1. Alur Program Hibah</h3>
+                           <p style="color:var(--text-muted); font-size:0.95rem;">Program dimulai dengan penetapan skema, atribut formulir, dan lini masa. Admin dapat membuka periode submisi pada menu Pengaturan Program.</p>
+                        </div>
+                        <div>
+                           <h3 style="color:var(--primary); margin-bottom:1rem;">2. Manajemen Pengusul</h3>
+                           <p style="color:var(--text-muted); font-size:0.95rem;">Ketua pengusul mendaftarkan diri lewat entry.html. Admin dapat meninjau semua data personel pada menu User & Kebijakan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="program-dashboard" style="display:none;"></div>
             <div id="proposal-detail-view" style="display:none;"></div>
         </main>
@@ -160,15 +176,19 @@
 
         window.switchMainView = function(view) {
             document.getElementById('dashboard-view').style.display = view === 'program' ? 'block' : 'none';
-            document.getElementById('global-users-view').style.display = view === 'users' ? 'block' : 'none';
+            document.getElementById('view-users').style.display = view === 'users' ? 'block' : 'none';
             document.getElementById('global-guide-view').style.display = view === 'guide' ? 'block' : 'none';
             document.getElementById('program-dashboard').style.display = 'none';
             document.getElementById('proposal-detail-view').style.display = 'none';
             
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if (view === 'program') document.querySelector('.nav-link[onclick*="program"]').classList.add('active');
+            if (view === 'program') {
+                const el = document.querySelector('.nav-link[onclick*="program"]');
+                if (el) el.classList.add('active');
+            }
             if (view === 'users') {
-                document.querySelector('.nav-link[onclick*="users"]').classList.add('active');
+                const el = document.querySelector('.nav-link[onclick*="users"]');
+                if (el) el.classList.add('active');
                 if (window.renderUsers) window.renderUsers();
             }
         };

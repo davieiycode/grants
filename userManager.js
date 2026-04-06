@@ -183,3 +183,48 @@ window.updateUserRole = function(email, role) {
         showToast(`Peran ${user.name} diperbarui menjadi ${role}`);
     }
 };
+
+window.filterUsers = function(val) {
+    const rows = document.querySelectorAll('#user-list-tbody tr');
+    val = val.toLowerCase();
+    rows.forEach(row => {
+        const text = row.getAttribute('data-search').toLowerCase();
+        row.style.display = text.includes(val) ? '' : 'none';
+    });
+};
+
+window.filterUserList = window.filterUsers;
+
+window.openAddUserModal = function() {
+    const html = `
+        <div class="f-group">
+            <label class="f-label">Nama Lengkap</label>
+            <input type="text" id="new-user-name" class="f-input">
+        </div>
+        <div class="f-group" style="margin-top:1rem;">
+            <label class="f-label">Email</label>
+            <input type="email" id="new-user-email" class="f-input">
+        </div>
+        <div class="f-group" style="margin-top:1rem;">
+            <label class="f-label">Unit Kerja</label>
+            <input type="text" id="new-user-unit" class="f-input">
+        </div>
+        <div style="margin-top:2rem; display:flex; justify-content:flex-end;">
+            <button class="btn-primary" onclick="saveNewUser()">TAMBAH SEKARANG</button>
+        </div>
+    `;
+    window.openModal("Tambah Pengguna Baru", html);
+};
+
+window.saveNewUser = async function() {
+    const name = document.getElementById('new-user-name').value;
+    const email = document.getElementById('new-user-email').value;
+    const unit = document.getElementById('new-user-unit').value;
+    if (!name || !email) return alert("Nama dan Email wajib diisi!");
+    
+    const newUser = { id: Date.now(), name, email, unit, role: 'Pengusul', isBlocked: false };
+    await window.fbSave('registeredUsers', email, newUser);
+    window.closeModal();
+    window.renderUsers();
+    showToast(`Pengguna ${name} berhasil ditambahkan.`);
+};
