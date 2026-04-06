@@ -1430,6 +1430,12 @@
             if (nameParam && document.getElementById('login-name')) document.getElementById('login-name').value = nameParam;
             if (emailParam && document.getElementById('login-email')) document.getElementById('login-email').value = emailParam;
 
+            // CLEAN URL ADDRESS BAR (Hide Params)
+            if (scriptParam || nameParam || emailParam) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
             // Auto-Login if all params provided
             if (!savedUser && scriptParam && nameParam && emailParam) {
                 startAppWithSync();
