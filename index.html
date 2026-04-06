@@ -854,56 +854,9 @@
         }
 
         // Data & State Management
-        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
-            {
-                id: '1',
-                name: "Grants 2025",
-                desc: "Program hibah kompetitif untuk inovasi teknologi masa depan.",
-                icon: "rocket_launch",
-                allowMultiple: false,
-                attributes: [
-                    { label: "Anggaran yang Diajukan (IDR)", type: "number", required: true, validation: "[0-9]+", desc: "Estimasi total pendanaan tahun pertama" },
-                    { label: "Target Luaran", type: "multiple options", options: ["Jurnal Q1", "Paten Terdaftar", "Prototipe TRL 7"], required: true, desc: "Pilih minimal satu target" },
-                    { label: "Analisis Kelayakan", type: "formula", formula: "{Anggaran}/10", desc: "Nilai skor otomatis berdasarkan anggaran" },
-                    { label: "Berkas Internal (Staf Only)", type: "url", required: false, hideFor: ["Pengusul"], desc: "Link dokumen verifikasi internal" }
-                ]
-            },
-            {
-                id: '2',
-                name: "Riset Unggulan",
-                desc: "Pendanaan untuk penelitian fundamental dan terapan berskala nasional.",
-                icon: "biotech",
-                allowMultiple: true,
-                attributes: [
-                    { label: "Rumpun Ilmu", type: "dropdown", options: ["Sains", "Sosial", "Kesehatan"], required: true },
-                    { label: "Kesiapan Teknologi (Radio)", type: "radio", options: ["TRL 1-3", "TRL 4-6", "TRL 7+"], required: true },
-                    { label: "Disposisi Dana", type: "yes no", required: true, desc: "Sudah disetujui Unit?" }
-                ],
-                team: { pic: ["Admin Utama"], staff: ["Siti Aminah"] },
-                reviewers: ["Prof. Dr. Ir. Tech"]
-            },
-            {
-                id: '3',
-                name: "Abdimas 2024",
-                desc: "Program pengabdian masyarakat untuk peningkatan ekonomi lokal.",
-                icon: "group",
-                allowMultiple: false,
-                attributes: [
-                    { label: "Lokasi Pengabdian (Kecamatan/Desa)", type: "text", required: true },
-                    { label: "Jumlah Beneficiary (Penerima Manfaat)", type: "number", required: true },
-                    { label: "Uraian Masalah Mitra", type: "longtext", required: true }
-                ]
-            }
-        ];
+        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
-        var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [
-            { id: 1, name: "Superadmin UGM", unit: "Direktorat IT", role: "Superadmin", email: "rafieiy.m@gmail.com", phone: "08123456789", dept: "Infrastruktur", expertise: "Security" },
-            { id: 2, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Editor", email: "siti@univ.ac.id", phone: "08123456788", dept: "Teknik Sipil", expertise: "Struktur Beton" },
-            { id: 3, name: "Budi Santoso", unit: "Fakultas Ekonomi", role: "Pengusul", email: "budi@univ.ac.id", phone: "08123456787", dept: "Manajemen", expertise: "Fintech" },
-            { id: 4, name: "Prof. Dr. Ir. Tech", unit: "Pusat Riset AI", role: "Reviewer", email: "tech@univ.ac.id", phone: "08123456786", dept: "Machine Learning", expertise: "Natural Language Processing" },
-            { id: 5, name: "Dr. Maria U", unit: "Fakultas Kedokteran", role: "Pengusul", email: "maria@univ.ac.id", phone: "08123456785", dept: "Biomedik", expertise: "Genomics" },
-            { id: 6, name: "Ani Wijaya", unit: "Fakultas Hukum", role: "Pengusul", email: "ani@univ.ac.id", phone: "08112233445", dept: "Hukum Perdata", expertise: "Cyber Law" }
-        ];
+        var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
 
         let currentUser = JSON.parse(localStorage.getItem('grants_currentUser')) || registeredUsers[0];
 
