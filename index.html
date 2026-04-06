@@ -1279,8 +1279,12 @@
                         });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                     }
-                    if (data.globalLogs) {
-                        window.globalLogs = data.globalLogs;
+                    if (data.globalLogs && Array.isArray(data.globalLogs)) {
+                        window.globalLogs = data.globalLogs.map(log => ({
+                            ...log,
+                            timestamp: log.timestamp || log.Timestamp || new Date().toISOString()
+                        }));
+                        localStorage.setItem('grants_global_logs', JSON.stringify(window.globalLogs));
                     }
 
                     checkAdminVisibility();
@@ -1359,6 +1363,10 @@
             } else if (collection === 'globalPermissions') {
                 globalPermissions[id] = data; // id is the Role name
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+            } else if (collection === 'globalLogs') {
+                if (!window.globalLogs) window.globalLogs = [];
+                window.globalLogs.unshift(data);
+                localStorage.setItem('grants_global_logs', JSON.stringify(window.globalLogs));
             }
 
             // 2. PUSH TO CLOUD (With Logging)
