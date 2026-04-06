@@ -438,7 +438,7 @@
             <button onclick="startAppWithSync()" id="btn-login-sync"
                 style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:var(--primary); color:white; border:none; padding:16px; border-radius:16px; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft); transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
                 <span class="material-symbols-outlined">login</span>
-                Masuk ke Dashboard
+                Launch
             </button>
             <p
                 style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">
@@ -1549,7 +1549,7 @@
             if (savedUrl) {
                 if (loginSyncDot) loginSyncDot.style.background = '#10b981'; // Green
                 if (loginSyncText) {
-                    loginSyncText.innerText = "Buku ditemukan";
+                    loginSyncText.innerText = "Book found";
                     loginSyncText.style.color = "#10b981";
                 }
                 const urlInput = document.getElementById('login-appscript-url');
