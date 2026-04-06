@@ -1394,6 +1394,8 @@
                     });
                     syncHub.end();
                     this.isSyncing = false;
+                    // Force a tiny delay to ensure browser doesn't immediately kill the connection
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 } catch (e) {
                     console.error("Push Sync Failed:", e);
                     syncHub.update('error');
@@ -1429,6 +1431,15 @@
             if (collection !== 'global_logs') {
                 const details = `Update ${collection} ID:${id}`;
                 window.addGlobalLog('DATA_CHANGE', details);
+            }
+        };
+
+        // PREVENT DATA LOSS ON REFRESH DURING SYNC
+        window.onbeforeunload = function(e) {
+            if (cloudSync.isSyncing) {
+                const msg = "Sinkronisasi sedang berlangsung. Jika Anda keluar, perubahan mungkin tidak tersimpan secara permanen di cloud.";
+                e.returnValue = msg;
+                return msg;
             }
         };
 
