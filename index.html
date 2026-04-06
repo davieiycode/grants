@@ -398,7 +398,7 @@
                 <span class="material-symbols-outlined">login</span>
                 Masuk ke Dashboard
             </button>
-            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal <span class="app-version-text">v2.5.4</span></span></p>
+            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal <span class="app-version-text">v2.5.5</span></span></p>
         </div>
     </div>
 
@@ -482,7 +482,7 @@
                             </button>
 
                             <div style="margin-top:12px; padding:12px; text-align:center; border-top:1px dashed var(--border);">
-                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH <span class="app-version-text">v2.5.4</span></span>
+                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH <span class="app-version-text">v2.5.5</span></span>
                             </div>
                         </div>
                     </div>
@@ -750,7 +750,7 @@
         }
 
         // Data & State Management
-        const APP_VERSION = "v2.5.4";
+        const APP_VERSION = "v2.5.5";
 
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
@@ -1260,7 +1260,7 @@
             }
         };
 
-        window.fbSave = (collection, id, data) => {
+        window.fbSave = async (collection, id, data) => {
             // 1. UPDATE LOCAL STATE IMMEDIATELY (Reactive UI)
             if (collection === 'programs') {
                 const idx = programs.findIndex(p => p.id == id);
@@ -1292,13 +1292,14 @@
             }
 
             // 2. PUSH TO CLOUD (With Logging)
-            cloudSync.push(collection, id, data);
+            await cloudSync.push(collection, id, data);
             
             // 3. LOG THE CHANGE
-            if (collection !== 'global_logs') {
+            if (collection !== 'globalLogs') {
                 const details = `Update ${collection} ID:${id}`;
                 window.addGlobalLog('DATA_CHANGE', details);
             }
+            return true;
         };
 
         // PREVENT DATA LOSS ON REFRESH DURING SYNC
@@ -1345,10 +1346,11 @@
                 // If pull has permissions, merge them into the globalPermissions object
                 if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
                     data.globalPermissions.forEach(p => {
-                       // Find the role name from the ID or inside the data
-                       const role = Object.keys(defaultPermissions).find(k => k.toString() === p.id); 
-                       if (role) globalPermissions[role] = p;
+                       const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
+                       const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId); 
+                       if (roleKey) globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...p };
                     });
+                    localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                 }
                 // Find user by email and matching password (if present in sheet)
                 let user = data.registeredUsers.find(u => u.email === email);
@@ -1528,6 +1530,9 @@
             const defaultKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === userRoleLower);
             
             let rolePerms = (globalPermissions[permsKey] || defaultPermissions[defaultKey] || defaultPermissions['Pengusul']);
+            
+            // Critical fix: make sure rolePerms has all required keys
+            rolePerms = { ...defaultPermissions[defaultKey || 'Pengusul'], ...rolePerms };
             
             // SUPERADMIN OVERRIDE: Full access always
             if (userRoleLower === 'superadmin') {
@@ -2095,16 +2100,21 @@
             switchGlobalUserSubTab('hak-akses');
         };
 
-        window.saveGlobalPermissions = function () {
+        window.saveGlobalPermissions = async function () {
             localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             
-            // Sync each role as a separate document in 'globalPermissions' sheet
-            Object.keys(globalPermissions).forEach(role => {
-                const payload = { ...globalPermissions[role], id: role };
-                window.fbSave('globalPermissions', role, payload);
-            });
+            const rolesToSync = Object.keys(globalPermissions);
+            showToast(`Memulai sinkronisasi kebijakan (${rolesToSync.length} peran)...`, "info");
             
-            showToast('Kebijakan akses berhasil disimpan!');
+            for (let i = 0; i < rolesToSync.length; i++) {
+                const role = rolesToSync[i];
+                showToast(`Sinkronisasi peran: ${role} (${i+1}/${rolesToSync.length})...`, "info");
+                const payload = { ...globalPermissions[role], id: role };
+                await window.fbSave('globalPermissions', role, payload);
+            }
+            
+            showToast('Seluruh kebijakan berhasil disinkronkan ke Cloud!', 'success');
+            checkAdminVisibility();
         };
 
         window.resetDefaultPermissions = function () {
