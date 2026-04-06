@@ -461,15 +461,15 @@
                         </div>
 
                         <!-- Clickable Profile Trigger -->
-                        <div id="profile-dropdown-trigger" onclick="toggleProfileDropdown()" style="display:flex; align-items:center; gap:12px; cursor:pointer; padding:4px 8px; border-radius:14px; transition:all 0.2s;">
-                            <div style="text-align:right;">
-                                <div id="nav-user-name" style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...</div>
-                                <div id="nav-user-role" style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST</div>
+                        <div id="profile-dropdown-trigger" onclick="toggleProfileDropdown()" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:6px 16px 6px 6px; border-radius:18px; transition:all 0.2s; border:1px solid transparent;" onmouseover="this.style.background='var(--surface)'; this.style.border='1px solid var(--border)';" onmouseout="this.style.background='none'; this.style.border='1px solid transparent';">
+                            <div style="width:42px; height:42px; border-radius:14px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(99,102,241,0.15);">
+                                <span class="material-symbols-outlined" style="font-size:26px;">person</span>
                             </div>
-                            <div style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
-                                <span class="material-symbols-outlined" style="font-size:24px;">person</span>
+                            <div style="text-align:left;">
+                                <div id="nav-user-name" style="font-weight:900; font-size:1rem; color:var(--text-main); letter-spacing:-0.01em;">GUEST</div>
+                                <div id="nav-user-role" style="font-size:0.75rem; font-weight:850; color:var(--primary); margin-top:2px; letter-spacing:0.02em;">GUEST</div>
                             </div>
-                            <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted);">expand_more</span>
+                            <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted); margin-left:4px;">expand_more</span>
                         </div>
 
                         <!-- Dropdown Menu -->
@@ -478,23 +478,23 @@
                                 <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.08em;">PENGATURAN SISTEM</span>
                             </div>
                             
-                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px 16px; border:none; background:none; color:var(--text-main); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); text-align:left;">
-                                <div id="theme-icon-bg" style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center; color:var(--primary); transition:all 0.3s;">
-                                    <span class="material-symbols-outlined" id="theme-menu-icon" style="font-size:22px;">dark_mode</span>
+                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; flex-direction:row; align-items:center; gap:16px; padding:12px 18px; border:none; background:none; color:var(--text-main); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); text-align:left;">
+                                <div id="theme-icon-bg" style="width:42px; height:42px; border-radius:14px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center; color:var(--primary); transition:all 0.3s; flex-shrink:0;">
+                                    <span class="material-symbols-outlined" id="theme-menu-icon" style="font-size:24px;">dark_mode</span>
                                 </div>
-                                <div style="line-height:1.3;">
-                                    <span id="theme-text" style="display:block;">Mode Gelap</span>
-                                    <span id="theme-subtext" style="font-size:0.7rem; font-weight:600; opacity:0.5; display:block;">Pindah ke Tema Malam</span>
+                                <div style="line-height:1.4;">
+                                    <span id="theme-text" style="display:block; font-size:1rem; font-weight:900;">Mode Gelap</span>
+                                    <span id="theme-subtext" style="font-size:0.75rem; font-weight:600; opacity:0.6; display:block;">Pindah ke Tema Malam</span>
                                 </div>
                             </button>
 
-                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px 16px; border:none; background:none; color:var(--error); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s; text-align:left; margin-top:4px;">
-                                <div style="width:40px; height:40px; border-radius:12px; background:rgba(239, 68, 68, 0.08); display:flex; align-items:center; justify-content:center; color:var(--error);">
-                                    <span class="material-symbols-outlined" style="font-size:22px;">logout</span>
+                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; flex-direction:row; align-items:center; gap:16px; padding:12px 18px; border:none; background:none; color:var(--error); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s; text-align:left; margin-top:6px;">
+                                <div style="width:42px; height:42px; border-radius:14px; background:rgba(239, 68, 68, 0.08); display:flex; align-items:center; justify-content:center; color:var(--error); flex-shrink:0;">
+                                    <span class="material-symbols-outlined" style="font-size:24px;">logout</span>
                                 </div>
-                                <div style="line-height:1.3;">
-                                    <span style="display:block;">Keluar Sesi</span>
-                                    <span style="font-size:0.7rem; font-weight:600; opacity:0.5; display:block;">Log out from account</span>
+                                <div style="line-height:1.4;">
+                                    <span style="display:block; font-size:1rem; font-weight:900;">Keluar Sesi</span>
+                                    <span style="font-size:0.75rem; font-weight:600; opacity:0.6; display:block;">Log out from account</span>
                                 </div>
                             </button>
 
