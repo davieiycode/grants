@@ -1327,8 +1327,10 @@
         // --- APPS SCRIPT SYNC BRIDGE ---
         window.cloudSync = {
             url: localStorage.getItem('grants_appscript_url'),
+            isSyncing: false,
             async pull() {
-                if (!this.url) return;
+                if (!this.url || this.isSyncing) return;
+                this.isSyncing = true;
                 syncHub.start();
                 try {
                     const res = await fetch(this.url + '?action=pull');
@@ -1363,15 +1365,19 @@
                     else renderDashboard();
                     
                     syncHub.end();
+                    this.isSyncing = false;
                     return data;
                 } catch (e) {
                     console.error("Pull Sync Failed:", e);
                     syncHub.update('error');
+                    this.isSyncing = false;
                     return null;
                 }
             },
             async push(collection, id, data) {
                 if (!this.url) return;
+                // Pushes should always go through, but prevent concurrent pulls
+                this.isSyncing = true;
                 syncHub.start();
                 try {
                     await fetch(this.url, {
@@ -1387,9 +1393,11 @@
                         })
                     });
                     syncHub.end();
+                    this.isSyncing = false;
                 } catch (e) {
                     console.error("Push Sync Failed:", e);
                     syncHub.update('error');
+                    this.isSyncing = false;
                 }
             }
         };
@@ -2449,14 +2457,14 @@
                 type: type,
                 message: message
             });
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
         }
 
         function deleteProgramLog(idx) {
             if (!confirm('Hapus log permanen?')) return;
             const program = programs.find(p => p.id == progId);
             program.logs.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             renderProgramLogs();
         }
 
@@ -2992,7 +3000,7 @@
                 program.financeLogs.unshift(entry);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             renderKeuanganTab();
             showToast('Data keuangan diperbarui');
@@ -3002,7 +3010,7 @@
             if (!confirm('Hapus log transaksi ini?')) return;
             const program = programs.find(p => p.id == progId);
             program.financeLogs.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             renderKeuanganTab();
             showToast('Transaksi dihapus');
         }
@@ -3768,7 +3776,7 @@
                 desc: ""
             });
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -3778,7 +3786,7 @@
             const newLabel = prompt("Edit Label Atribut:", attr.label);
             if (newLabel) attr.label = newLabel;
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -3786,7 +3794,7 @@
             if (!confirm("Hapus atribut ini?")) return;
             const program = programs.find(p => p.id == progId);
             program.attributes.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -3822,7 +3830,7 @@
             if (role === 'pic') program.team.pic.push(name);
             else program.team.staff.push(name);
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             showToast('Anggota tim berhasil ditambahkan');
             switchUserSubTab('pengelola');
@@ -3832,7 +3840,7 @@
             if (!confirm(`Hapus ${name} dari tim pengelola?`)) return;
             const program = programs.find(p => p.id == progId);
             program.team[role] = program.team[role].filter(n => n !== name);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('pengelola');
         }
 
@@ -3858,7 +3866,7 @@
             if (!program.reviewers) program.reviewers = [];
             if (!program.reviewers.includes(name)) program.reviewers.push(name);
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             showToast('Reviewer berhasil ditugaskan');
             switchUserSubTab('reviewer');
@@ -3868,7 +3876,7 @@
             if (!confirm(`Cabut penugasan ${name}?`)) return;
             const program = programs.find(p => p.id == progId);
             program.reviewers = program.reviewers.filter(n => n !== name);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('reviewer');
         }
 
@@ -3902,7 +3910,8 @@
         }
 
         function saveStatusSettings() {
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            const program = programs.find(p => p.id == progId);
+            window.fbSave('programs', program.id, program);
             showToast("Konfigurasi status berhasil disimpan!");
         }
 
@@ -3961,7 +3970,7 @@
         }
 
         function saveNotifSettings() {
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast("Templat notifikasi berhasil diperbarui!");
         }
 
@@ -4073,7 +4082,7 @@
                 const modeEl = document.getElementById('program-review-mode');
                 if (modeEl) program.reviewMode = modeEl.value;
 
-                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
                 if (typeof addProgramLog === 'function') {
                     addProgramLog(progId, 'CONFIG', `Mengubah pengaturan penilaian dan mode review.`);
                 }
@@ -4086,22 +4095,25 @@
         }
 
         function saveTimelineSettings() {
+            const program = programs.find(p => p.id == progId);
             addProgramLog('update', 'Memperbarui lini masa dan periode program');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast("Lini masa program berhasil diperbarui!");
             switchSettingSubTab('timeline');
         }
 
         function saveFileSettings() {
+            const program = programs.find(p => p.id == progId);
             addProgramLog('update', 'Memperbarui konfigurasi berkas persyaratan');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast("Konfigurasi berkas berhasil disimpan!");
             switchSettingSubTab('berkas');
         }
 
         function saveNotifSettings() {
+            const program = programs.find(p => p.id == progId);
             addProgramLog('update', 'Memperbarui templat notifikasi sistem');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast("Templat notifikasi berhasil diperbarui!");
             switchSettingSubTab('notif');
         }
@@ -4120,7 +4132,7 @@
             const program = programs.find(p => p.id == progId);
             const item = program.periods.splice(draggedPeriodIdx, 1)[0];
             program.periods.splice(targetIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('timeline');
         }
 
@@ -4137,7 +4149,7 @@
             const program = programs.find(p => p.id == progId);
             const item = program.periods[draggedTimelineIdx.p].timeline.splice(draggedTimelineIdx.s, 1)[0];
             program.periods[pIdx].timeline.splice(sIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('timeline');
         }
 
@@ -4158,7 +4170,7 @@
             const targetIdx = others.findIndex(i => (i.group || 'Tanpa Grup') === targetGroupName);
             if (targetIdx !== -1) others.splice(targetIdx, 0, ...items); else others.push(...items);
             program.reviewTemplate = others;
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
@@ -4175,7 +4187,7 @@
             const program = programs.find(p => p.id == progId);
             const item = program.reviewTemplate.splice(draggedReviewIndIdx, 1)[0];
             program.reviewTemplate.splice(targetIdx, 0, item);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
@@ -4388,7 +4400,7 @@
                 program.team[role] = list.filter(u => u !== userName);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('pengelola');
         }
 
@@ -4402,7 +4414,7 @@
                 program.reviewers = program.reviewers.filter(u => u !== userName);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('reviewer');
         }
 
@@ -4540,7 +4552,7 @@
                 program.attributes.push(newAttr);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             switchSettingSubTab('atribut');
         }
@@ -4736,7 +4748,7 @@
                 program.team[role] = list.filter(u => u !== userName);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('pengelola');
         }
 
@@ -4750,7 +4762,7 @@
                 program.reviewers = program.reviewers.filter(u => u !== userName);
             }
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchUserSubTab('reviewer');
         }
 
@@ -4758,21 +4770,21 @@
             const program = programs.find(p => p.id == progId);
             if (!program.reviewTemplate) program.reviewTemplate = [];
             program.reviewTemplate.push({ label: "Kriteria Baru", type: "number", weight: 0, max: 100 });
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
         function updateReviewInd(idx, key, val) {
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate[idx][key] = val;
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             if (key === 'type' || key === 'options') switchSettingSubTab('review');
         }
 
         function deleteReviewInd(idx) {
             const program = programs.find(p => p.id == progId);
             program.reviewTemplate.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('review');
         }
 
@@ -4787,7 +4799,7 @@
                 end: document.getElementById('blacklist-end').value,
                 note: document.getElementById('blacklist-note').value
             });
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             switchUserSubTab('blacklist');
             showToast('User berhasil masuk daftar cekal');
@@ -4802,7 +4814,7 @@
             program.attributes[idx] = program.attributes[target];
             program.attributes[target] = temp;
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4810,7 +4822,7 @@
             if (!confirm('Hapus atribut ini?')) return;
             const program = programs.find(p => p.id == progId);
             program.attributes.splice(idx, 1);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4833,7 +4845,7 @@
             const item = program.attributes.splice(draggedIdx, 1)[0];
             program.attributes.splice(targetIdx, 0, item);
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4866,7 +4878,7 @@
             }
             program.attributes = others;
 
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('atribut');
         }
 
@@ -4883,7 +4895,7 @@
                 listEl.style.display = 'none';
                 const program = programs.find(p => p.id == progId);
                 program.excludeDuplication = [];
-                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
             } else {
                 listEl.style.display = 'block';
             }
@@ -4910,7 +4922,7 @@
 
             addProgramLog('update', `Memperbarui informasi umum ${oldName !== program.name ? '(Nama berubah dari ' + oldName + ')' : ''}`);
             showToast('Informasi program berhasil diperbarui');
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             renderProgramHeader();
             switchSettingSubTab('info');
         }
@@ -4922,7 +4934,7 @@
             if (confirm(`Apakah Anda yakin ingin ${isArchived ? 'mengaktifkan kembali' : 'menonaktifkan'} program "${program.name}"?`)) {
                 program.status = isArchived ? 'active' : 'archived';
                 addProgramLog('archive', `Status program diubah menjadi: ${program.status.toUpperCase()}`);
-                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
                 showToast(`Program berhasil ${isArchived ? 'diaktifkan' : 'dinonaktifkan'}`);
                 switchSettingSubTab('info');
             }
@@ -4937,7 +4949,7 @@
 
                 recycleBin.push(deletedItem);
                 localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
-                localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+                window.fbSave('programs', program.id, program);
 
                 showToast('Program dipindahkan ke Tempat Sampah');
                 window.location.href = 'index.html';
@@ -4952,7 +4964,7 @@
             program.status = 'archived'; // Default to archived after restore for safety
 
             programs.push(program);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             localStorage.setItem('grants_recycle_bin', JSON.stringify(recycleBin));
 
             showToast('Program berhasil di-restore ke Arsip');
@@ -4963,7 +4975,7 @@
             const program = programs.find(p => p.id == id);
             if (!program) return;
             program.status = 'active';
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             showToast('Program berhasil diaktifkan kembali');
             switchGlobalUserSubTab('arsip-program');
         }
@@ -5386,7 +5398,7 @@
             };
 
             programs.push(newProg);
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             closeModal();
             showToast('Program berhasil dibuat!');
             renderDashboard();
@@ -5400,7 +5412,7 @@
             } else {
                 program.excludeDuplication = program.excludeDuplication.filter(id => id != targetId);
             }
-            localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+            window.fbSave('programs', program.id, program);
             switchSettingSubTab('info');
         }
 
