@@ -1875,7 +1875,7 @@
                     </div>
                 `;
             } else if (sub === 'hak-akses') {
-                if (currentUser.role !== 'Superadmin') {
+                if (currentUser.role.toLowerCase() !== 'superadmin') {
                     container.innerHTML = `
                         <div style="text-align:center; padding:8rem 2rem;">
                             <div style="display:inline-flex; width:80px; height:80px; background:rgba(239, 68, 68, 0.05); color:var(--error); border-radius:30px; align-items:center; justify-content:center; margin-bottom:2rem;">
