@@ -1356,7 +1356,12 @@
                     }
 
                     checkAdminVisibility();
-                    init(); // SMART RE-INITIALIZE (Keeps current view/tab)
+                    
+                    // SMART RE-INITIALIZE: Only if p param exists, otherwise just render grid
+                    const params = new URLSearchParams(window.location.search);
+                    if (params.get('p')) init(); 
+                    else renderDashboard();
+                    
                     syncHub.end();
                     return data;
                 } catch (e) {
@@ -1585,10 +1590,19 @@
             const navLinks = document.getElementById('main-nav-links');
             if (!navLinks) return;
             // Role Lookup - Case Insensitive
-            const userRoleTitleCase = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase();
-            const rolePerms = (globalPermissions[currentUser.role] || globalPermissions[userRoleTitleCase]) || 
-                              (defaultPermissions[currentUser.role] || defaultPermissions[userRoleTitleCase]) || 
-                              defaultPermissions['Pengusul'];
+            const userRoleLower = currentUser.role.toLowerCase();
+            const isAdmin = userRoleLower === 'superadmin' || userRoleLower === 'admin';
+            
+            // Generate rolePerms with fallback and Case-Insensitivity
+            const permsKey = Object.keys(globalPermissions).find(k => k.toLowerCase() === userRoleLower);
+            const defaultKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === userRoleLower);
+            
+            let rolePerms = (globalPermissions[permsKey] || defaultPermissions[defaultKey] || defaultPermissions['Pengusul']);
+            
+            // SUPERADMIN OVERRIDE: Full access always
+            if (userRoleLower === 'superadmin') {
+                rolePerms = Object.keys(rolePerms).reduce((acc, key) => ({ ...acc, [key]: 2 }), { ...rolePerms });
+            }
 
             // 1. Navbar & Activity Buttons (Only for Edit Level 2)
             const addProgBtn = document.getElementById('btn-add-program');
@@ -1603,8 +1617,8 @@
                 'tab-btn-analisis': rolePerms.analysis >= 1,
                 'tab-btn-keuangan': rolePerms.finance >= 1,
                 'tab-btn-users': rolePerms.users >= 1,
-                'tab-btn-setting': rolePerms.programs >= 2, // Pengaturan only level 2
-                'tab-btn-logs': rolePerms.view_program_logs >= 1
+                'tab-btn-setting': (rolePerms.programs >= 2) || (userRoleLower === 'superadmin'),
+                'tab-btn-logs': (rolePerms.view_program_logs >= 1) || (userRoleLower === 'superadmin')
             };
 
             for (const [id, allowed] of Object.entries(permsMap)) {
@@ -2145,18 +2159,14 @@
         };
 
         window.saveGlobalPermissions = function () {
-            localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-            
-            // Sync to Firestore (Master Settings)
-            window.fbSave('settings', 'global_permissions', { permissions: globalPermissions });
-            
+            window.fbSave('global_permissions', 'global_settings', { permissions: globalPermissions });
             showToast('Kebijakan akses berhasil disimpan!');
         };
 
         window.resetDefaultPermissions = function () {
             if (confirm('Reset seluruh kebijakan ke pengaturan default?')) {
                 globalPermissions = JSON.parse(JSON.stringify(defaultPermissions));
-                localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
+                window.fbSave('global_permissions', 'global_settings', { permissions: globalPermissions });
                 switchGlobalUserSubTab('hak-akses');
                 showToast('Kebijakan akses telah direset.');
             }
@@ -2367,8 +2377,9 @@
         function renderProgramLogs() {
             const container = document.getElementById('program-logs-container');
             const program = programs.find(p => p.id == progId);
-            const canView = (globalPermissions[currentUser.role] || {}).view_program_logs;
-            const canDelete = (globalPermissions[currentUser.role] || {}).delete_program_logs;
+            const userRoleLower = currentUser.role.toLowerCase();
+            const canView = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).view_program_logs || (globalPermissions["Superadmin"] || {}).view_program_logs;
+            const canDelete = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).delete_program_logs || (globalPermissions["Superadmin"] || {}).delete_program_logs;
 
             if (!canView) {
                 container.innerHTML = `<div class="glass" style="padding:6rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock_person</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main);">Akses Log Terbatas</h3><p style="color:var(--text-muted); font-weight:600;">Anda tidak memiliki izin untuk melihat log perubahan program ini.</p></div>`;
