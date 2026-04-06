@@ -398,7 +398,7 @@
                 <span class="material-symbols-outlined">login</span>
                 Masuk ke Dashboard
             </button>
-            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal ${APP_VERSION}</span></p>
+            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal <span class="app-version-text">v2.5.1</span></span></p>
         </div>
     </div>
 
@@ -482,7 +482,7 @@
                             </button>
 
                             <div style="margin-top:12px; padding:12px; text-align:center; border-top:1px dashed var(--border);">
-                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH ${APP_VERSION}</span>
+                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH <span class="app-version-text">v2.5.1</span></span>
                             </div>
                         </div>
                     </div>
@@ -1010,19 +1010,9 @@
 
             const userData = { name, email, phone, unit, dept, expertise, role, password };
 
-            if (id) {
-                const idx = registeredUsers.findIndex(u => u.id == id);
-                registeredUsers[idx] = { ...registeredUsers[idx], ...userData };
-            } else {
-                const newId = Date.now();
-                registeredUsers.push({ id: newId, ...userData });
-            }
-
-            localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
-            
-            // Sync user data to Firestore (using email as doc ID for reliability)
-            const updatedUser = id ? registeredUsers.find(u => u.id == id) : registeredUsers[registeredUsers.length - 1];
-            if (updatedUser) window.fbSave('registeredUsers', updatedUser.email, updatedUser);
+            // Use fbSave for both local and cloud persistence
+            const finalId = id || email; // Use ID if editing, Email if new
+            window.fbSave('registeredUsers', finalId, userData);
 
             closeModal();
             switchGlobalUserSubTab('daftar-user');
@@ -1426,9 +1416,16 @@
                 if (idx !== -1) proposals[idx] = data; else proposals.push(data);
                 localStorage.setItem('grants_proposals', JSON.stringify(proposals));
             } else if (collection === 'registeredUsers') {
-                const idx = registeredUsers.findIndex(u => (u.id || u.email) == id);
-                if (idx !== -1) registeredUsers[idx] = data; else registeredUsers.push(data);
+                const idx = registeredUsers.findIndex(u => (u.id == id || u.email == id));
+                if (idx !== -1) {
+                    registeredUsers[idx] = { ...registeredUsers[idx], ...data };
+                } else {
+                    if (!data.id) data.id = Date.now();
+                    registeredUsers.push(data);
+                }
                 localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+                // For cloud, always use email as the persistent key
+                id = registeredUsers.find(u => (u.id == id || u.email == id))?.email || id;
             } else if (collection === 'global_blacklist') {
                 localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
             } else if (collection === 'global_permissions') {
@@ -1530,6 +1527,9 @@
 
         // On Start: Check Session & URL Params
         document.addEventListener('DOMContentLoaded', () => {
+            // Inject App Version
+            document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
+            
             const savedUser = localStorage.getItem('grants_current_user');
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
