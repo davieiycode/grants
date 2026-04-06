@@ -979,6 +979,10 @@
                         <label class="f-label">Bidang Keahlian (Expertise)</label>
                         <input type="text" id="user-expertise-input" class="f-input" value="${user?.expertise || ''}" placeholder="Contoh: AI, Web Dev, IoT">
                     </div>
+                    <div class="f-group">
+                        <label class="f-label">${id ? 'Ubah Password (Kosongkan jika tidak diubah)' : 'Password Akun'}</label>
+                        <input type="password" id="user-password-input" class="f-input" placeholder="********" value="${user?.password || ''}">
+                    </div>
                     <div style="margin-top:1rem; display:flex; justify-content:flex-end;">
                         <button class="btn-primary" onclick="saveUser(${id})">${id ? 'Simpan Perubahan' : 'Daftarkan User'}</button>
                     </div>
@@ -996,8 +1000,9 @@
             const dept = document.getElementById('user-dept-input').value;
             const expertise = document.getElementById('user-expertise-input').value;
             const role = document.getElementById('user-role-input').value;
+            const password = document.getElementById('user-password-input').value;
 
-            const userData = { name, email, phone, unit, dept, expertise, role };
+            const userData = { name, email, phone, unit, dept, expertise, role, password };
 
             if (id) {
                 const idx = registeredUsers.findIndex(u => u.id == id);
@@ -1939,7 +1944,8 @@
                     </div>
                 `;
             } else if (sub === 'arsip-program') {
-                const hasAccess = (globalPermissions[currentUser.role] || {}).manage_archive_trash >= 1;
+                const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
+                const hasAccess = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).manage_archive_trash >= 1;
                 if (!hasAccess) {
                     container.innerHTML = `<div class="glass" style="padding:4rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border); box-shadow:var(--shadow-sm);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main); margin-bottom:0.5rem;">Akses Terbatas</h3><p style="color:var(--text-muted); font-weight:600; font-size:1.1rem; max-width:400px; margin:0 auto;">Anda tidak memiliki kebijakan akses untuk mengelola arsip dan sampah program.</p></div>`;
                     return;
@@ -2132,6 +2138,11 @@
                     </div>
                 `;
             } else if (sub === 'log-akses') {
+                const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
+                if (userRoleLower !== 'superadmin' && userRoleLower !== 'admin') {
+                    container.innerHTML = `<div class="glass" style="padding:4rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border); box-shadow:var(--shadow-sm);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main); margin-bottom:0.5rem;">Akses Terbatas</h3><p style="color:var(--text-muted); font-weight:600; font-size:1.1rem; max-width:400px; margin:0 auto;">Hanya Administrator yang memiliki akses ke log aktivitas sistem global.</p></div>`;
+                    return;
+                }
                 const logs = window.globalLogs || [];
                 container.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
@@ -2400,8 +2411,12 @@
         function renderProgramLogs() {
             const container = document.getElementById('program-logs-container');
             const program = programs.find(p => p.id == progId);
-            const canView = (globalPermissions[currentUser.role] || {}).view_program_logs;
-            const canDelete = (globalPermissions[currentUser.role] || {}).delete_program_logs;
+            
+            const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
+            const isAdmin = userRoleLower === 'superadmin' || userRoleLower === 'admin';
+            
+            const canView = isAdmin || (globalPermissions[currentUser.role] || {}).view_program_logs;
+            const canDelete = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).delete_program_logs;
 
             if (!canView) {
                 container.innerHTML = `<div class="glass" style="padding:6rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock_person</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main);">Akses Log Terbatas</h3><p style="color:var(--text-muted); font-weight:600;">Anda tidak memiliki izin untuk melihat log perubahan program ini.</p></div>`;
