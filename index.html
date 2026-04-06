@@ -97,6 +97,23 @@
             border-radius: 10px 10px 0 0;
         }
 
+        /* Profile Dropdown Improvements */
+        .dropdown-item:hover {
+            background: rgba(99, 102, 241, 0.06) !important;
+            transform: translateX(4px);
+        }
+        .dropdown-item:active {
+            transform: scale(0.98);
+            background: rgba(99, 102, 241, 0.12) !important;
+        }
+        [data-theme="dark"] #profile-dropdown-menu {
+            background: rgba(30, 41, 59, 0.95) !important;
+            color: white !important;
+        }
+        [data-theme="dark"] .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
         /* Hero */
         .hero {
             padding: 4rem 0 3rem;
@@ -456,28 +473,28 @@
                         </div>
 
                         <!-- Dropdown Menu -->
-                        <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:240px; padding:8px; border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow-xl); z-index:1000;">
-                            <div style="padding:10px 12px 14px; border-bottom:1px solid var(--border); margin-bottom:6px;">
-                                <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.05em;">PENGATURAN SISTEM</span>
+                        <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:260px; padding:10px; border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow-xl); z-index:1000; background:rgba(255,255,255,0.95); backdrop-filter:blur(20px);">
+                            <div style="padding:12px 16px 14px; border-bottom:1px solid var(--border); margin-bottom:8px;">
+                                <span style="display:block; font-size:0.65rem; font-weight:900; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.08em;">PENGATURAN SISTEM</span>
                             </div>
                             
-                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--text-main); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
-                                <div style="width:36px; height:36px; border-radius:10px; background:var(--background); display:flex; align-items:center; justify-content:center; color:var(--text-muted);">
-                                    <span class="material-symbols-outlined theme-icon" style="font-size:20px;">dark_mode</span>
+                            <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px 16px; border:none; background:none; color:var(--text-main); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); text-align:left;">
+                                <div id="theme-icon-bg" style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); display:flex; align-items:center; justify-content:center; color:var(--primary); transition:all 0.3s;">
+                                    <span class="material-symbols-outlined" id="theme-menu-icon" style="font-size:22px;">dark_mode</span>
                                 </div>
-                                <div style="line-height:1.2;">
+                                <div style="line-height:1.3;">
                                     <span id="theme-text" style="display:block;">Mode Gelap</span>
-                                    <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Switch UI Theme</span>
+                                    <span id="theme-subtext" style="font-size:0.7rem; font-weight:600; opacity:0.5; display:block;">Pindah ke Tema Malam</span>
                                 </div>
                             </button>
 
-                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--error); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
-                                <div style="width:36px; height:36px; border-radius:10px; background:rgba(239, 68, 68, 0.05); display:flex; align-items:center; justify-content:center; color:var(--error);">
-                                    <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+                            <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px 16px; border:none; background:none; color:var(--error); border-radius:18px; cursor:pointer; font-weight:750; font-size:0.95rem; transition:all 0.2s; text-align:left; margin-top:4px;">
+                                <div style="width:40px; height:40px; border-radius:12px; background:rgba(239, 68, 68, 0.08); display:flex; align-items:center; justify-content:center; color:var(--error);">
+                                    <span class="material-symbols-outlined" style="font-size:22px;">logout</span>
                                 </div>
-                                <div style="line-height:1.2;">
+                                <div style="line-height:1.3;">
                                     <span style="display:block;">Keluar Sesi</span>
-                                    <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Log out from account</span>
+                                    <span style="font-size:0.7rem; font-weight:600; opacity:0.5; display:block;">Log out from account</span>
                                 </div>
                             </button>
 
@@ -1097,15 +1114,32 @@
         const themeToggle = document.getElementById('theme-toggle');
         // Theme Logic
         function applyTheme(theme) {
+            const body = document.body;
+            const icon = document.getElementById('theme-menu-icon');
+            const bg = document.getElementById('theme-icon-bg');
+            const text = document.getElementById('theme-text');
+            const sub = document.getElementById('theme-subtext');
+
             if (theme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                if (themeToggle) themeToggle.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+                body.setAttribute('data-theme', 'dark');
+                if (icon) icon.innerText = 'light_mode';
+                if (bg) { bg.style.background = '#facc1520'; bg.style.color = '#facc15'; }
+                if (text) text.innerText = 'Mode Terang';
+                if (sub) sub.innerText = 'Switch to Light Theme';
             } else {
-                document.body.removeAttribute('data-theme');
-                if (themeToggle) themeToggle.innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+                body.removeAttribute('data-theme');
+                if (icon) icon.innerText = 'dark_mode';
+                if (bg) { bg.style.background = 'var(--primary-soft)'; bg.style.color = 'var(--primary)'; }
+                if (text) text.innerText = 'Mode Gelap';
+                if (sub) sub.innerText = 'Pindah ke Tema Malam';
             }
             localStorage.setItem('grants_theme', theme);
         }
+
+        window.toggleTheme = function() {
+            const current = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(current);
+        };
 
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {
