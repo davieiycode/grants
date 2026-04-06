@@ -858,7 +858,7 @@
 
         var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
 
-        let currentUser = JSON.parse(localStorage.getItem('grants_currentUser')) || registeredUsers[0];
+        let currentUser = JSON.parse(localStorage.getItem('grants_current_user')) || registeredUsers[0];
 
         var globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
         let recycleBin = JSON.parse(localStorage.getItem('grants_recycle_bin')) || [];
@@ -1309,6 +1309,7 @@
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                     }
 
+                    checkAdminVisibility();
                     renderDashboard();
                     syncHub.end();
                     return data;
@@ -1489,7 +1490,7 @@
         function checkAdminVisibility() {
             const navLinks = document.getElementById('main-nav-links');
             if (!navLinks) return;
-            const rolePerms = globalPermissions[currentUser.role] || defaultPermissions['Pengusul'];
+            const rolePerms = (globalPermissions[currentUser.role]) || (defaultPermissions[currentUser.role]) || defaultPermissions['Pengusul'];
 
             // 1. Navbar & Activity Buttons (Only for Edit Level 2)
             const addProgBtn = document.getElementById('btn-add-program');
