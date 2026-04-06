@@ -243,15 +243,54 @@
             <div class="logo-icon"><span class="material-symbols-outlined">description</span></div>
             <span>Grants Portal</span>
         </a>
-        <div style="display:flex; align-items:center; gap:16px;">
-            <button id="sync-hub-btn" class="glass" title="Cloud Sync Status" style="width:40px; height:40px; border-radius:12px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer;">
-                <span class="material-symbols-outlined" id="sync-icon">cloud_done</span>
-                <span id="sync-status-dot" style="position:absolute; top:4px; right:4px; width:8px; height:8px; background:var(--secondary); border-radius:50%; border:2px solid var(--surface);"></span>
-            </button>
-            <span style="font-size:0.85rem; color:var(--text-muted);">Simulasi Login:</span>
-            <select id="mock-login" onchange="changeMockUser()"
-                style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.85rem; outline:none;">
-            </select>
+        <div class="nav-actions" style="display:flex; align-items:center; gap:1.25rem;">
+            <div id="user-profile-nav" style="display:flex; align-items:center; gap:12px; position:relative;">
+                <!-- Last Sync Info Hub -->
+                <div id="sync-hub-display" style="display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; min-width:140px;">
+                    <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+                        <span class="material-symbols-outlined" id="sync-icon" style="font-size:20px; color:var(--secondary);">cloud_done</span>
+                        <span id="sync-status-dot" style="position:absolute; top:2px; right:2px; width:6px; height:6px; background:var(--secondary); border-radius:50%; border:1.5px solid var(--surface);"></span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:0px;">
+                        <span style="font-size:0.65rem; font-weight:850; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.02em;">SINKRONISASI</span>
+                        <span id="sync-time-rel" style="font-size:0.75rem; font-weight:800; color:var(--text-main);">Baru saja</span>
+                    </div>
+                </div>
+
+                <!-- Clickable Profile Trigger -->
+                <div id="profile-dropdown-trigger" onclick="toggleProfileDropdown()" style="display:flex; align-items:center; gap:12px; cursor:pointer; padding:4px 8px; border-radius:14px; transition:all 0.2s;">
+                    <div style="text-align:right;">
+                        <div id="nav-user-name" style="font-weight:900; font-size:0.9rem; color:var(--text-main); line-height:1;">...</div>
+                        <div id="nav-user-role" style="font-size:0.7rem; font-weight:850; color:var(--primary); margin-top:4px;">GUEST</div>
+                    </div>
+                    <div style="width:40px; height:40px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;">
+                        <span class="material-symbols-outlined" style="font-size:24px;">person</span>
+                    </div>
+                    <span class="material-symbols-outlined" style="font-size:18px; color:var(--text-muted);">expand_more</span>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div id="profile-dropdown-menu" class="glass animate-pop-in" style="display:none; position:absolute; top:calc(100% + 12px); right:0; width:240px; padding:8px; border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow-xl); z-index:1000;">
+                    <button onclick="toggleTheme()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--text-main); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
+                        <div style="width:36px; height:36px; border-radius:10px; background:var(--background); display:flex; align-items:center; justify-content:center; color:var(--text-muted);">
+                            <span class="material-symbols-outlined theme-icon" style="font-size:20px;">dark_mode</span>
+                        </div>
+                        <div style="line-height:1.2;">
+                            <span id="theme-text" style="display:block;">Mode Gelap</span>
+                            <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Switch UI Theme</span>
+                        </div>
+                    </button>
+                    <button onclick="logoutSession()" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:12px; border:none; background:none; color:var(--error); border-radius:14px; cursor:pointer; font-weight:750; font-size:0.9rem; transition:all 0.2s; text-align:left;">
+                        <div style="width:36px; height:36px; border-radius:10px; background:rgba(239, 68, 68, 0.05); display:flex; align-items:center; justify-content:center; color:var(--error);">
+                            <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+                        </div>
+                        <div style="line-height:1.2;">
+                            <span style="display:block;">Keluar Sesi</span>
+                            <span style="display:block; font-size:0.7rem; font-weight:600; opacity:0.5;">Log out from account</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -412,36 +451,71 @@
 
     <script>
         const syncHub = {
+            lastSynced: Date.now(),
             update(newState) {
                 const icon = document.getElementById('sync-icon');
                 const dot = document.getElementById('sync-status-dot');
+                const relTime = document.getElementById('sync-time-rel');
                 if (!icon || !dot) return;
                 if (newState === 'syncing') {
                     icon.innerText = 'sync'; icon.classList.add('animate-spin');
                     dot.style.background = '#f59e0b';
+                    if (relTime) relTime.innerText = 'Sinkronisasi...';
                 } else if (newState === 'error') {
                     icon.innerText = 'cloud_off'; icon.classList.remove('animate-spin');
                     dot.style.background = 'var(--error)';
+                    if (relTime) relTime.innerText = 'Gagal sinkron';
                 } else {
                     icon.innerText = 'cloud_done'; icon.classList.remove('animate-spin');
                     dot.style.background = 'var(--secondary)';
+                    this.lastSynced = Date.now();
+                    this.updateRelTime();
                 }
+            },
+            start() { this.update('syncing'); },
+            end() { this.update('synced'); },
+            updateRelTime() {
+                const relTime = document.getElementById('sync-time-rel');
+                if (!relTime) return;
+                const diff = Math.floor((Date.now() - this.lastSynced) / 60000);
+                if (diff < 1) relTime.innerText = 'Baru saja';
+                else relTime.innerText = `${diff} menit lalu`;
             }
+        };
+        setInterval(() => syncHub.updateRelTime(), 60000);
+
+        window.toggleProfileDropdown = function() {
+            const menu = document.getElementById('profile-dropdown-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        };
+        window.onclick = function(event) {
+            if (!event.target.closest('#profile-dropdown-trigger') && !event.target.closest('#profile-dropdown-menu')) {
+                const menu = document.getElementById('profile-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        };
+
+        window.logoutSession = function() {
+            localStorage.removeItem('grants_current_user');
+            localStorage.removeItem('grants_appscript_url');
+            location.href = 'index.html';
         };
 
         window.cloudSync = {
             url: localStorage.getItem('grants_appscript_url'),
             async push(collection, id, data) {
                 if (!this.url) return;
-                syncHub.update('syncing');
+                syncHub.start();
                 try {
                     await fetch(this.url, {
                         method: 'POST',
                         mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'push', collection, id, data })
                     });
-                    syncHub.update('synced');
+                    syncHub.end();
                 } catch (e) {
+                    console.error("Push Failed:", e);
                     syncHub.update('error');
                 }
             }
@@ -450,80 +524,23 @@
         window.fbSave = (col, id, data) => cloudSync.push(col, id, data);
     </script>
     <script>
-        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [
-            { id: 101, title: "Modernisasi Jaringan Listrik Universitas", program: "Grants 2025", proposer: "Budi Santoso", date: "2025-01-15", status: "Approved", allowMultiple: false },
-            { id: 102, title: "Penelitian Robotika Dasar", program: "Riset Unggulan", proposer: "Rahmat Hidayat", date: "2024-11-20", status: "Under Review", allowMultiple: true },
-            { id: 103, title: "Penerapan AI dalam Ekonomi Kreatif", program: "Abdimas 2024", proposer: "Ani Wijaya", date: "2024-12-05", status: "Completed", allowMultiple: false }
-        ];
-        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [
-            {
-                id: '1',
-                name: "Grants 2025",
-                desc: "Program hibah kompetitif untuk inovasi teknologi masa depan.",
-                icon: "rocket_launch",
-                color: "#6366f1",
-                allowMultiple: true,
-                attributes: [
-                    { label: "Nominal Dana (IDR)", type: "number", required: true, desc: "Batas maksimal 100jt" },
-                    { label: "Durasi Proyek (Bulan)", type: "number", required: true },
-                    { label: "Bidang Fokus", type: "dropdown", options: ["AI/ML", "Green Tech", "Biotech"], required: true },
-                    { label: "Abstrak Pendek", type: "longtext", required: true }
-                ]
-            },
-            {
-                id: '2',
-                name: "Riset Unggulan",
-                desc: "Penelitian mendalam untuk pengembangan ilmu pengetahuan.",
-                icon: "biotech",
-                color: "#10b981",
-                allowMultiple: true,
-                attributes: [
-                    { label: "Metodologi", type: "longtext", required: true },
-                    { label: "Target Luaran", type: "dropdown", options: ["Jurnal Q1", "Paten", "Prototipe"], required: true }
-                ]
-            },
-            {
-                id: '3',
-                name: "Abdimas 2024",
-                desc: "Program pengabdian masyarakat untuk peningkatan ekonomi lokal.",
-                icon: "group",
-                color: "#f59e0b",
-                allowMultiple: false,
-                attributes: [
-                    { label: "Lokasi Pengabdian (Kecamatan/Desa)", type: "text", required: true },
-                    { label: "Jumlah Beneficiary (Penerima Manfaat)", type: "number", required: true },
-                    { label: "Uraian Masalah Mitra", type: "longtext", required: true }
-                ]
-            }
-        ];
+        var proposals = JSON.parse(localStorage.getItem('grants_proposals')) || [];
+        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
+
         const urlParams = new URLSearchParams(window.location.search);
         const proposalId = urlParams.get('id');
 
-        const mockUsers = [
-            { id: 1, name: "Admin Utama", unit: "Pusat IT", role: "Superadmin", email: "admin@univ.ac.id" },
-            { id: 2, name: "Manager Hibah", unit: "Direktorat Inovasi", role: "Manager", email: "manager@univ.ac.id" },
-            { id: 3, name: "Siti Aminah", unit: "Fakultas Teknik", role: "Editor", email: "siti@univ.ac.id" },
-            { id: 4, name: "Dr. Budi Santoso", unit: "Fakultas Sains", role: "Pengusul", email: "budi@univ.ac.id" },
-            { id: 5, name: "Prof. Rahmat Hidayat", unit: "Fakultas Kedokteran", role: "Reviewer", email: "rahmat@univ.ac.id" },
-            { id: 6, name: "Pengusul Luar", unit: "Umum", role: "Pengusul", email: "tamu@univ.ac.id" }
-        ];
+        let currentUser = JSON.parse(localStorage.getItem('grants_current_user'));
+        if (!currentUser) location.href = 'index.html';
 
-        let registeredUsers = JSON.parse(localStorage.getItem('grants_users')) || mockUsers;
-        let currentUser = localStorage.getItem('grants_activeUser') ? JSON.parse(localStorage.getItem('grants_activeUser')) : (registeredUsers[0] || {});
         let globalPermissions = JSON.parse(localStorage.getItem('grants_global_permissions')) || {};
 
         let currentProposal = null;
         let currentProgram = null;
 
-        function changeMockUser() {
-            const select = document.getElementById('mock-login');
-            const user = registeredUsers.find(u => u.name === select.value);
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('grants_activeUser', JSON.stringify(currentUser));
-                renderAttributes();
-                renderReviews();
-            }
+        function updateProfileUI() {
+            document.getElementById('nav-user-name').innerText = currentUser.name;
+            document.getElementById('nav-user-role').innerText = currentUser.role.toUpperCase();
         }
 
         function switchMainTab(tab, btn) {
@@ -1170,10 +1187,7 @@
         }
 
         function init() {
-            const mockSelect = document.getElementById('mock-login');
-            if (mockSelect) {
-                mockSelect.innerHTML = registeredUsers.map(u => `<option value="${u.name}" ${u.name === currentUser.name ? 'selected' : ''}>${u.name} (${u.role})</option>`).join('');
-            }
+            updateProfileUI();
 
             if (!proposalId) {
                 location.href = 'index.html';
