@@ -398,7 +398,7 @@
                 <span class="material-symbols-outlined">login</span>
                 Masuk ke Dashboard
             </button>
-            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal <span class="app-version-text">v2.5.2</span></span></p>
+            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">© 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Grants Portal <span class="app-version-text">v2.5.3</span></span></p>
         </div>
     </div>
 
@@ -482,7 +482,7 @@
                             </button>
 
                             <div style="margin-top:12px; padding:12px; text-align:center; border-top:1px dashed var(--border);">
-                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH <span class="app-version-text">v2.5.2</span></span>
+                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM MANAJEMEN HIBAH <span class="app-version-text">v2.5.3</span></span>
                             </div>
                         </div>
                     </div>
@@ -883,7 +883,7 @@
         }
 
         // Data & State Management
-        const APP_VERSION = "v2.5.2";
+        const APP_VERSION = "v2.5.3";
 
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
@@ -1349,8 +1349,8 @@
                         registeredUsers = data.registeredUsers;
                         localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
                     }
-                    if (data.global_blacklist) {
-                        globalBlacklist = data.global_blacklist;
+                    if (data.globalBlacklist) {
+                        globalBlacklist = data.globalBlacklist;
                         localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
                     }
                     if (data.global_permissions) {
@@ -1427,8 +1427,12 @@
                 // For cloud, always use email as the persistent key
                 id = registeredUsers.find(u => (u.id == id || u.email == id))?.email || id;
             } else if (collection === 'global_blacklist') {
+                const idx = globalBlacklist.findIndex(b => b.id == id || b.email == id);
+                if (idx !== -1) globalBlacklist[idx] = { ...globalBlacklist[idx], ...data };
+                else globalBlacklist.push(data);
                 localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
             } else if (collection === 'global_permissions') {
+                globalPermissions[id] = data; // id is the Role name
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             }
 
@@ -1484,6 +1488,14 @@
             const data = await cloudSync.pull();
             
             if (data && data.registeredUsers) {
+                // If pull has permissions, merge them into the globalPermissions object
+                if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
+                    data.globalPermissions.forEach(p => {
+                       // Find the role name from the ID or inside the data
+                       const role = Object.keys(defaultPermissions).find(k => k.toString() === p.id); 
+                       if (role) globalPermissions[role] = p;
+                    });
+                }
                 // Find user by email and matching password (if present in sheet)
                 let user = data.registeredUsers.find(u => u.email === email);
                 
@@ -2197,8 +2209,10 @@
         window.saveGlobalPermissions = function () {
             localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             
-            // Sync to Firestore (Master Settings)
-            window.fbSave('settings', 'global_permissions', { permissions: globalPermissions });
+            // Sync each role as a separate document in 'global_permissions' sheet
+            Object.keys(globalPermissions).forEach(role => {
+                window.fbSave('global_permissions', role, globalPermissions[role]);
+            });
             
             showToast('Kebijakan akses berhasil disimpan!');
         };
@@ -2482,7 +2496,7 @@
             const program = programs.find(p => p.id == progId);
             if (!program) return;
             if (!program.logs) program.logs = [];
-            program.logs.push({
+            program.logs.unshift({
                 timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
                 user: currentUser.name,
                 role: currentUser.role,
@@ -2490,6 +2504,10 @@
                 message: message
             });
             window.fbSave('programs', program.id, program);
+            // Also log globally for total visibility (audit trail)
+            if (typeof window.addGlobalLog === 'function') {
+                window.addGlobalLog('PROG_UPDATE', `[${program.name}] ${type}: ${message}`);
+            }
         }
 
         function deleteProgramLog(idx) {
@@ -3943,6 +3961,7 @@
 
         function saveStatusSettings() {
             const program = programs.find(p => p.id == progId);
+            addProgramLog('update', 'Mengubah alur status program.');
             window.fbSave('programs', program.id, program);
             showToast("Konfigurasi status berhasil disimpan!");
         }
@@ -4002,6 +4021,7 @@
         }
 
         function saveNotifSettings() {
+            const program = programs.find(p => p.id == progId);
             window.fbSave('programs', program.id, program);
             showToast("Templat notifikasi berhasil diperbarui!");
         }
@@ -4075,6 +4095,7 @@
         };
         window.saveFileSettings = function () {
             const program = programs.find(p => p.id == progId);
+            addProgramLog('update', 'Memperbarui persyaratan berkas program.');
             window.fbSave('programs', program.id, program);
             showToast('Konfigurasi berkas berhasil disimpan');
         };
