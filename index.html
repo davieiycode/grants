@@ -1613,21 +1613,6 @@
             }
         });
 
-                const profileNav = document.getElementById('user-profile-nav');
-                if (profileNav) {
-                    profileNav.style.display = 'flex';
-                    document.getElementById('nav-user-name').innerText = currentUser.name;
-                    document.getElementById('nav-user-role').innerText = currentUser.role.toUpperCase();
-                }
-
-                init();
-                // Auto-pull every time app starts if URL exists
-                if (localStorage.getItem('grants_appscript_url')) cloudSync.pull();
-            } else {
-                if (loginGate) loginGate.style.display = 'flex';
-                if (mainApp) mainApp.style.display = 'none';
-            }
-        });
 
         const qaList = [
             { q: "Bagaimana cara membuat program hibah baru?", a: "Klik menu <b>Program</b> di sidebar, lalu klik tombol <b>Tambah Program</b> di pojok kanan atas. Isi nama skema dan deskripsi, lalu klik Buat Program." },
