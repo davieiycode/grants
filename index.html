@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -845,18 +845,58 @@
     </div><!-- End of main-app-container -->
 
     <script>
-        function showToast(msg = 'Berhasil diperbarui') {
+        function showToast(msg = 'Berhasil diperbarui', type = 'success') {
             const t = document.getElementById('toast');
             const m = document.getElementById('toast-msg');
             if (!t || !m) return;
+            
+            // Set styles based on type
+            const colors = {
+                success: 'var(--secondary)',
+                error: 'var(--error)',
+                info: 'var(--primary)',
+                warning: '#f59e0b'
+            };
+            const icons = {
+                success: 'check_circle',
+                error: 'report',
+                info: 'info',
+                warning: 'warning'
+            };
+            
+            t.style.borderLeft = `4px solid ${colors[type] || colors.success}`;
+            t.querySelector('.material-symbols-outlined').innerText = icons[type] || icons.success;
+            t.querySelector('.material-symbols-outlined').style.color = colors[type] || colors.success;
+
             m.innerText = msg;
             t.style.transform = 'translateX(-50%) translateY(0)';
             t.style.opacity = '1';
+            
             setTimeout(() => {
                 t.style.transform = 'translateX(-50%) translateY(-100px)';
                 t.style.opacity = '0';
             }, 3500);
         }
+
+        window.showAlert = function(title, message, type = 'info') {
+            const icon = type === 'error' ? 'report' : (type === 'success' ? 'check_circle' : 'info');
+            const color = type === 'error' ? 'var(--error)' : (type === 'success' ? 'var(--secondary)' : 'var(--primary)');
+            
+            const body = `
+                <div style="text-align:center; padding:1rem 0.5rem;">
+                    <div style="width:72px; height:72px; background:${color}10; color:${color}; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+                        <span class="material-symbols-outlined" style="font-size:38px;">${icon}</span>
+                    </div>
+                    <h3 style="font-size:1.35rem; font-weight:900; color:var(--text-main); margin-bottom:0.75rem; font-family:'Outfit'; line-height:1.2;">${title}</h3>
+                    <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:2.2rem;">${message}</p>
+                    <button onclick="closeModal()" class="btn-primary" style="width:100%; height:52px; border-radius:15px; background:${color}; color:white; border:none; font-weight:800; cursor:pointer; box-shadow:0 8px 24px ${color}25; transition:all 0.2s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">OK, I understand</button>
+                </div>
+            `;
+            showModal("", body);
+            // Hide the default modal header for alerts
+            const modalHeader = document.querySelector('.modal-header');
+            if (modalHeader) modalHeader.style.display = 'none';
+        };
 
         // Data & State Management
         const APP_VERSION = "v2.7.2";
@@ -1536,7 +1576,7 @@
 
         window.handlePiiSync = async function () {
             const url = document.getElementById('pii-book-url').value.trim();
-            if (!url) return alert("Harap masukkan URL Apps Script!");
+            if (!url) return showAlert("Empty Code", "Enter the book code provided by your institution first.", "warning");
 
             setLoginState('searching');
             localStorage.setItem('grants_appscript_url', url);
@@ -1555,9 +1595,9 @@
             const password = (document.getElementById('login-password').value || "").trim();
             let url = localStorage.getItem('grants_appscript_url');
 
-            if (!email || !password || !url) return alert("Silakan isi Email dan Password!");
+            if (!email || !password || !url) return showAlert("Sign In Required", "Please fill in Email address and Password address to open the book.", "info");
 
-            showToast("Memverifikasi kredensial...");
+            showToast("Opening the book...", "info");
             const data = await cloudSync.pull(true); // skipRender = true
 
             if (data && (data.registeredUsers || data.programs)) {
@@ -1565,16 +1605,27 @@
                 let user = users.find(u => u.email === email);
 
                 if (!user) {
-                    if (users.length === 0 || email === 'rafieiy.m@gmail.com') {
-                        showToast("Pendaftaran Superadmin Pertama...");
-                        user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
-                        await window.fbSave("registeredUsers", email, user);
-                    } else {
-                        return alert("Email tidak terdaftar di sistem Spreadsheet. Silakan hubungi admin!");
-                    }
+                    const isFirst = users.length === 0;
+                    const role = isFirst ? 'Superadmin' : 'Pengusul';
+                    const unit = isFirst ? 'Pusat' : 'Luar Pusat';
+
+                    showToast(isFirst ? "First Astronaut Registration..." : "Initiating New Member Space...", "info");
+                    
+                    user = { 
+                        id: Date.now(), 
+                        name: email.split('@')[0].toUpperCase().replace('.', ' '), 
+                        email: email, 
+                        role: role, 
+                        unit: unit, 
+                        password: password,
+                        created: new Date().toISOString()
+                    };
+                    
+                    // Sync to Cloud
+                    await window.fbSave("registeredUsers", email.replace(/\./g, '_'), user);
                 }
 
-                if (user.password && user.password != password) return alert("Password salah!");
+                if (user.password && user.password != password) return showAlert("Authentication Failed", "Email address or password is not registered. Please contact the astronauts!", "error");
 
                 currentUser = user;
                 localStorage.setItem('grants_current_user', JSON.stringify(user));
