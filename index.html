@@ -144,6 +144,16 @@
             line-height: 1.6;
         }
 
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-soft);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* Program Cards */
         .program-grid {
             display: grid;
@@ -390,7 +400,7 @@
 
     <!-- LOGIN GATE -->
     <div id="login-gate">
-        <div class="login-card animate-fade-in">
+        <div class="login-card animate-fade-in" id="login-card-inner">
             <a href="index.html" class="logo" style="margin-bottom:2rem; justify-content:center;">
                 <div class="logo-icon" style="width:52px; height:52px;"><span class="material-symbols-outlined"
                         style="font-size:32px;">rocket_launch</span></div>
@@ -400,48 +410,51 @@
                 </div>
             </a>
 
-            <h1
-                style="font-size:2.5rem; font-weight:900; color:var(--text-main); line-height:1.1; margin-bottom:1rem; letter-spacing:-0.03em; text-align:center;">
-                Elevate your Research</h1>
-            <p
-                style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2.5rem; font-weight:500; text-align:center;">
-                Enter the space to know more.</p>
-
-            <!-- Sync Status Indicator -->
-            <div id="login-sync-indicator"
-                style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:10px; background:rgba(0,0,0,0.03); margin-bottom:1.5rem; font-size:0.75rem; font-weight:800;">
-                <div id="login-sync-dot" style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></div>
-                <span id="login-sync-text" style="color:var(--text-muted);">Book not found</span>
+            <!-- STATE 1: SEARCHING THE BOOK -->
+            <div id="state-searching" style="display:none;">
+                <div class="spinner" style="margin: 0 auto 1.5rem;"></div>
+                <h2 style="font-weight:900; color:var(--text-main); font-size:1.5rem;">Searching the book...</h2>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Menghubungkan ke pusat data ProSpace</p>
             </div>
 
-            <div style="display:grid; gap:1rem; margin-bottom:2rem;">
-                <div class="f-group">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Email address</label>
-                    <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id"
-                        style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
+            <!-- STATE 2: BOOK NOT FOUND (404) -->
+            <div id="state-404" style="display:none;">
+                <div style="color:var(--error); margin-bottom:1.5rem;">
+                    <span class="material-symbols-outlined" style="font-size:64px; opacity:0.3;">database_off</span>
                 </div>
-                <div class="f-group">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Password</label>
-                    <input type="password" id="login-password" class="f-input" placeholder="••••••••"
-                        onkeydown="if(event.key === 'Enter') startAppWithSync()"
-                        style="height:52px; border-radius:14px; background:white; border:1px solid var(--border);">
-                </div>
-                <div class="f-group" id="group-appscript-url" style="display:none;">
-                    <label class="f-label" style="font-size:0.75rem; opacity:0.8; color:var(--primary);">Book
-                        Code</label>
-                    <input type="url" id="login-appscript-url" class="f-input"
-                        placeholder="https://script.google.com/..."
-                        style="height:52px; border-radius:14px; background:rgba(99,102,241,0.03); border:1px solid var(--primary-soft);">
-                </div>
+                <h1 style="font-size:2rem; font-weight:900; color:var(--text-main); letter-spacing:-0.03em;">404 Book not found</h1>
+                <p style="color:var(--text-muted); margin-bottom:2.5rem; font-weight:500;">Kode akses tidak valid atau link sudah kedaluwarsa.</p>
+                <button onclick="location.href='index.html?pii'" class="btn-primary" style="background:var(--text-main); color:white; width:100%; height:52px; border-radius:14px; border:none; font-weight:800; cursor:pointer;">Masuk Manual</button>
             </div>
 
-            <button onclick="startAppWithSync()" id="btn-login-sync"
-                style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:var(--primary); color:white; border:none; padding:16px; border-radius:16px; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft); transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-                <span class="material-symbols-outlined">login</span>
-                Launch
-            </button>
-            <p
-                style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">
+            <!-- STATE 3: BOOK CODE ENTRY -->
+            <div id="state-pii" style="display:none;">
+                <h2 style="font-weight:900; margin-bottom:0.5rem; font-size:1.5rem;">Enter Book Code</h2>
+                <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem; font-weight:500;">Tempelkan URL Apps Script Anda di bawah ini.</p>
+                <div class="f-group" style="margin-bottom:1.5rem;">
+                    <input type="url" id="pii-book-url" class="f-input" placeholder="https://script.google.com/..." style="height:52px; text-align:center; background:white; border-radius:14px; border:1px solid var(--border);">
+                </div>
+                <button onclick="handlePiiSync()" class="btn-primary" style="width:100%; height:52px; border-radius:14px; background:var(--primary); color:white; border:none; font-weight:800; cursor:pointer;">Sync & Continue</button>
+            </div>
+
+            <!-- STATE 4: LOGIN FORM -->
+            <div id="state-login" style="display:none;">
+                <h1 style="font-size:1.75rem; font-weight:900; color:var(--text-main); margin-bottom:0.75rem; letter-spacing:-0.02em;">Elevate your Research</h1>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:2.5rem; font-weight:500;">Masuk untuk mengelola data hibah Anda.</p>
+                <div style="display:grid; gap:1rem; margin-bottom:2rem; text-align:left;">
+                    <div class="f-group">
+                        <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Email address</label>
+                        <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id" style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Password</label>
+                        <input type="password" id="login-password" class="f-input" placeholder="••••••••" onkeydown="if(event.key === 'Enter') startAppWithSync()" style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
+                    </div>
+                </div>
+                <button onclick="startAppWithSync()" class="btn-primary" style="width:100%; height:52px; border-radius:16px; background:var(--primary); color:white; border:none; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft);">Launch Project</button>
+            </div>
+
+            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">
                 © 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Powered by <span
                         class="logo-text-pro" style="font-size:0.7rem;">Pro</span><span class="logo-text-space"
                         style="font-size:0.75rem;">Space</span> <span class="app-version-text"
@@ -1271,12 +1284,13 @@
             return arr.map(row => {
                 if (row.JSON_DATA) {
                     try {
-                        const parsed = JSON.parse(row.JSON_DATA);
-                        // Ensure it has an ID, preferring the outer row's ID
+                        const content = row.JSON_DATA.trim();
+                        if (!content.startsWith('{')) throw new Error("Not a JSON object");
+                        const parsed = JSON.parse(content);
                         return { ...parsed, id: row.ID || row.id || parsed.id };
                     } catch (e) {
-                        console.warn("Failed to parse JSON_DATA row:", e);
-                        return row;
+                        // If it's not valid JSON, we still want the ID if possible
+                        return { id: row.ID || row.id, _raw: row.JSON_DATA, _corrupt: true };
                     }
                 }
                 return row;
@@ -1287,7 +1301,7 @@
         window.cloudSync = {
             url: localStorage.getItem('grants_appscript_url'),
             isSyncing: false,
-            async pull() {
+            async pull(skipRender = false) {
                 const cleanUrl = (this.url || "").trim();
                 if (!cleanUrl || this.isSyncing) return null;
                 
@@ -1359,10 +1373,12 @@
                         localStorage.setItem('grants_global_logs', JSON.stringify(window.globalLogs));
                     }
 
-                    checkAdminVisibility();
-                    const params = new URLSearchParams(window.location.search);
-                    if (params.get('p')) init();
-                    else renderDashboard();
+                    if (!skipRender) {
+                        checkAdminVisibility();
+                        const params = new URLSearchParams(window.location.search);
+                        if (params.get('p')) init();
+                        else renderDashboard();
+                    }
 
                     syncHub.end();
                     this.isSyncing = false;
@@ -1481,35 +1497,44 @@
             cloudSync.push("globalLogs", logId, logData);
         };
 
-        window.startAppWithSync = async function () {
-            const email = (document.getElementById('login-email').value || "").trim();
-            const password = (document.getElementById('login-password').value || "").trim();
-            let url = (document.getElementById('login-appscript-url').value || "").trim();
+        // --- LOGIN GATE STATE HANDLER ---
+        window.setLoginState = function (state) {
+            const states = ['searching', '404', 'pii', 'login'];
+            states.forEach(s => {
+                const el = document.getElementById('state-' + s);
+                if (el) el.style.display = 'none';
+            });
+            const target = document.getElementById('state-' + state);
+            if (target) target.style.display = 'block';
+        };
 
-            if (!email || !password || !url) return alert("Silakan isi Email, Password, dan Apps Script URL!");
+        window.handlePiiSync = async function () {
+            const url = document.getElementById('pii-book-url').value.trim();
+            if (!url) return alert("Harap masukkan URL Apps Script!");
 
-            // Common Error Check: Editor URL vs Deployment URL
-            if (url.includes('/edit')) {
-                return alert("Ups! Anda menggunakan URL Editor Spreadsheet.\n\nHarap gunakan URL 'Web App' yang berakhiran '/exec'.\n1. Buka Apps Script\n2. Klik Deploy -> Manage Deployments\n3. Salin 'Web App URL'!");
-            }
-
+            setLoginState('searching');
             localStorage.setItem('grants_appscript_url', url);
             cloudSync.url = url;
 
+            const data = await cloudSync.pull(true);
+            if (data && (data.registeredUsers || data.programs)) {
+                setLoginState('login');
+            } else {
+                setLoginState('404');
+            }
+        };
+
+        window.startAppWithSync = async function () {
+            const email = (document.getElementById('login-email').value || "").trim();
+            const password = (document.getElementById('login-password').value || "").trim();
+            let url = localStorage.getItem('grants_appscript_url');
+
+            if (!email || !password || !url) return alert("Silakan isi Email dan Password!");
+            
             showToast("Memverifikasi kredensial...");
-            const data = await cloudSync.pull();
+            const data = await cloudSync.pull(true); // skipRender = true
 
             if (data && (data.registeredUsers || data.programs)) {
-                // ... same logic but with better data checks
-                if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
-                    data.globalPermissions.forEach(p => {
-                        const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
-                        const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId);
-                        if (roleKey) globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...p };
-                    });
-                    localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
-                }
-                
                 let users = data.registeredUsers || [];
                 let user = users.find(u => u.email === email);
 
@@ -1530,7 +1555,7 @@
                 showToast(`Selamat datang, ${user.name}!`);
                 location.reload();
             } else {
-                alert("Gagal terhubung ke Spreadsheet!\n\nKemungkinan penyebab:\n1. URL Web App salah (harus berakhiran /exec).\n2. Apps Script belum di-deploy sebagai 'Anyone' (Semua Orang).\n3. Spreadsheet ID dalam script tidak valid.");
+                setLoginState('404');
             }
         };
 
@@ -1793,7 +1818,8 @@
             if (!grid) return;
             grid.innerHTML = '';
 
-            const canViewAll = (globalPermissions[currentUser.role] || {}).view_all_props;
+            const roleName = currentUser?.role || 'Guest';
+            const canViewAll = (globalPermissions[roleName] || {}).view_all_props;
             let filtered = programs.filter(p => {
                 const name = (p.name || "").toLowerCase();
                 const desc = (p.desc || "").toLowerCase();
