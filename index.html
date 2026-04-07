@@ -1065,6 +1065,7 @@
         var registeredUsers = safeParse('grants_registeredUsers', []);
         let currentUser = safeParse('grants_current_user', registeredUsers[0] || null);
         var globalBlacklist = safeParse('grants_global_blacklist', []);
+        var globalPermissions = safeParse('grants_global_permissions', {}); // MISSING PIECE ADDED HERE
         var globalLogs = []; // Global Logs always pulled fresh from cloud
         let recycleBin = safeParse('grants_recycle_bin', []);
 
