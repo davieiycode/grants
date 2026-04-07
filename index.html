@@ -1000,7 +1000,7 @@
         };
 
         // Data & State Management
-        const APP_VERSION = "v2.7.2";
+        const APP_VERSION = "v3.0.0-SPA";
 
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
@@ -1391,6 +1391,7 @@
         const programDashboard = document.getElementById('program-dashboard');
         const globalUsersView = document.getElementById('global-users-view');
         const proposalDetailView = document.getElementById('proposal-detail-view');
+        let proposalId, currentProposal, progId;
 
         // Routing & Initialization
         // --- Firebase Modular SDK Setup ---
@@ -2007,14 +2008,142 @@
                 return;
             }
 
-            dashboardView.style.display = 'none';
-            document.getElementById('global-users-view').style.display = 'none';
-            programDashboard.style.display = 'block';
-
-            renderProgramHeader();
-            switchTab(tab, false);
-            checkAdminVisibility();
+            switchMainView('program-dashboard');
         }
+
+        window.renderProposalDetail = function(id) {
+            proposalId = id;
+            currentProposal = proposals.find(p => String(p.id) === String(id));
+            if (!currentProposal) return showAlert("Oops!", "Data usulan tidak ditemukan.", "error");
+
+            currentProgram = programs.find(p => p.name === currentProposal.program);
+            
+            switchMainView('proposal-detail');
+            
+            // Populate Basic Info
+            const ids = ['proposal-id-tag', 'disp-title', 'disp-proposer', 'disp-unit', 'disp-date'];
+            const vals = [`ID: #${currentProposal.id}`, currentProposal.title, currentProposal.proposer, currentProposal.unit || "-", currentProposal.date || "-"];
+            ids.forEach((sid, i) => { if (document.getElementById(sid)) document.getElementById(sid).innerText = vals[i]; });
+            
+            const badgeCont = document.getElementById('disp-status-container');
+            if (badgeCont) {
+                const s = currentProposal.status || 'Submitted';
+                const sClass = (s === 'Lolos' || s === 'Accepted' || s === 'Received') ? 'status-open' : (s === 'Ditolak' || s === 'Rejected' ? 'status-rejected' : 'status-revisi');
+                badgeCont.innerHTML = `<span class="status-badge ${sClass}">${s}</span>`;
+            }
+
+            const btnEditBasic = document.getElementById('btn-edit-basic');
+            if (btnEditBasic) btnEditBasic.style.display = ['Superadmin', 'Admin', 'Manager', 'Editor'].includes(currentUser.role) ? 'flex' : 'none';
+
+            renderAuthors();
+            renderDynamicAttributes();
+            renderProposalFiles();
+            renderProposalReviews();
+            switchProposalSubTab('detail');
+        };
+
+        window.renderAuthors = function() {
+            const list = document.getElementById('proposal-authors');
+            if (!list) return;
+            const members = currentProposal.members || [];
+            if (members.length === 0) {
+                list.innerHTML = `<div class="glass" style="padding:16px; border-radius:12px; border:1px solid var(--border); display:flex; gap:12px; align-items:center; background:white;">
+                    <div style="width:36px; height:36px; border-radius:50%; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center;"><span class="material-symbols-outlined" style="font-size:18px;">person</span></div>
+                    <div style="flex:1;"><div style="font-weight:800; font-size:0.9rem;">${currentProposal.proposer}</div><div style="font-size:0.7rem; color:var(--text-muted);">${currentProposal.unit || '-'}</div></div>
+                    <span class="status-badge" style="font-size:0.6rem; background:var(--primary); color:white; padding:2px 8px; border-radius:6px; font-weight:800;">FIRST AUTHOR</span>
+                </div>`;
+            } else {
+                list.innerHTML = members.map((m, idx) => `
+                    <div class="glass animate-fade-in" style="padding:16px; border-radius:12px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--surface); margin-bottom:8px;">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div style="width:36px; height:36px; border-radius:50%; background:${idx === 0 ? 'var(--primary-soft)' : 'var(--background)'}; color:${idx === 0 ? 'var(--primary)' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center;"><span class="material-symbols-outlined" style="font-size:18px;">person</span></div>
+                            <div><div style="font-weight:800; font-size:0.95rem; color:var(--text-main); line-height:1.2;">${m.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">${m.unit || "-"}</div></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.renderDynamicAttributes = function() {
+            const container = document.getElementById('dynamic-form-container');
+            if (!container || !currentProgram || !currentProgram.attributes) return;
+            const groups = {};
+            currentProgram.attributes.forEach((attr, idx) => {
+                const g = attr.group || "Informasi Tambahan";
+                if (!groups[g]) groups[g] = [];
+                groups[g].push({...attr, originalIdx: idx});
+            });
+            container.innerHTML = Object.entries(groups).map(([name, attrs]) => `
+                <div style="margin-bottom:24px;">
+                    <div style="font-size:0.8rem; font-weight:900; color:var(--primary); text-transform:uppercase; margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:6px;">${name}</div>
+                    <div style="display:grid; grid-template-columns:1fr; gap:16px;">
+                        ${attrs.map(attr => {
+                            const val = (currentProposal.attributes && currentProposal.attributes[attr.label]) || (currentProposal.customData && currentProposal.customData[attr.label]) || '';
+                            return `<div class="form-group"><label class="f-label">${attr.label}</label><input type="text" id="prop-attr-${attr.originalIdx}" value="${val}" class="f-input" onchange="enableProposalSave()"></div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.renderProposalFiles = function() {
+            const container = document.getElementById('proposal-files-container');
+            if (!container) return;
+            const files = currentProposal.files || {};
+            if (Object.keys(files).length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = `<div style="font-size:0.8rem; font-weight:900; color:var(--primary); text-transform:uppercase; margin:24px 0 12px;">BERKAS LAMPIRAN</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">${Object.entries(files).map(([l, h]) => `<div class="glass" style="padding:12px; border-radius:12px; display:flex; align-items:center; gap:12px; border:1px solid var(--border);"><span class="material-symbols-outlined" style="color:var(--secondary);">picture_as_pdf</span><div style="flex:1;"><div style="font-weight:700; font-size:0.85rem;">${l}</div></div><button class="btn-icon" style="color:var(--primary);" title="Download"><span class="material-symbols-outlined">download</span></button></div>`).join('')}</div>`;
+        };
+
+        window.renderProposalReviews = function() {
+            const container = document.getElementById('reviews-history-container');
+            if (!container) return;
+            const reviews = currentProposal.reviews || [];
+            if (reviews.length === 0) { container.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted);">Belum ada hasil penilaian dari Reviewer.</div>'; return; }
+            container.innerHTML = reviews.map(r => `<div class="glass animate-fade-in" style="padding:1.5rem; border-radius:18px; border:1px solid var(--border); background:white; position:relative; margin-bottom:16px;"><div style="position:absolute; top:1.5rem; right:1.5rem; background:var(--primary); color:white; width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.1rem;">${r.totalScore || 0}</div><div style="font-weight:800; font-size:1rem; margin-bottom:4px;">Review oleh: ${r.reviewerName || 'Reviewer'}</div><div style="font-size:0.75rem; color:var(--text-muted);">${r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '-'}</div><div style="font-size:0.9rem; color:var(--text-main); line-height:1.6; white-space:pre-line;">${r.notes || 'Tidak ada catatan review.'}</div></div>`).join('');
+        };
+
+        window.switchProposalSubTab = function(tab) {
+            const d = document.getElementById('prop-tab-detail'), r = document.getElementById('prop-tab-review'), bd = document.getElementById('tab-btn-detail'), br = document.getElementById('tab-btn-review');
+            if (d && r) { d.style.display = tab === 'detail' ? 'block' : 'none'; r.style.display = tab === 'review' ? 'block' : 'none'; if (bd) bd.classList.toggle('active', tab === 'detail'); if (br) br.classList.toggle('active', tab === 'review'); }
+        };
+
+        window.enableProposalSave = function() {
+            const btn = document.getElementById('btn-save-proposal');
+            if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'all'; }
+        };
+
+        window.saveProposalDetailChanges = async function() {
+            const idx = proposals.findIndex(p => String(p.id) === String(currentProposal.id));
+            if (idx !== -1) {
+                const attrs = {};
+                if (currentProgram && currentProgram.attributes) {
+                    currentProgram.attributes.forEach((attr, i) => { const el = document.getElementById(`prop-attr-${i}`); if (el) attrs[attr.label] = el.value; });
+                }
+                currentProposal.attributes = attrs;
+                proposals[idx] = JSON.parse(JSON.stringify(currentProposal));
+                localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+                await window.fbSave('proposals', currentProposal.id.toString(), currentProposal);
+                showToast("Simpan Perubahan Berhasil!");
+                const btn = document.getElementById('btn-save-proposal');
+                if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
+                renderProposalDetail(currentProposal.id);
+            }
+        };
+
+        window.openEditBasicModal = function() {
+            const body = `<div class="settings-form"><div class="form-group"><label class="f-label">Judul Usulan</label><textarea id="edit-basic-title" class="f-input" rows="4">${currentProposal.title}</textarea></div><div class="form-group"><label class="f-label">Ketua Pengusul</label><input type="text" id="edit-basic-proposer" class="f-input" value="${currentProposal.proposer}"></div><div style="margin-top:24px; display:flex; justify-content:flex-end; gap:12px;"><button class="btn-secondary" onclick="closeModal()">Batal</button><button class="btn-primary" onclick="saveBasicProposalInfo()">Simpan</button></div></div>`;
+            showModal("Edit Informasi Utama", body);
+        };
+
+        window.saveBasicProposalInfo = function() {
+            currentProposal.title = document.getElementById('edit-basic-title').value;
+            currentProposal.proposer = document.getElementById('edit-basic-proposer').value;
+            closeModal();
+            renderProposalDetail(currentProposal.id);
+            window.enableProposalSave();
+        };
+
+
 
 
 
@@ -2855,7 +2984,7 @@
                                     </td>
                                     <td style="padding:1.25rem 1.5rem;">
                                         <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-                                            <button class="btn-icon glass" title="View Detail" onclick="window.location.href='proposal.html?id=${p.id}'" style="width:40px; height:40px; background:white; color:var(--primary); border:1px solid var(--border); border-radius:10px;"><span class="material-symbols-outlined" style="font-size:20px;">visibility</span></button>
+                                            <button class="btn-icon glass" title="View Detail" onclick="renderProposalDetail('${p.id}')" style="width:40px; height:40px; background:white; color:var(--primary); border:1px solid var(--border); border-radius:10px;"><span class="material-symbols-outlined" style="font-size:20px;">visibility</span></button>
                                             ${canEdit ? `
                                             <button class="btn-icon glass" title="Edit Usulan" onclick="openProposalModal(${p.id})" style="width:40px; height:40px; background:white; color:var(--secondary); border:1px solid var(--border); border-radius:10px;"><span class="material-symbols-outlined" style="font-size:20px;">edit_square</span></button>
                                             ` : ''}
@@ -5608,7 +5737,7 @@
 
             closeModal();
             showToast(pid ? 'Usulan berhasil diperbarui' : 'Usulan berhasil dikirim!');
-            renderProposalTab();
+            renderUsulanTab();
         }
 
         function renderAnalisisTab() {
