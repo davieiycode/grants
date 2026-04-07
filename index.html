@@ -1825,13 +1825,7 @@
 
             const effectiveScriptUrl = scriptUrlParam || storedScriptUrl;
 
-            // 2. CLEAN URL (Optional UI cleanup)
-            if (scriptUrlParam || isPiiMode) {
-                const cleanUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }
-
-            // 3. APPLY TO STORAGE
+            // 2. APPLY TO STORAGE
             if (scriptUrlParam) {
                 localStorage.setItem('grants_appscript_url', scriptUrlParam);
                 cloudSync.url = scriptUrlParam;
@@ -1839,7 +1833,7 @@
                 cloudSync.url = storedScriptUrl;
             }
 
-            // 4. NAVIGATION LOGIC
+            // 3. NAVIGATION LOGIC
             if (savedUser && !scriptUrlParam && !isPiiMode) {
                 // Return user session
                 if (loginGate) loginGate.style.display = 'none';
@@ -1856,10 +1850,18 @@
                     } else {
                         setLoginState('404');
                     }
-                }, 500);
+                }, 50);
             } else {
                 // Fresh start / Manual entry
                 setLoginState('pii');
+            }
+
+            // 4. CLEAN URL (Delayed for Performance)
+            if (scriptUrlParam || isPiiMode) {
+                setTimeout(() => {
+                    const cleanUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, cleanUrl);
+                }, 1000); // Wait for things to settle
             }
         });
 
