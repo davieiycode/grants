@@ -1839,7 +1839,7 @@
                 // Return user session
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
-                currentUser = JSON.parse(savedUser);
+                // currentUser is already loaded via safeParse at the top
                 init();
             } else if (effectiveScriptUrl && !isPiiMode) {
                 // Connecting to book
@@ -1927,7 +1927,7 @@
                 const nameEl = document.getElementById('impersonated-name');
                 if (alertEl && nameEl) {
                     alertEl.style.display = 'flex';
-                    nameEl.innerText = currentUser.name.toUpperCase();
+                    nameEl.innerText = (currentUser?.name || 'USER').toUpperCase();
                 }
             }
         }
@@ -2109,7 +2109,7 @@
             }
 
             const btnEditBasic = document.getElementById('btn-edit-basic');
-            if (btnEditBasic) btnEditBasic.style.display = ['Superadmin', 'Admin', 'Manager', 'Editor'].includes(currentUser.role) ? 'flex' : 'none';
+            if (btnEditBasic) btnEditBasic.style.display = ['Superadmin', 'Admin', 'Manager', 'Editor'].includes(currentUser?.role || 'Guest') ? 'flex' : 'none';
 
             renderAuthors();
             renderDynamicAttributes();
@@ -2332,7 +2332,7 @@
                                         </td>
                                         <td>
                                             <div style="display:flex; gap:8px; justify-content:flex-end;">
-                                                ${['Superadmin', 'Admin'].includes(currentUser.role) && u.name !== currentUser.name ? `
+                                                ${['Superadmin', 'Admin'].includes(currentUser?.role || 'Guest') && u.name !== (currentUser?.name || '') ? `
                                                     <button class="btn-icon" title="Login As (Impersonate)" onclick="impersonateUser('${u.name}')" 
                                                             style="color:var(--primary); background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.1); border-radius:10px; width:38px; height:38px;">
                                                         <span class="material-symbols-outlined" style="font-size:20px;">person_pin</span>
@@ -2474,7 +2474,7 @@
                     </div>
                 `;
             } else if (sub === 'hak-akses') {
-                if (currentUser.role.toLowerCase() !== 'superadmin') {
+                if ((currentUser?.role || 'Guest').toLowerCase() !== 'superadmin') {
                     container.innerHTML = `
                         <div style="text-align:center; padding:8rem 2rem;">
                             <div style="display:inline-flex; width:80px; height:80px; background:rgba(239, 68, 68, 0.05); color:var(--error); border-radius:30px; align-items:center; justify-content:center; margin-bottom:2rem;">
@@ -2890,8 +2890,8 @@
             const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
             const isAdmin = userRoleLower === 'superadmin' || userRoleLower === 'admin';
 
-            const canView = isAdmin || (globalPermissions[currentUser.role] || {}).view_program_logs;
-            const canDelete = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).delete_program_logs;
+            const canView = isAdmin || (globalPermissions[currentUser?.role || 'Guest'] || {}).view_program_logs;
+            const canDelete = (userRoleLower === 'superadmin') || (globalPermissions[currentUser?.role || 'Guest'] || {}).delete_program_logs;
 
             if (!canView) {
                 container.innerHTML = `<div class="glass" style="padding:6rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock_person</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main);">Akses Log Terbatas</h3><p style="color:var(--text-muted); font-weight:600;">Anda tidak memiliki izin untuk melihat log perubahan program ini.</p></div>`;
@@ -2954,7 +2954,7 @@
             program.logs.unshift({
                 timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
                 user: currentUser.name,
-                role: currentUser.role,
+                role: currentUser?.role || 'Guest',
                 type: type,
                 message: message
             });
@@ -3024,15 +3024,15 @@
                         <tbody>
                             ${filtered.map((p, idx) => {
                 const reviewMode = program.reviewMode || 'open';
-                const isReviewer = currentUser.role === 'Reviewer';
-                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser.role);
+                const isReviewer = (currentUser?.role === 'Reviewer');
+                const isAdmin = ['Superadmin', 'Admin', 'Manager'].includes(currentUser?.role || 'Guest');
                 let displayProposer = p.proposer;
                 if (reviewMode === 'double-blind' && isReviewer && !isAdmin) {
                     displayProposer = "[IDENTITAS TERSEMBUNYI]";
                 }
 
-                const scope = globalPermissions[currentUser.role]?.proposals_scope !== undefined ? globalPermissions[currentUser.role].proposals_scope : 1;
-                const isMyProp = p.proposer === currentUser.name;
+                const scope = globalPermissions[currentUser?.role || 'Guest']?.proposals_scope !== undefined ? globalPermissions[currentUser?.role || 'Guest'].proposals_scope : 1;
+                const isMyProp = p.proposer === (currentUser?.name || '');
                 const canEdit = (scope >= 3) || (scope === 2 && !isMyProp);
 
                 return `
@@ -3138,7 +3138,7 @@
             const program = programs.find(p => p.id == progId);
             let filtered = proposals.filter(p => p.program === program.name);
 
-            if (currentUser.role === 'Pengusul') {
+            if (currentUser?.role === 'Pengusul') {
                 filtered = filtered.filter(p =>
                     p.proposer === currentUser.name ||
                     (p.members && p.members.some(m => m.name === currentUser.name))
@@ -3582,7 +3582,7 @@
                                 <h3 style="margin:0; font-family:'Outfit'; font-size:1.15rem; font-weight:800; color:var(--text-main);">Informasi & Batasan</h3>
                             </div>
                             <div style="display:flex; gap:10px;">
-                                ${(globalPermissions[currentUser.role] || {}).import_export_data >= 2 ? `
+                                ${(globalPermissions[currentUser?.role || 'Guest'] || {}).import_export_data >= 2 ? `
                                     <button class="btn-secondary" onclick="triggerImportExcel()" style="height:36px; padding:0 14px; border-radius:10px; font-size:0.75rem; font-weight:850; background:var(--background);">
                                         <span class="material-symbols-outlined" style="font-size:16px;">upload</span> IMPOR MS EXCEL
                                     </button>
@@ -5819,10 +5819,10 @@
         function renderAnalisisTab() {
             const container = document.getElementById('analisis-overview');
             const program = programs.find(p => p.id == progId);
-            const canViewAll = (globalPermissions[currentUser.role] || {}).view_all_props;
-            const canViewMember = (globalPermissions[currentUser.role] || {}).view_member_props;
-            const canShowTotal = (globalPermissions[currentUser.role] || {}).stat_total_props;
-            const canShowReviewer = (globalPermissions[currentUser.role] || {}).stat_reviewers_count;
+            const canViewAll = (globalPermissions[currentUser?.role || 'Guest'] || {}).view_all_props;
+            const canViewMember = (globalPermissions[currentUser?.role || 'Guest'] || {}).view_member_props;
+            const canShowTotal = (globalPermissions[currentUser?.role || 'Guest'] || {}).stat_total_props;
+            const canShowReviewer = (globalPermissions[currentUser?.role || 'Guest'] || {}).stat_reviewers_count;
 
             let filtered = proposals.filter(p => p.program === program.name);
             if (!canViewAll) {
