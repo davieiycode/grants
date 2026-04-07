@@ -1758,31 +1758,36 @@
         };
 
         window.startAppWithSync = async function () {
-            const email = (document.getElementById('login-email').value || "").trim();
-            const password = (document.getElementById('login-password').value || "").trim();
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const email = (emailInput.value || "").trim();
+            const password = (passwordInput.value || "").trim();
             let url = localStorage.getItem('grants_appscript_url');
 
             if (!email || !password || !url) return showAlert("Clearance Required", "Astronaut, please provide your credentials to dock with the Galaxy Station.", "info");
 
-            showToast("Igniting Propulsion Systems...", "info");
+            showToast("Verifying Biometrics...", "info");
+            
+            // 1. PULL DATA
             const data = await cloudSync.pull(true); // skipRender = true
 
             if (data && (data.registeredUsers || data.programs)) {
                 let users = data.registeredUsers || [];
                 let user = users.find(u => u.email === email);
 
-                if (!user) {
-                    if (users.length === 0) {
-                        showToast("First Astronaut Registration...", "info");
-                        user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
-                        await window.fbSave("registeredUsers", email.replace(/\./g, '_'), user);
-                    } else {
-                        return showAlert("Access Denied", "Email address or password is not registered. Please contact the astronaut!", "error");
-                    }
+                // 2. FIRST ASTRONAUT LOGIC
+                if (!user && users.length === 0) {
+                    showToast("Registering First Astronaut...", "info");
+                    user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
+                    await window.fbSave("registeredUsers", email.replace(/\./g, '_'), user);
                 }
 
-                if (user.password && user.password != password) return showAlert("Clearance Denied", "Your biometric credentials do not match our registry. Signal terminated.", "error");
+                // 3. AUTH LOGIC
+                if (!user || user.password != password) {
+                    return showAlert("Identity Lost", "Your credentials were not found in the Flight Registry or password mismatched.", "error");
+                }
 
+                // 4. LOGIN SUCCESS
                 currentUser = user;
                 localStorage.setItem('grants_current_user', JSON.stringify(user));
                 showToast(`Welcome on board, Astronaut ${user.name}!`);
@@ -1852,12 +1857,11 @@
                 setLoginState('pii');
             }
 
-            // 4. CLEAN URL (Delayed for Performance)
+            // 4. CLEAN ADDRESS BAR (Instant Cleanup)
             if (scriptUrlParam || isPiiMode) {
-                setTimeout(() => {
-                    const cleanUrl = window.location.pathname;
-                    window.history.replaceState({}, document.title, cleanUrl);
-                }, 1000); // Wait for things to settle
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+                showToast("Mission Coordinates Secured", "success");
             }
         });
 
