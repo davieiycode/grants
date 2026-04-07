@@ -586,8 +586,8 @@
                             <div
                                 style="margin-top:12px; padding:12px; text-align:center; border-top:1px dashed var(--border);">
                                 <span
-                                    style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">SISTEM
-                                    MANAJEMEN HIBAH <span class="app-version-text">v2.7.2</span></span>
+                                    style="font-size:0.65rem; color:var(--text-muted); font-weight:850; letter-spacing:0.05em; opacity:0.4;">ProSpace
+                                    <span class="app-version-text">v3.0.0</span></span>
                             </div>
                         </div>
                     </div>
@@ -1389,7 +1389,7 @@
         }
 
         // DOM elements
-        // --- CLOUD SYNC ENGINE (v2.7.1) ---
+        // --- CLOUD SYNC ENGINE (v3.0.0) ---
         async function syncMetadataToCloud() {
             const url = localStorage.getItem('grants_appscript_url');
             if (!url) return;
@@ -1543,7 +1543,8 @@
                         showToast("Koneksi diperbarui ke server terbaru.", "info");
                     }
                     if (data.app_version && data.app_version !== APP_VERSION) {
-                        return showAlert("Versi Baru Tersedia", `Aplikasi Anda (${APP_VERSION}) sudah tidak didukung. Versi terbaru (${data.app_version}) telah dirilis. Harap tekan CTRL + F5 atau hapus cache browser untuk memperbarui.`, "warning");
+                        showAlert("Update Required", `Aplikasi Anda (${APP_VERSION}) sudah tidak didukung. Versi terbaru (${data.app_version}) telah dirilis. Harap tekan CTRL + F5 atau hapus cache browser untuk memperbarui.`, "warning");
+                        // We continue to allow them to log in if possible
                     }
 
                     // 1. Process Programs
@@ -1812,7 +1813,7 @@
             const scriptUrlParam = params.get('script')?.trim() || params.get('url')?.trim();
             const isPiiMode = params.has('pii');
             const storedScriptUrl = localStorage.getItem('grants_appscript_url');
-            
+
             const effectiveScriptUrl = scriptUrlParam || storedScriptUrl;
 
             if (scriptUrlParam) {
@@ -1888,8 +1889,7 @@
                 </div>
             `).join('');
         };
-    </script>
-    <script>
+
         function init() {
             // Setup User Profile Nav
             const profileNav = document.getElementById('user-profile-nav');
