@@ -408,9 +408,10 @@
 <body data-theme="light">
 
     <!-- LOGIN GATE -->
-    <div id="login-gate">
-        <div class="login-card animate-fade-in" id="login-card-inner">
-            <a href="index.html" class="logo" style="margin-bottom:2rem; justify-content:center;">
+    <div id="login-gate" data-cache-v="3.1.0-RELOAD-REQUIRED">
+        <div class="login-card animate-fade-in" id="login-card-inner" style="position:relative; overflow:hidden;">
+            <div id="v3-spa-shield" style="display:none;">v3.1.0 Activated</div>
+            <a href="index.html" class="logo" style="margin-bottom:2rem; justify-content:center; position:relative; z-index:10;">
                 <div class="logo-icon" style="width:52px; height:52px;"><span class="material-symbols-outlined"
                         style="font-size:32px;">rocket_launch</span></div>
                 <div style="display:flex; align-items:baseline;">
@@ -1050,15 +1051,22 @@
         // Data & State Management
         const APP_VERSION = "v3.1.0-SPA";
 
-        var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
+        function safeParse(key, fallback) {
+            try {
+                const val = localStorage.getItem(key);
+                return val ? JSON.parse(val) : fallback;
+            } catch (e) {
+                console.error("Corrupt data for " + key, e);
+                return fallback;
+            }
+        }
 
-        var registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers')) || [];
-
-        let currentUser = JSON.parse(localStorage.getItem('grants_current_user')) || registeredUsers[0];
-
-        var globalBlacklist = JSON.parse(localStorage.getItem('grants_global_blacklist')) || [];
+        var programs = safeParse('grants_programs_meta', []);
+        var registeredUsers = safeParse('grants_registeredUsers', []);
+        let currentUser = safeParse('grants_current_user', registeredUsers[0] || null);
+        var globalBlacklist = safeParse('grants_global_blacklist', []);
         var globalLogs = []; // Global Logs always pulled fresh from cloud
-        let recycleBin = JSON.parse(localStorage.getItem('grants_recycle_bin')) || [];
+        let recycleBin = safeParse('grants_recycle_bin', []);
 
         const defaultPermissions = {
             'Superadmin': {
@@ -1808,14 +1816,22 @@
             // Inject App Version
             document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
 
-            // 1. GET PARAMS & FALLBACKS
+            // 1. GET PARAMS & FALLBACKS (Capture before cleaning URL)
             const params = new URLSearchParams(window.location.search);
             const scriptUrlParam = params.get('script')?.trim() || params.get('url')?.trim();
             const isPiiMode = params.has('pii');
             const storedScriptUrl = localStorage.getItem('grants_appscript_url');
+            const savedUser = localStorage.getItem('grants_current_user');
 
             const effectiveScriptUrl = scriptUrlParam || storedScriptUrl;
 
+            // 2. CLEAN URL (Optional UI cleanup)
+            if (scriptUrlParam || isPiiMode) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
+            // 3. APPLY TO STORAGE
             if (scriptUrlParam) {
                 localStorage.setItem('grants_appscript_url', scriptUrlParam);
                 cloudSync.url = scriptUrlParam;
@@ -1823,24 +1839,16 @@
                 cloudSync.url = storedScriptUrl;
             }
 
-            if (scriptUrlParam || isPiiMode || params.toString()) {
-                const cleanUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }
-
-            if (savedUser && !scriptUrlParam) {
+            // 4. NAVIGATION LOGIC
+            if (savedUser && !scriptUrlParam && !isPiiMode) {
+                // Return user session
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
                 currentUser = JSON.parse(savedUser);
                 init();
-                return;
-            }
-
-            if (effectiveScriptUrl) {
+            } else if (effectiveScriptUrl && !isPiiMode) {
+                // Connecting to book
                 setLoginState('searching');
-                localStorage.setItem('grants_appscript_url', effectiveScriptUrl);
-                cloudSync.url = effectiveScriptUrl;
-
                 setTimeout(async () => {
                     const data = await cloudSync.pull(true);
                     if (data && (data.registeredUsers || data.programs)) {
@@ -1848,10 +1856,9 @@
                     } else {
                         setLoginState('404');
                     }
-                }, 800);
-            } else if (isPiiMode) {
-                setLoginState('pii');
+                }, 500);
             } else {
+                // Fresh start / Manual entry
                 setLoginState('pii');
             }
         });
