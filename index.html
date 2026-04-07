@@ -2953,7 +2953,7 @@
             if (!program.logs) program.logs = [];
             program.logs.unshift({
                 timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
-                user: currentUser.name,
+                user: currentUser?.name || 'USER',
                 role: currentUser?.role || 'Guest',
                 type: type,
                 message: message
