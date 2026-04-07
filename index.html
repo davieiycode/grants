@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -1533,6 +1533,16 @@
 
                     const data = await res.json();
 
+                    // 0. SELF-HEALING & VERSION CHECK
+                    if (data.new_script_url && data.new_script_url !== this.url) {
+                        this.url = data.new_script_url;
+                        localStorage.setItem('grants_appscript_url', data.new_script_url);
+                        showToast("Koneksi diperbarui ke server terbaru.", "info");
+                    }
+                    if (data.app_version && data.app_version !== APP_VERSION) {
+                        return showAlert("Versi Baru Tersedia", `Aplikasi Anda (${APP_VERSION}) sudah tidak didukung. Versi terbaru (${data.app_version}) telah dirilis. Harap tekan CTRL + F5 atau hapus cache browser untuk memperbarui.`, "warning");
+                    }
+
                     // 1. Process Programs
                     const rawPrograms = data.programs || [];
                     programs = parseSyncRows(rawPrograms);
@@ -1799,12 +1809,17 @@
             const scriptUrl = params.get('script')?.trim() || params.get('url')?.trim();
             const isPiiMode = params.has('pii');
 
+            if (scriptUrl) {
+                localStorage.setItem('grants_appscript_url', scriptUrl);
+                cloudSync.url = scriptUrl;
+            }
+
             if (scriptUrl || isPiiMode || params.toString()) {
                 const cleanUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, cleanUrl);
             }
 
-            if (savedUser) {
+            if (savedUser && !scriptUrl) {
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
                 currentUser = JSON.parse(savedUser);
