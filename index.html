@@ -5675,14 +5675,29 @@
         };
 
         window.confirmAddMember = () => {
-            const name = document.getElementById('search-member-name').value;
-            const unit = document.getElementById('search-member-name').dataset.unit || 'Fakultas Teknik';
-            const role = document.getElementById('member-role').value;
-            if (!name) return;
-            window.tempProposalMembers.push({ name, role, unit });
+            const nameInput = document.getElementById('search-member-name');
+            const name = nameInput.value.trim();
+            const unit = nameInput.dataset.unit || 'Fakultas';
+            const isCorr = document.getElementById('member-is-corr')?.checked || false;
+
+            if (!name) return alert("Silakan sertakan nama anggota!");
+
+            // Default role logic: First one is First Author, others are Member
+            const role = window.tempProposalMembers.length === 0 ? "First Author" : "Member";
+
+            window.tempProposalMembers.push({ name, role, unit, isCorresponding: isCorr });
+            
+            // Handle unique corresponding author logic
+            if (isCorr) {
+                window.tempProposalMembers.forEach((m, idx) => {
+                    if (idx !== window.tempProposalMembers.length - 1) m.isCorresponding = false;
+                });
+            }
+
             window.renderMembersList();
             document.getElementById('add-member-form').style.display = 'none';
-            document.getElementById('search-member-name').value = '';
+            nameInput.value = '';
+            if (document.getElementById('member-is-corr')) document.getElementById('member-is-corr').checked = false;
         };
     </script>
 </body>
