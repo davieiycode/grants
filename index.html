@@ -1650,6 +1650,14 @@
     </script>
     <script>
         function init() {
+            // Setup User Profile Nav
+            const profileNav = document.getElementById('user-profile-nav');
+            if (profileNav && currentUser) {
+                profileNav.style.display = 'flex';
+                if (document.getElementById('nav-user-name')) document.getElementById('nav-user-name').innerText = currentUser.name;
+                if (document.getElementById('nav-user-role')) document.getElementById('nav-user-role').innerText = (currentUser.role || "").toUpperCase();
+            }
+
             const params = new URLSearchParams(window.location.search);
             const pId = params.get('p');
             const tab = params.get('tab') || 'usulan';
