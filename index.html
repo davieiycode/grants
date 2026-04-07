@@ -3937,18 +3937,33 @@
         }
 
         function addTeamMember() {
-            const name = document.querySelector('.dropdown-item.selected')?.innerText || document.querySelector('.searchable-select input').value;
+            const inputEl = document.querySelector('.searchable-select input');
+            const name = inputEl ? inputEl.value.trim() : "";
             const role = document.getElementById('new-team-role').value;
-            const program = programs.find(p => p.id == progId);
+
+            if (!name) return alert("Silakan pilih atau isi nama pengelola terlebih dahulu!");
+            
+            const program = programs.find(p => p.id == (typeof progId !== 'undefined' ? progId : null));
+            if (!program) return alert("Ups! Data program tidak ditemukan. Silakan refresh.");
 
             if (!program.team) program.team = { pic: [], staff: [] };
-            if (role === 'pic') program.team.pic.push(name);
-            else program.team.staff.push(name);
+            
+            // Check for duplicates
+            const allStaff = [...(program.team.pic || []), ...(program.team.staff || [])];
+            if (allStaff.includes(name)) return alert("Pengguna ini sudah terdaftar di tim!");
+
+            if (role === 'pic') {
+                if (!program.team.pic) program.team.pic = [];
+                program.team.pic.push(name);
+            } else {
+                if (!program.team.staff) program.team.staff = [];
+                program.team.staff.push(name);
+            }
 
             window.fbSave('programs', program.id, program);
             closeModal();
             showToast('Anggota tim berhasil ditambahkan');
-            switchUserSubTab('pengelola');
+            switchSettingSubTab('user'); // Refresh the view
         }
 
         function removeTeamMember(name, role) {
