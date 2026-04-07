@@ -484,7 +484,7 @@
                 © 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Powered by <span
                         class="logo-text-pro" style="font-size:0.7rem;">Pro</span><span class="logo-text-space"
                         style="font-size:0.75rem;">Space</span> <span class="app-version-text"
-                        style="font-style:normal; font-family:'Outfit';">v3.0.0, developed by Rafieiy</span></span>
+                        style="font-style:normal; font-family:'Outfit';">...</span></span>, developed by Rafieiy
             </p>
         </div>
     </div>
@@ -1048,7 +1048,7 @@
         };
 
         // Data & State Management
-        const APP_VERSION = "v3.0.0-SPA";
+        const APP_VERSION = "v3.1.0-SPA";
 
         var programs = JSON.parse(localStorage.getItem('grants_programs_meta')) || [];
 
@@ -1434,11 +1434,11 @@
             showToast("Semua pengaturan berhasil disimpan!");
         };
 
-        const programGrid = document.getElementById('program-grid');
-        const dashboardView = document.getElementById('dashboard-view');
-        const programDashboard = document.getElementById('program-dashboard');
-        const globalUsersView = document.getElementById('global-users-view');
-        const proposalDetailView = document.getElementById('proposal-detail-view');
+        let programGrid = document.getElementById('program-grid');
+        let dashboardView = document.getElementById('dashboard-view');
+        let programDashboard = document.getElementById('program-dashboard');
+        let globalUsersView = document.getElementById('global-users-view');
+        let proposalDetailView = document.getElementById('proposal-detail-view');
         let proposalId, currentProposal, progId;
 
         // Routing & Initialization
