@@ -1566,7 +1566,7 @@
         };
 
         // On Start: Check Session & URL Params
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Inject App Version
             document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
 
@@ -1574,83 +1574,44 @@
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
 
-            // Handle URL Parameters for Quick Config
-            const urlParams = new URLSearchParams(window.location.search);
-            const scriptParam = urlParams.get('script') || urlParams.get('url');
-            const piiParam = urlParams.has('pii');
-
-            // 1. Handle ?pii -> Show Book URL Field
-            if (piiParam) {
-                document.getElementById('group-appscript-url').style.display = 'block';
-            }
-
-            // 2. Handle ?script=URL -> Save and Hide
-            if (scriptParam) {
-                localStorage.setItem('grants_appscript_url', scriptParam);
-                // Clean Address Bar immediately
-                const paramsToKeep = new URLSearchParams(window.location.search);
-                paramsToKeep.delete('script'); paramsToKeep.delete('url'); paramsToKeep.delete('pii');
-                const newSearch = paramsToKeep.toString();
-                const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
-                window.history.replaceState({}, document.title, newUrl);
-            }
-
-            // 3. Update Sync Indicator on Login Gate
-            window.updateLoginSyncStatus = function() {
-                const urlInput = document.getElementById('login-appscript-url');
-                const btn = document.getElementById('btn-login-sync');
-                const dot = document.getElementById('login-sync-dot');
-                const text = document.getElementById('login-sync-text');
-                const email = document.getElementById('login-email').value.trim();
-                const pass = document.getElementById('login-password').value.trim();
-                
-                let url = (urlInput.value || "").trim();
-                const isValidUrl = url.startsWith('https://script.google.com/') && url.includes('/exec');
-                
-                if (isValidUrl) {
-                    if (dot) dot.style.background = '#10b981'; // Green
-                    if (text) {
-                        text.innerText = "Book found";
-                        text.style.color = "#10b981";
-                    }
-                    if (btn) {
-                        btn.disabled = !(email && pass);
-                        btn.style.opacity = (email && pass) ? "1" : "0.5";
-                        btn.style.cursor = (email && pass) ? "pointer" : "not-allowed";
-                    }
-                } else {
-                    if (dot) dot.style.background = '#ef4444'; // Red
-                    if (text) {
-                        text.innerText = url.includes('/edit') ? "Wrong format (/edit)" : "Book not found";
-                        text.style.color = "#ef4444";
-                    }
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.style.opacity = "0.5";
-                        btn.style.cursor = "not-allowed";
-                    }
-                }
-            };
-
-            const savedUrl = localStorage.getItem('grants_appscript_url');
-            if (savedUrl) {
-                const urlInput = document.getElementById('login-appscript-url');
-                if (urlInput) urlInput.value = savedUrl;
-            }
-            
-            // Add Listeners
-            ['login-email', 'login-password', 'login-appscript-url'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('input', window.updateLoginSyncStatus);
-            });
-
-            // Initial Check
-            window.updateLoginSyncStatus();
-
             if (savedUser) {
-                currentUser = JSON.parse(savedUser);
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
+                currentUser = JSON.parse(savedUser);
+                init();
+                return;
+            }
+
+            // LOGIN GATE LOGIC (Based on Params)
+            const params = new URLSearchParams(window.location.search);
+            const scriptUrl = params.get('script')?.trim() || params.get('url')?.trim();
+            const isPiiMode = params.has('pii');
+
+            if (scriptUrl) {
+                setLoginState('searching');
+                localStorage.setItem('grants_appscript_url', scriptUrl);
+                cloudSync.url = scriptUrl;
+                
+                // Wait 1s for visual effect then pull
+                setTimeout(async () => {
+                    const data = await cloudSync.pull(true);
+                    if (data && (data.registeredUsers || data.programs)) {
+                        setLoginState('login');
+                        // Clean URL to avoid infinite loops if it fails in the future
+                        const cleanUrl = new URL(window.location);
+                        cleanUrl.searchParams.delete('script');
+                        cleanUrl.searchParams.delete('url');
+                        window.history.replaceState({}, "", cleanUrl.toString());
+                    } else {
+                        setLoginState('404');
+                    }
+                }, 1000);
+            } else if (isPiiMode) {
+                setLoginState('pii');
+            } else {
+                setLoginState('404');
+            }
+        });
 
                 const profileNav = document.getElementById('user-profile-nav');
                 if (profileNav) {
