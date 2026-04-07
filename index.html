@@ -1265,6 +1265,24 @@
             }
         };
 
+        // Helper to parse rows that might contain JSON_DATA
+        const parseSyncRows = (arr) => {
+            if (!arr || !Array.isArray(arr)) return [];
+            return arr.map(row => {
+                if (row.JSON_DATA) {
+                    try {
+                        const parsed = JSON.parse(row.JSON_DATA);
+                        // Ensure it has an ID, preferring the outer row's ID
+                        return { ...parsed, id: row.ID || row.id || parsed.id };
+                    } catch (e) {
+                        console.warn("Failed to parse JSON_DATA row:", e);
+                        return row;
+                    }
+                }
+                return row;
+            });
+        };
+
         // --- APPS SCRIPT SYNC BRIDGE ---
         window.cloudSync = {
             url: localStorage.getItem('grants_appscript_url'),
@@ -1274,7 +1292,6 @@
                 if (!cleanUrl || this.isSyncing) return null;
                 
                 if (cleanUrl.includes('/edit')) {
-                    console.error("Wrong URL: Using Editor URL instead of Web App URL");
                     syncHub.update('error', 'URL salah (/edit)');
                     return null;
                 }
@@ -1287,25 +1304,31 @@
                     
                     const data = await res.json();
                     
-                    // Update state... (rest of the logic remains)
-                    if (data.programs) {
-                        programs = data.programs;
-                        localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
-                    }
-                    if (data.proposals) {
-                        proposals = data.proposals;
-                        localStorage.setItem('grants_proposals', JSON.stringify(proposals));
-                    }
-                    if (data.registeredUsers) {
-                        registeredUsers = data.registeredUsers;
-                        localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
-                    }
-                    if (data.globalBlacklist) {
-                        globalBlacklist = data.globalBlacklist;
-                        localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
-                    }
-                    if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
-                        data.globalPermissions.forEach(p => {
+                    // 1. Process Programs
+                    const rawPrograms = data.programs || [];
+                    programs = parseSyncRows(rawPrograms);
+                    if (programs.length > 0) localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
+
+                    // 2. Process Proposals
+                    const rawProposals = data.proposals || [];
+                    proposals = parseSyncRows(rawProposals);
+                    if (proposals.length > 0) localStorage.setItem('grants_proposals', JSON.stringify(proposals));
+
+                    // 3. Process Users
+                    const rawUsers = data.registeredUsers || [];
+                    registeredUsers = parseSyncRows(rawUsers);
+                    if (registeredUsers.length > 0) localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
+
+                    // 4. Process Blacklist (Supporting both forms)
+                    const rawBlacklist = data.global_blacklist || data.globalBlacklist || [];
+                    globalBlacklist = parseSyncRows(rawBlacklist);
+                    if (globalBlacklist.length > 0) localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
+
+                    // 5. Process Global Permissions
+                    const rawPerms = data.globalPermissions || [];
+                    const processedPerms = parseSyncRows(rawPerms);
+                    if (processedPerms.length > 0) {
+                        processedPerms.forEach(p => {
                             const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
                             const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId);
                             if (roleKey) {
@@ -1324,10 +1347,14 @@
                         });
                         localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                     }
-                    if (data.globalLogs && Array.isArray(data.globalLogs)) {
-                        window.globalLogs = data.globalLogs.map(log => ({
+
+                    // 6. Process Logs (Supporting both forms)
+                    const rawLogs = data.global_logs || data.globalLogs || [];
+                    const processedLogs = parseSyncRows(rawLogs);
+                    if (processedLogs.length > 0) {
+                        window.globalLogs = processedLogs.map(log => ({
                             ...log,
-                            timestamp: log.timestamp || log.Timestamp || new Date().toISOString()
+                            timestamp: log.timestamp || log.Timestamp || log.LAST_UPDATED || new Date().toISOString()
                         }));
                         localStorage.setItem('grants_global_logs', JSON.stringify(window.globalLogs));
                     }
@@ -1348,30 +1375,35 @@
                 }
             },
             async push(collection, id, data) {
-                if (!this.url) return;
-                // Pushes should always go through, but prevent concurrent pulls
+                const cleanUrl = (this.url || "").trim();
+                if (!cleanUrl) return;
+                
+                // Align collection names with spreadsheet sheet names
+                let targetSheet = collection;
+                if (collection === 'globalBlacklist') targetSheet = 'global_blacklist';
+                if (collection === 'globalLogs') targetSheet = 'global_logs';
+
                 this.isSyncing = true;
                 syncHub.start();
                 try {
-                    await fetch(this.url, {
+                    await fetch(cleanUrl, {
                         method: 'POST',
                         mode: 'no-cors',
                         body: JSON.stringify({
                             action: 'push',
-                            collection,
-                            id,
-                            data,
+                            collection: targetSheet,
+                            id: id,
+                            data: data,
                             user_email: currentUser?.email || 'system',
                             timestamp: new Date().toISOString()
                         })
                     });
                     syncHub.end();
                     this.isSyncing = false;
-                    // Force a tiny delay to ensure browser doesn't immediately kill the connection
                     await new Promise(resolve => setTimeout(resolve, 300));
                 } catch (e) {
                     console.error("Push Sync Failed:", e);
-                    syncHub.update('error');
+                    syncHub.update('error', 'Gagal kirim');
                     this.isSyncing = false;
                 }
             }
@@ -1396,15 +1428,14 @@
                     registeredUsers.push(data);
                 }
                 localStorage.setItem('grants_registeredUsers', JSON.stringify(registeredUsers));
-                // For cloud, always use email as the persistent key
                 id = registeredUsers.find(u => (u.id == id || u.email == id))?.email || id;
             } else if (collection === 'globalBlacklist') {
-                const idx = globalBlacklist.findIndex(b => b.id == id || b.email == id);
+                const idx = globalBlacklist.findIndex(b => b.id == id || (b.email && b.email == id));
                 if (idx !== -1) globalBlacklist[idx] = { ...globalBlacklist[idx], ...data };
                 else globalBlacklist.push(data);
                 localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
             } else if (collection === 'globalPermissions') {
-                globalPermissions[id] = data; // id is the Role name
+                globalPermissions[id] = data; 
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             } else if (collection === 'globalLogs') {
                 if (!window.globalLogs) window.globalLogs = [];
@@ -1412,7 +1443,7 @@
                 localStorage.setItem('grants_global_logs', JSON.stringify(window.globalLogs));
             }
 
-            // 2. PUSH TO CLOUD (With Logging)
+            // 2. PUSH TO CLOUD
             await cloudSync.push(collection, id, data);
 
             // 3. LOG THE CHANGE
@@ -1763,7 +1794,11 @@
             grid.innerHTML = '';
 
             const canViewAll = (globalPermissions[currentUser.role] || {}).view_all_props;
-            let filtered = programs.filter(p => p.name.toLowerCase().includes(filter) || (p.desc && p.desc.toLowerCase().includes(filter)));
+            let filtered = programs.filter(p => {
+                const name = (p.name || "").toLowerCase();
+                const desc = (p.desc || "").toLowerCase();
+                return name.includes(filter) || desc.includes(filter);
+            });
 
             // Filter inactive for non-admins
             if (!canViewAll) {

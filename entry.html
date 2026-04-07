@@ -1419,13 +1419,19 @@
         window.cloudSync = {
             url: (localStorage.getItem('grants_appscript_url') || "").trim(),
             async push(collection, id, data) {
-                if (!this.url) return;
+                const cleanUrl = (this.url || "").trim();
+                if (!cleanUrl) return;
+                
+                let targetSheet = collection;
+                if (collection === 'globalBlacklist') targetSheet = 'global_blacklist';
+                if (collection === 'globalLogs') targetSheet = 'global_logs';
+
                 syncHub.update('syncing');
                 try {
-                    await fetch(this.url, {
+                    await fetch(cleanUrl, {
                         method: 'POST',
                         mode: 'no-cors',
-                        body: JSON.stringify({ action: 'push', collection, id, data })
+                        body: JSON.stringify({ action: 'push', collection: targetSheet, id, data })
                     });
                     syncHub.update('synced');
                 } catch (e) {
