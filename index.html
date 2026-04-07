@@ -1288,6 +1288,8 @@
         const programGrid = document.getElementById('program-grid');
         const dashboardView = document.getElementById('dashboard-view');
         const programDashboard = document.getElementById('program-dashboard');
+        const globalUsersView = document.getElementById('global-users-view');
+        const proposalDetailView = document.getElementById('proposal-detail-view');
 
         // Routing & Initialization
         // --- Firebase Modular SDK Setup ---
@@ -1605,24 +1607,13 @@
                 let user = users.find(u => u.email === email);
 
                 if (!user) {
-                    const isFirst = users.length === 0;
-                    const role = isFirst ? 'Superadmin' : 'Pengusul';
-                    const unit = isFirst ? 'Pusat' : 'Luar Pusat';
-
-                    showToast(isFirst ? "First Astronaut Registration..." : "Initiating New Member Space...", "info");
-                    
-                    user = { 
-                        id: Date.now(), 
-                        name: email.split('@')[0].toUpperCase().replace('.', ' '), 
-                        email: email, 
-                        role: role, 
-                        unit: unit, 
-                        password: password,
-                        created: new Date().toISOString()
-                    };
-                    
-                    // Sync to Cloud
-                    await window.fbSave("registeredUsers", email.replace(/\./g, '_'), user);
+                    if (users.length === 0) {
+                        showToast("First Astronaut Registration...", "info");
+                        user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
+                        await window.fbSave("registeredUsers", email.replace(/\./g, '_'), user);
+                    } else {
+                        return showAlert("Access Denied", "Email address or password is not registered. Please contact the astronaut!", "error");
+                    }
                 }
 
                 if (user.password && user.password != password) return showAlert("Authentication Failed", "Email address or password is not registered. Please contact the astronauts!", "error");
@@ -1642,14 +1633,19 @@
             location.reload();
         };
 
+
+
         // On Start: Check Session & URL Params
         document.addEventListener('DOMContentLoaded', async () => {
-            // Inject App Version
-            document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
-
-            const savedUser = localStorage.getItem('grants_current_user');
+            // Cache DOM Elements
+            dashboardView = document.getElementById('dashboard-view');
+            programDashboard = document.getElementById('program-dashboard');
+            globalUsersView = document.getElementById('global-users-view');
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
+
+            // Inject App Version
+            document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
 
             // 1. GET PARAMS & CLEAN ADDRESS BAR IMMEDIATELY
             const params = new URLSearchParams(window.location.search);
@@ -1925,7 +1921,8 @@
             document.getElementById('dashboard-view').style.display = view === 'program' ? 'block' : 'none';
             document.getElementById('global-users-view').style.display = view === 'users' ? 'block' : 'none';
             document.getElementById('global-guide-view').style.display = view === 'guide' ? 'block' : 'none';
-            document.getElementById('program-dashboard').style.display = 'none';
+            programDashboard.style.display = view === 'program-dashboard' ? 'block' : 'none';
+            if (proposalDetailView) proposalDetailView.style.display = view === 'proposal-detail' ? 'block' : 'none';
 
             if (view === 'program') {
                 renderDashboard();
