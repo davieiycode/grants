@@ -408,9 +408,9 @@
 <body data-theme="light">
 
     <!-- LOGIN GATE -->
-    <div id="login-gate" data-cache-v="3.1.0-RELOAD-REQUIRED">
+    <div id="login-gate" data-cache-v="3.1.2-SPACE-STATION">
         <div class="login-card animate-fade-in" id="login-card-inner" style="position:relative; overflow:hidden;">
-            <div id="v3-spa-shield" style="display:none;">v3.1.0 Activated</div>
+            <div id="v3-spa-shield" style="display:none;">v3.1.2 Space Shield Activated</div>
             <a href="index.html" class="logo" style="margin-bottom:2rem; justify-content:center; position:relative; z-index:10;">
                 <div class="logo-icon" style="width:52px; height:52px;"><span class="material-symbols-outlined"
                         style="font-size:32px;">rocket_launch</span></div>
@@ -420,39 +420,34 @@
                 </div>
             </a>
 
-            <!-- STATE 1: SEARCHING THE BOOK -->
+            <!-- STATE 1: SEARCHING THE GALAXY -->
             <div id="state-searching" style="display:none;">
                 <div class="spinner" style="margin: 0 auto 1.5rem;"></div>
-                <h2 style="font-weight:900; color:var(--text-main); font-size:1.5rem;">Searching the book...</h2>
-                <p style="color:var(--text-muted); font-size:0.9rem;">Menghubungkan ke pusat data ProSpace</p>
+                <h2 style="font-weight:900; color:var(--text-main); font-size:1.5rem;">Mapping the Galaxy...</h2>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Connecting to the Command Script Coordinates</p>
             </div>
 
-            <!-- STATE 2: BOOK NOT FOUND (404) -->
+            <!-- STATE 2: TRANSMISSION LOST (404) -->
             <div id="state-404" style="display:none;">
                 <div style="color:var(--error); margin-bottom:1.5rem;">
-                    <span class="material-symbols-outlined" style="font-size:64px; opacity:0.3;">database_off</span>
+                    <span class="material-symbols-outlined" style="font-size:64px; opacity:0.3;">shuttle</span>
                 </div>
-                <h1 style="font-size:2rem; font-weight:900; color:var(--text-main); letter-spacing:-0.03em;">404 Book
-                    not found</h1>
-                <p style="color:var(--text-muted); margin-bottom:2.5rem; font-weight:500;">The book not found in the
-                    library.</p>
+                <h1 style="font-size:1.8rem; font-weight:900; color:var(--text-main); letter-spacing:-0.03em;">Transmission Lost</h1>
+                <p style="color:var(--text-muted); margin-bottom:2.5rem; font-weight:500;">We couldn't dock with the server at those coordinates. Check your signal.</p>
                 <button onclick="location.href='index.html?pii'" class="btn-primary"
-                    style="background:var(--text-main); color:white; width:100%; height:52px; border-radius:14px; border:none; font-weight:800; cursor:pointer;">Search
-                    the book</button>
+                    style="background:var(--text-main); color:white; width:100%; height:52px; border-radius:14px; border:none; font-weight:800; cursor:pointer;">RE-ENTER COORDINATES</button>
             </div>
 
-            <!-- STATE 3: BOOK CODE ENTRY -->
+            <!-- STATE 3: MISSION COORDINATES ENTRY -->
             <div id="state-pii" style="display:none;">
-                <h2 style="font-weight:900; margin-bottom:0.5rem; font-size:1.5rem;">Enter Book Code</h2>
-                <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem; font-weight:500;">Enter the
-                    code provided by your institution.</p>
+                <h2 style="font-weight:900; margin-bottom:0.5rem; font-size:1.5rem;">Mission Entry Code</h2>
+                <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem; font-weight:500;">Enter the Galaxy Control URL to reach the book server.</p>
                 <div class="f-group" style="margin-bottom:1.5rem;">
-                    <input type="url" id="pii-book-url" class="f-input" placeholder="Enter the book code here"
+                    <input type="url" id="pii-book-url" class="f-input" placeholder="https://script.google.com/macros/s/.../exec"
                         style="height:52px; text-align:center; background:white; border-radius:14px; border:1px solid var(--border);">
                 </div>
                 <button onclick="handlePiiSync()" class="btn-primary"
-                    style="width:100%; height:52px; border-radius:14px; background:var(--primary); color:white; border:none; font-weight:800; cursor:pointer;">Sync
-                    & Continue</button>
+                    style="width:100%; height:52px; border-radius:14px; background:var(--primary); color:white; border:none; font-weight:800; cursor:pointer;">IGNITION & CONNECT</button>
             </div>
 
             <!-- STATE 4: LOGIN FORM -->
@@ -485,7 +480,7 @@
                 © 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Powered by <span
                         class="logo-text-pro" style="font-size:0.7rem;">Pro</span><span class="logo-text-space"
                         style="font-size:0.75rem;">Space</span> <span class="app-version-text"
-                        style="font-style:normal; font-family:'Outfit';">...</span></span>, developed by Rafieiy
+                        style="font-style:normal; font-family:'Outfit';">...</span></span>, developed by NASA-Rafieiy Command
             </p>
         </div>
     </div>
@@ -501,9 +496,9 @@
                 </div>
             </a>
             <div class="nav-links" id="main-nav-links">
-                <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs">Program</a>
-                <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users">User & Kebijakan</a>
-                <a href="#" onclick="switchMainView('guide')" class="nav-link" id="nav-guide">Panduan</a>
+                <a href="#" onclick="switchMainView('program')" class="nav-link active" id="nav-programs">Expeditions</a>
+                <a href="#" onclick="switchMainView('users')" class="nav-link" id="nav-users">Crew & Protocols</a>
+                <a href="#" onclick="switchMainView('guide')" class="nav-link" id="nav-guide">Flight Manual</a>
             </div>
             <div class="nav-actions" style="display:flex; align-items:center; gap:1.25rem;">
                 <div id="impersonation-alert"
@@ -533,9 +528,9 @@
                             </div>
                             <div style="display:flex; flex-direction:column; gap:0px;">
                                 <span
-                                    style="font-size:0.65rem; font-weight:850; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.02em;">SINKRONISASI</span>
+                                    style="font-size:0.65rem; font-weight:850; color:var(--text-muted); opacity:0.6; text-transform:uppercase; letter-spacing:0.02em;">TELEMETRY STATUS</span>
                                 <span id="sync-time-rel"
-                                    style="font-size:0.75rem; font-weight:800; color:var(--text-main);">Baru saja</span>
+                                    style="font-size:0.75rem; font-weight:800; color:var(--text-main);">Connected</span>
                             </div>
                         </div>
 
@@ -616,27 +611,26 @@
             <!-- Global User Management View -->
             <div id="global-users-view" style="display:none; animation:fadeIn 0.4s ease;">
                 <header class="hero" style="text-align:left; margin-bottom:40px;">
-                    <h1 style="margin:0; font-size:2.5rem;">Pengelolaan User</h1>
-                    <p style="margin:0;">Kelola akses sistem, daftar user aktif, dan kebijakan pencekalan (blacklist)
-                        global.</p>
+                    <h1 style="margin:0; font-size:2.5rem;">Crew Management</h1>
+                    <p style="margin:0;">Manage astronaut access, active duty lists, and galactic security protocols.</p>
                 </header>
 
                 <div class="settings-container">
                     <div class="settings-sidebar">
                         <button class="side-tab active" onclick="switchGlobalUserSubTab('daftar-user')">
-                            <span class="material-symbols-outlined">group</span> Daftar User
+                            <span class="material-symbols-outlined">group</span> Active Astronauts
                         </button>
                         <button class="side-tab" onclick="switchGlobalUserSubTab('hak-akses')">
-                            <span class="material-symbols-outlined">security</span> Kebijakan Akses
+                            <span class="material-symbols-outlined">security</span> Clearance Levels
                         </button>
                         <button class="side-tab" onclick="switchGlobalUserSubTab('blacklist-global')">
-                            <span class="material-symbols-outlined">block</span> Blacklist Global
+                            <span class="material-symbols-outlined">block</span> Forbidden Zones
                         </button>
                         <button class="side-tab" onclick="switchGlobalUserSubTab('log-akses')">
-                            <span class="material-symbols-outlined">history</span> Log Akses
+                            <span class="material-symbols-outlined">history</span> Black Box Data
                         </button>
                         <button class="side-tab" onclick="switchGlobalUserSubTab('arsip-program')">
-                            <span class="material-symbols-outlined">archive</span> Arsip & Sampah
+                            <span class="material-symbols-outlined">archive</span> Space Debris (Archives)
                         </button>
                     </div>
                     <div class="settings-content" id="global-user-content" style="padding:32px; background:white;">
@@ -1767,9 +1761,9 @@
             const password = (document.getElementById('login-password').value || "").trim();
             let url = localStorage.getItem('grants_appscript_url');
 
-            if (!email || !password || !url) return showAlert("Sign In Required", "Please fill in Email address and Password address to open the book.", "info");
+            if (!email || !password || !url) return showAlert("Clearance Required", "Astronaut, please provide your credentials to dock with the Galaxy Station.", "info");
 
-            showToast("Opening the book...", "info");
+            showToast("Igniting Propulsion Systems...", "info");
             const data = await cloudSync.pull(true); // skipRender = true
 
             if (data && (data.registeredUsers || data.programs)) {
@@ -1786,11 +1780,11 @@
                     }
                 }
 
-                if (user.password && user.password != password) return showAlert("Authentication Failed", "Email address or password is not registered. Please contact the astronauts!", "error");
+                if (user.password && user.password != password) return showAlert("Clearance Denied", "Your biometric credentials do not match our registry. Signal terminated.", "error");
 
                 currentUser = user;
                 localStorage.setItem('grants_current_user', JSON.stringify(user));
-                showToast(`Selamat datang, ${user.name}!`);
+                showToast(`Welcome on board, Astronaut ${user.name}!`);
                 location.reload();
             } else {
                 setLoginState('404');
@@ -1868,13 +1862,13 @@
 
 
         const qaList = [
-            { q: "Bagaimana cara membuat program hibah baru?", a: "Klik menu <b>Program</b> di sidebar, lalu klik tombol <b>Tambah Program</b> di pojok kanan atas. Isi nama skema dan deskripsi, lalu klik Buat Program." },
-            { q: "Mengapa data yang saya edit tidak muncul di teman saya?", a: "Pastikan Anda melihat indikator <b>SyncHub</b> di pojok kanan atas. Jika tertulis 'Baru saja', berarti data sudah di-push ke Cloud. Teman Anda harus me-refresh halaman untuk menarik data terbaru tersebut." },
-            { q: "Bagaimana cara memulihkan program yang tidak sengaja dihapus?", a: "Program yang dihapus masuk ke tab <b>Arsip & Sampah</b> di menu User & Kebijakan. Superadmin bisa klik tombol Restore (panah berputar) untuk mengaktifkannya kembali." },
-            { q: "Apa bedanya peran Admin dan Reviewer?", a: "<b>Admin</b> bisa mengatur konfigurasi program dan melihat semua usulan. sedangkan <b>Reviewer</b> hanya bisa melihat usulan yang ditugaskan kepada mereka dan memberikan nilai penilaian." },
-            { q: "Dapatkah saya mengganti password user lain?", a: "Bisa, peran Superadmin dapat melakukan ini melalui menu <b>Daftar User</b>. Klik ikon Pensil pada user terkait, isi password baru di kolom bawah, dan klik Simpan." },
-            { q: "Bagaimana cara memfilter usulan berdasarkan status?", a: "Di dalam Dashboard Program, gunakan bar pencarian atau klik tab kategori yang tersedia (misal: Lolos, Revisi) untuk menyaring data secara otomatis." },
-            { q: "Bagaimana cara mencetak/ekspor data ke Excel?", a: "Gunakan fitur <b>Ekspor Excel</b> yang ada di setiap daftar usulan. Sistem akan mengonversi data tabel langsung menjadi file .xlsx yang kompatibel dengan Microsoft Excel." }
+            { q: "How to initiate a new Space Expedition?", a: "Navigate to the <b>Expeditions</b> sector, then click <b>Initialize New Expedition</b>. Define your constellation parameters and hit Ignite." },
+            { q: "Why isn't my telemetry signal reaching other astronauts?", a: "Check the <b>SyncHub</b> indicator in your orbit (top right). If it shows 'Connected', your data has reached the Mothership. Other crew members must refresh their signal to pull latest logs." },
+            { q: "How to recover an Expedition lost in Space Debris?", a: "Decommissioned missions move to the <b>Space Debris (Archives)</b> sector in Crew Protocols. Superadmins can click 'Restore' to re-ignite the program." },
+            { q: "What's the difference between a Commander (Admin) and a Specialist? (Reviewer)?", a: "<b>Commanders</b> can reconfigure mission parameters and view all flight manifests. <b>Specialists</b> are assigned specific payloads to review and provide scientific telemetry." },
+            { q: "Can I reset the credentials of another Crew Member?", a: "Yes, Superadmins can access the <b>Active Astronauts</b> roster. Select the astronaut's profile, input new clearance codes, and secure the link." },
+            { q: "How to filter flight manifests by mission status?", a: "Inside the Expedition Dashboard, use the Galaxy Scanner (search) or click specific status chips (e.g., Orbiting, Re-entry) to filter your view." },
+            { q: "How to download mission telemetry to MS Excel?", a: "Use the <b>Download Telemetry</b> feature in any manifest view. Our systems will convert the live data into a portable .xlsx signal compatible with legacy Excel systems." }
         ];
 
         window.renderQA = function (filter = "") {
@@ -1995,16 +1989,16 @@
                 dashboardView.innerHTML = `
                     <div class="section-header" style="margin-bottom: 2rem; display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                            <h1 style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.02em;">Dashboard Portal Hibah</h1>
-                            <p style="color:var(--text-muted); font-size:0.95rem; margin-top:0.25rem;">Pilih skema program untuk mulai mengelola usulan.</p>
+                            <h1 style="font-family:'Outfit'; font-size:2rem; font-weight:900; letter-spacing:-0.02em;">Galaxy Mission Control</h1>
+                            <p style="color:var(--text-muted); font-size:0.95rem; margin-top:0.25rem;">Select an active constellation to manage mission parameters and flight logs.</p>
                         </div>
                         <div style="display:flex; gap:1rem; align-items:center;">
                             <div class="glass" style="display:flex; align-items:center; padding:0 1rem; border-radius:12px; border:1px solid var(--border); background:var(--surface);">
                                 <span class="material-symbols-outlined" style="font-size:20px; color:var(--text-muted);">search</span>
-                                <input type="text" id="program-search" placeholder="Cari program..." style="border:none; background:transparent; padding:0.75rem 0.5rem; font-size:0.9rem; width:200px; outline:none;" onkeyup="filterPrograms(this.value)">
+                                <input type="text" id="program-search" placeholder="Scan Constellations..." style="border:none; background:transparent; padding:0.75rem 0.5rem; font-size:0.9rem; width:200px; outline:none;" onkeyup="filterPrograms(this.value)">
                             </div>
                             <button id="btn-add-program" class="btn-primary" onclick="openAddProgramModal()" style="height:46px; border-radius:12px; font-weight:800; padding:0 20px; gap:8px;">
-                                <span class="material-symbols-outlined">add_circle</span> Tambah Program
+                                <span class="material-symbols-outlined">rocket</span> Initialize Expedition
                             </button>
                         </div>
                     </div>
@@ -2064,10 +2058,10 @@
                     <div class="program-footer">
                         <div class="stats">
                             <span class="stats-value">${count}</span>
-                            <span class="stats-label"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">description</span>Usulan Masuk</span>
+                            <span class="stats-label"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">rocket_launch</span>Flight Logs</span>
                         </div>
                         <button class="btn-apply" onclick="event.stopPropagation(); const url = new URL(window.location); url.searchParams.set('p', '${prog.id}'); url.searchParams.set('tab', 'usulan'); window.history.pushState({}, '', url.toString()); renderProgramDashboard('${prog.id}', 'usulan');">
-                            Buka Program
+                            Enter Orbit
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </div>
@@ -2410,8 +2404,8 @@
                     </div>
                 `;
             } else if (sub === 'arsip-program') {
-                const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
-                const hasAccess = (userRoleLower === 'superadmin') || (globalPermissions[currentUser.role] || {}).manage_archive_trash >= 1;
+                const userRoleLower = (currentUser?.role || 'pengusul').toLowerCase();
+                const hasAccess = (userRoleLower === 'superadmin') || (globalPermissions[currentUser?.role || 'Guest'] || {}).manage_archive_trash >= 1;
                 if (!hasAccess) {
                     container.innerHTML = `<div class="glass" style="padding:4rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border); box-shadow:var(--shadow-sm);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main); margin-bottom:0.5rem;">Akses Terbatas</h3><p style="color:var(--text-muted); font-weight:600; font-size:1.1rem; max-width:400px; margin:0 auto;">Anda tidak memiliki kebijakan akses untuk mengelola arsip dan sampah program.</p></div>`;
                     return;
@@ -2604,7 +2598,7 @@
                     </div>
                 `;
             } else if (sub === 'log-akses') {
-                const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
+                const userRoleLower = (currentUser?.role || 'pengusul').toLowerCase();
                 if (userRoleLower !== 'superadmin' && userRoleLower !== 'admin') {
                     container.innerHTML = `<div class="glass" style="padding:4rem; text-align:center; border-radius:24px; border:1.5px dashed var(--border); box-shadow:var(--shadow-sm);"><span class="material-symbols-outlined" style="font-size:4rem; color:var(--error); opacity:0.3; margin-bottom:1.5rem;">lock</span><h3 style="font-size:1.5rem; font-weight:900; color:var(--text-main); margin-bottom:0.5rem;">Akses Terbatas</h3><p style="color:var(--text-muted); font-weight:600; font-size:1.1rem; max-width:400px; margin:0 auto;">Hanya Administrator yang memiliki akses ke log aktivitas sistem global.</p></div>`;
                     return;
@@ -2808,7 +2802,7 @@
                             program: program.name,
                             members: row["TIM PENELITI"] ? (row["TIM PENELITI"].startsWith('[') ? JSON.parse(row["TIM PENELITI"]) : row["TIM PENELITI"].split(',').map(n => ({ name: n.trim(), role: 'Anggota' }))) : [],
                             attributes: attributes, // Integrated custom attributes
-                            logs: [{ date: new Date().toISOString(), action: 'Imported via Excel', user: currentUser.name }]
+                            logs: [{ date: new Date().toISOString(), action: 'Imported via Excel', user: (currentUser?.name || 'USER') }]
                         };
 
                         const exists = proposals.findIndex(p => p.id === newProp.id);
@@ -2887,7 +2881,7 @@
             const container = document.getElementById('program-logs-container');
             const program = programs.find(p => p.id == progId);
 
-            const userRoleLower = (currentUser.role || 'pengusul').toLowerCase();
+            const userRoleLower = (currentUser?.role || 'pengusul').toLowerCase();
             const isAdmin = userRoleLower === 'superadmin' || userRoleLower === 'admin';
 
             const canView = isAdmin || (globalPermissions[currentUser?.role || 'Guest'] || {}).view_program_logs;
@@ -2978,7 +2972,7 @@
             const program = programs.find(p => p.id == progId);
             if (!program) return;
 
-            const scope = globalPermissions[currentUser.role]?.proposals_scope !== undefined ? globalPermissions[currentUser.role].proposals_scope : 1;
+            const scope = globalPermissions[currentUser?.role || 'Guest']?.proposals_scope !== undefined ? globalPermissions[currentUser?.role || 'Guest'].proposals_scope : 1;
 
             let filtered = proposals.filter(p => p.program === program.name);
 
@@ -2988,8 +2982,8 @@
                 return;
             } else if (scope < 1) { // Standard user sees own
                 filtered = filtered.filter(p =>
-                    p.proposer === currentUser.name ||
-                    (p.members && p.members.some(m => m.name === currentUser.name))
+                    p.proposer === (currentUser?.name || '') ||
+                    (p.members && p.members.some(m => m.name === (currentUser?.name || '')))
                 );
             }
 
@@ -3140,8 +3134,8 @@
 
             if (currentUser?.role === 'Pengusul') {
                 filtered = filtered.filter(p =>
-                    p.proposer === currentUser.name ||
-                    (p.members && p.members.some(m => m.name === currentUser.name))
+                    p.proposer === (currentUser?.name || '') ||
+                    (p.members && p.members.some(m => m.name === (currentUser?.name || '')))
                 );
             }
 
@@ -5520,13 +5514,13 @@
             const header = document.querySelector('.prog-header');
             if (!header) return;
 
-            const canViewAll = (globalPermissions[currentUser.role] || {}).view_all_props;
-            const canViewMember = (globalPermissions[currentUser.role] || {}).view_member_props;
-            const canShowRevCount = (globalPermissions[currentUser.role] || {}).stat_reviewers_count;
+            const canViewAll = (globalPermissions[currentUser?.role || 'Guest'] || {}).view_all_props;
+            const canViewMember = (globalPermissions[currentUser?.role || 'Guest'] || {}).view_member_props;
+            const canShowRevCount = (globalPermissions[currentUser?.role || 'Guest'] || {}).stat_reviewers_count;
 
             const userProposals = canViewAll
                 ? proposals.filter(p => p.program === program.name)
-                : proposals.filter(p => p.program === program.name && (p.proposer === currentUser.name || (canViewMember && p.members && p.members.some(m => m.name === currentUser.name))));
+                : proposals.filter(p => p.program === program.name && (p.proposer === (currentUser?.name || '') || (canViewMember && p.members && p.members.some(m => m.name === (currentUser?.name || '')))));
 
             let reviewerSection = '';
             if (canShowRevCount) {
@@ -5638,9 +5632,9 @@
                 window.tempProposalMembers = [...proposal.members];
             } else {
                 window.tempProposalMembers = [{
-                    name: proposal ? proposal.proposer : currentUser.name,
+                    name: proposal ? proposal.proposer : (currentUser?.name || 'USER'),
                     role: 'Ketua Pengusul',
-                    unit: proposal ? proposal.unit : currentUser.unit
+                    unit: proposal ? proposal.unit : (currentUser?.unit || '-')
                 }];
             }
 
@@ -5665,33 +5659,33 @@
                     <div style="padding:1.5rem; background:rgba(37,99,235,0.03); border:1px dashed var(--primary); border-radius:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <h4 style="font-size:1rem; font-weight:900; color:var(--primary);">Tim Pengusul</h4>
-                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; background:white; padding:2px 8px; border-radius:10px; border:1px solid var(--border);">DRAG UNTUK REORDER</span>
+                                <h4 style="font-size:1rem; font-weight:900; color:var(--primary);">Active Flight Crew</h4>
+                                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; background:white; padding:2px 8px; border-radius:10px; border:1px solid var(--border);">ORBITAL RE-ORDER</span>
                             </div>
-                            <button class="btn-primary" onclick="window.showAddPropMemberForm()" style="height:32px; padding:0 12px; font-size:0.75rem; border-radius:8px;">+ Tambah Anggota</button>
+                            <button class="btn-primary" onclick="window.showAddPropMemberForm()" style="height:32px; padding:0 12px; font-size:0.75rem; border-radius:8px;">+ Enlist Crew</button>
                         </div>
                         <div id="prop-members-list"></div>
                         <div id="add-member-form" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(0,0,0,0.05);">
                             <div class="f-group" style="position:relative;">
-                                <label class="f-label">Cari Nama Anggota</label>
-                                <input type="text" id="search-member-name" class="f-input" onkeyup="window.searchAppMember(this.value)" placeholder="Ketik nama dosen/peneliti...">
+                                <label class="f-label">Scan Crew Registry</label>
+                                <input type="text" id="search-member-name" class="f-input" onkeyup="window.searchAppMember(this.value)" placeholder="Enter astronaut surname...">
                                 <div id="member-suggestions" class="glass" style="display:none; position:absolute; top:100%; left:0; right:0; z-index:100; margin-top:5px; border-radius:12px; border:1px solid var(--border); max-height:150px; overflow-y:auto; box-shadow:var(--shadow-lg);"></div>
                             </div>
                             <div class="f-group" style="margin-top:10px;">
                                 <label class="f-check-label" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
                                     <input type="checkbox" id="member-is-corr" style="width:18px; height:18px;">
-                                    Set sebagai Corresponding Author
+                                    Designate as Mission Captain (Corr. Author)
                                 </label>
                             </div>
                             <div style="display:flex; gap:10px; margin-top:15px;">
-                                <button class="btn-secondary" onclick="document.getElementById('add-member-form').style.display='none'" style="flex:1; height:36px; font-size:0.75rem;">Batal</button>
-                                <button class="btn-primary" onclick="window.confirmAddMember()" style="flex:1; height:36px; font-size:0.75rem;">Konfirmasi</button>
+                                <button class="btn-secondary" onclick="document.getElementById('add-member-form').style.display='none'" style="flex:1; height:36px; font-size:0.75rem;">Abort</button>
+                                <button class="btn-primary" onclick="window.confirmAddMember()" style="flex:1; height:36px; font-size:0.75rem;">Initiate Boarding</button>
                             </div>
                         </div>
                     </div>
 
                     <div style="padding:1.5rem; background:white; border-radius:20px; border:1px solid var(--border);">
-                        <h4 style="font-size:0.9rem; margin-bottom:1.25rem; color:var(--text-main); font-weight:800;">Atribut Teknis & Lampiran</h4>
+                        <h4 style="font-size:0.9rem; margin-bottom:1.25rem; color:var(--text-main); font-weight:800;">Technical Telemetry & Attachments</h4>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
                             ${(program.attributes || []).map(attr => `
                                 <div class="f-group">
@@ -5704,7 +5698,7 @@
                     </div>
 
                     <div style="padding:1.5rem; border:1px solid var(--border); border-radius:20px;">
-                         <h4 style="font-size:0.9rem; font-weight:900; color:var(--text-main); margin-bottom:1.25rem;">Unggah Berkas Wajib</h4>
+                         <h4 style="font-size:0.9rem; font-weight:900; color:var(--text-main); margin-bottom:1.25rem;">Required Mission Payload (Files)</h4>
                          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                             ${programFiles.length === 0 ? '<p style="color:var(--text-muted); font-size:0.85rem; font-style:italic;">Tidak ada berkas wajib untuk program ini.</p>' : programFiles.map((f, i) => `
                                 <div class="file-upload-card" onclick="window.triggerPropFileUpload('file-input-${i}')" style="background:var(--background); border:1px dashed var(--border); padding:12px 16px; border-radius:14px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:all 0.2s;">
@@ -5722,14 +5716,14 @@
                     </div>
 
                     <div style="margin-top:2.5rem; display:flex; justify-content:flex-end; gap:1.25rem;">
-                        <button class="btn-secondary" onclick="closeModal()" style="height:52px; padding:0 24px; border-radius:12px; font-weight:700;">Batal</button>
+                        <button class="btn-secondary" onclick="closeModal()" style="height:52px; padding:0 24px; border-radius:12px; font-weight:700;">Abort</button>
                         <button class="btn-primary" onclick="saveProposal(${pid})" style="padding:0 36px; height:52px; border-radius:14px; font-weight:800; gap:12px; box-shadow:var(--shadow-float);">
-                            <span class="material-symbols-outlined">${pid ? 'save' : 'cloud_upload'}</span> ${pid ? 'Simpan Perubahan' : 'Submit Usulan'}
+                            <span class="material-symbols-outlined">${pid ? 'save' : 'rocket_launch'}</span> ${pid ? 'Secure Manifest (Save)' : 'Launch Manifest'}
                         </button>
                     </div>
                 </div>
             `;
-            showModal(pid ? 'Edit Data Utama Usulan' : 'Submit Usulan Baru', body);
+            showModal(pid ? 'Edit Flight Parameters' : 'Initiate New Flight Manifest', body);
             window.renderPropMembersList();
         }
 
@@ -5793,7 +5787,7 @@
                     program: program.name,
                     title: title,
                     period: period,
-                    proposer: window.tempProposalMembers[0]?.name || (currentUser ? currentUser.name : 'Unknown'),
+                    proposer: window.tempProposalMembers[0]?.name || (currentUser?.name || 'Unknown'),
                     unit: window.tempProposalMembers[0]?.unit || 'Pusat',
                     members: JSON.parse(JSON.stringify(window.tempProposalMembers)),
                     date: new Date().toISOString().split('T')[0],
@@ -5826,7 +5820,7 @@
 
             let filtered = proposals.filter(p => p.program === program.name);
             if (!canViewAll) {
-                filtered = filtered.filter(p => p.proposer === currentUser.name || (canViewMember && p.members && p.members.some(m => m.name === currentUser.name)));
+                filtered = filtered.filter(p => p.proposer === (currentUser?.name || '') || (canViewMember && p.members && p.members.some(m => m.name === (currentUser?.name || ''))));
             }
 
             const total = filtered.length;
@@ -5903,20 +5897,20 @@
             const body = `
                 <div class="settings-form">
                     <div class="f-group">
-                        <label class="f-label">Nama Skema Baru</label>
-                        <input type="text" id="new-prog-name" class="f-input" placeholder="Contoh: Hibah Internal 2026">
+                        <label class="f-label">New Constellation Name</label>
+                        <input type="text" id="new-prog-name" class="f-input" placeholder="e.g. Alpha Galaxy 2026">
                     </div>
                     <div class="f-group">
-                        <label class="f-label">Deskripsi</label>
+                        <label class="f-label">Mission Objectives & Description</label>
                         <textarea id="new-prog-desc" rows="3" class="f-input"></textarea>
                     </div>
                     <div style="margin-top:2rem; display:flex; justify-content:flex-end; gap:1rem;">
-                        <button class="btn-secondary" onclick="closeModal()">Batal</button>
-                        <button class="btn-primary" onclick="saveNewProgram()">Buat Program</button>
+                        <button class="btn-secondary" onclick="closeModal()">Abort</button>
+                        <button class="btn-primary" onclick="saveNewProgram()">Ignite Expedition</button>
                     </div>
                 </div>
             `;
-            showModal('Tambah Skema Baru', body);
+            showModal('Initialize New Galaxy Expedition', body);
         }
 
         function saveNewProgram() {
@@ -5929,12 +5923,12 @@
                 name: name,
                 desc: desc,
                 icon: "rocket_launch",
-                attributes: [{ label: "Judul Riset", type: "text", required: true }]
+                attributes: [{ label: "Primary Research Object", type: "text", required: true }]
             };
 
             window.fbSave('programs', newProg.id, newProg);
             closeModal();
-            showToast('Program berhasil dibuat!');
+            showToast('Expedition successfully initialized! Ready for launch.');
             renderDashboard();
         }
 
