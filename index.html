@@ -1574,6 +1574,16 @@
             const loginGate = document.getElementById('login-gate');
             const mainApp = document.getElementById('main-app-container');
 
+            // 1. GET PARAMS & CLEAN ADDRESS BAR IMMEDIATELY
+            const params = new URLSearchParams(window.location.search);
+            const scriptUrl = params.get('script')?.trim() || params.get('url')?.trim();
+            const isPiiMode = params.has('pii');
+
+            if (scriptUrl || isPiiMode || params.toString()) {
+                const cleanUrl = window.location.pathname; 
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
             if (savedUser) {
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
@@ -1582,11 +1592,7 @@
                 return;
             }
 
-            // LOGIN GATE LOGIC (Based on Params)
-            const params = new URLSearchParams(window.location.search);
-            const scriptUrl = params.get('script')?.trim() || params.get('url')?.trim();
-            const isPiiMode = params.has('pii');
-
+            // LOGIN GATE LOGIC (Using stored parameters)
             if (scriptUrl) {
                 setLoginState('searching');
                 localStorage.setItem('grants_appscript_url', scriptUrl);
@@ -1597,11 +1603,6 @@
                     const data = await cloudSync.pull(true);
                     if (data && (data.registeredUsers || data.programs)) {
                         setLoginState('login');
-                        // Clean URL to avoid infinite loops if it fails in the future
-                        const cleanUrl = new URL(window.location);
-                        cleanUrl.searchParams.delete('script');
-                        cleanUrl.searchParams.delete('url');
-                        window.history.replaceState({}, "", cleanUrl.toString());
                     } else {
                         setLoginState('404');
                     }
