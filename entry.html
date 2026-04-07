@@ -1417,7 +1417,7 @@
         };
 
         window.cloudSync = {
-            url: localStorage.getItem('grants_appscript_url'),
+            url: (localStorage.getItem('grants_appscript_url') || "").trim(),
             async push(collection, id, data) {
                 if (!this.url) return;
                 syncHub.update('syncing');

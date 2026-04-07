@@ -1270,13 +1270,24 @@
             url: localStorage.getItem('grants_appscript_url'),
             isSyncing: false,
             async pull() {
-                if (!this.url || this.isSyncing) return;
+                const cleanUrl = (this.url || "").trim();
+                if (!cleanUrl || this.isSyncing) return null;
+                
+                if (cleanUrl.includes('/edit')) {
+                    console.error("Wrong URL: Using Editor URL instead of Web App URL");
+                    syncHub.update('error', 'URL salah (/edit)');
+                    return null;
+                }
+
                 this.isSyncing = true;
                 syncHub.start();
                 try {
-                    const res = await fetch(this.url + '?action=pull');
+                    const res = await fetch(cleanUrl + (cleanUrl.includes('?') ? '&' : '?') + 'action=pull');
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    
                     const data = await res.json();
-
+                    
+                    // Update state... (rest of the logic remains)
                     if (data.programs) {
                         programs = data.programs;
                         localStorage.setItem('grants_programs_meta', JSON.stringify(programs));
@@ -1298,20 +1309,14 @@
                             const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
                             const roleKey = Object.keys(defaultPermissions).find(k => k.toLowerCase() === rowId);
                             if (roleKey) {
-                                // Force all permission values to be Numbers to avoid string comparison issues
                                 const normalizedP = {};
                                 Object.keys(p).forEach(key => {
-                                    const val = p[key];
-                                    // Only convert values that exist and are relevant to permissions
                                     if (key !== 'id' && key !== 'ID') {
+                                        const val = p[key];
                                         normalizedP[key] = isNaN(val) || val === "" || val === null ? (defaultPermissions[roleKey][key] || 0) : Number(val);
                                     }
                                 });
-
-                                // MERGE with defaults first, then cloud data
                                 globalPermissions[roleKey] = { ...defaultPermissions[roleKey], ...normalizedP };
-
-                                // ABSOLUTE OVERRIDE: Superadmin always has full access (Level 2)
                                 if (roleKey.toLowerCase() === 'superadmin') {
                                     Object.keys(defaultPermissions['Superadmin']).forEach(f => globalPermissions[roleKey][f] = 2);
                                 }
@@ -1328,8 +1333,6 @@
                     }
 
                     checkAdminVisibility();
-
-                    // SMART RE-INITIALIZE: Only if p param exists, otherwise just render grid
                     const params = new URLSearchParams(window.location.search);
                     if (params.get('p')) init();
                     else renderDashboard();
@@ -1339,7 +1342,7 @@
                     return data;
                 } catch (e) {
                     console.error("Pull Sync Failed:", e);
-                    syncHub.update('error');
+                    syncHub.update('error', e.message);
                     this.isSyncing = false;
                     return null;
                 }
@@ -1448,11 +1451,16 @@
         };
 
         window.startAppWithSync = async function () {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const url = document.getElementById('login-appscript-url').value;
+            const email = (document.getElementById('login-email').value || "").trim();
+            const password = (document.getElementById('login-password').value || "").trim();
+            let url = (document.getElementById('login-appscript-url').value || "").trim();
 
             if (!email || !password || !url) return alert("Silakan isi Email, Password, dan Apps Script URL!");
+
+            // Common Error Check: Editor URL vs Deployment URL
+            if (url.includes('/edit')) {
+                return alert("Ups! Anda menggunakan URL Editor Spreadsheet.\n\nHarap gunakan URL 'Web App' yang berakhiran '/exec'.\n1. Buka Apps Script\n2. Klik Deploy -> Manage Deployments\n3. Salin 'Web App URL'!");
+            }
 
             localStorage.setItem('grants_appscript_url', url);
             cloudSync.url = url;
@@ -1460,8 +1468,8 @@
             showToast("Memverifikasi kredensial...");
             const data = await cloudSync.pull();
 
-            if (data && data.registeredUsers) {
-                // If pull has permissions, merge them into the globalPermissions object
+            if (data && (data.registeredUsers || data.programs)) {
+                // ... same logic but with better data checks
                 if (data.globalPermissions && Array.isArray(data.globalPermissions)) {
                     data.globalPermissions.forEach(p => {
                         const rowId = (p.id || p.ID || "").toString().trim().toLowerCase();
@@ -1470,12 +1478,12 @@
                     });
                     localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
                 }
-                // Find user by email and matching password (if present in sheet)
-                let user = data.registeredUsers.find(u => u.email === email);
+                
+                let users = data.registeredUsers || [];
+                let user = users.find(u => u.email === email);
 
                 if (!user) {
-                    // AUTO-REGISTER FIRST USER
-                    if (data.registeredUsers.length === 0 || email === 'rafieiy.m@gmail.com') {
+                    if (users.length === 0 || email === 'rafieiy.m@gmail.com') {
                         showToast("Pendaftaran Superadmin Pertama...");
                         user = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
                         await window.fbSave("registeredUsers", email, user);
@@ -1484,24 +1492,14 @@
                     }
                 }
 
-                // If password column exists in sheet, check it
                 if (user.password && user.password != password) return alert("Password salah!");
 
                 currentUser = user;
                 localStorage.setItem('grants_current_user', JSON.stringify(user));
                 showToast(`Selamat datang, ${user.name}!`);
                 location.reload();
-            } else if (data) {
-                // Fallback if NO registeredUsers array at all (e.g. empty spreadsheet)
-                showToast("Membuat profil Superadmin...");
-                const userData = { id: Date.now(), name: email.split('@')[0], email, role: 'Superadmin', unit: 'Pusat', password: password };
-                await window.fbSave("registeredUsers", email, userData);
-
-                currentUser = userData;
-                localStorage.setItem('grants_current_user', JSON.stringify(userData));
-                location.reload();
             } else {
-                alert("Gagal terhubung ke Spreadsheet!");
+                alert("Gagal terhubung ke Spreadsheet!\n\nKemungkinan penyebab:\n1. URL Web App salah (harus berakhiran /exec).\n2. Apps Script belum di-deploy sebagai 'Anyone' (Semua Orang).\n3. Spreadsheet ID dalam script tidak valid.");
             }
         };
 
@@ -1542,19 +1540,56 @@
             }
 
             // 3. Update Sync Indicator on Login Gate
-            const savedUrl = localStorage.getItem('grants_appscript_url');
-            const loginSyncDot = document.getElementById('login-sync-dot');
-            const loginSyncText = document.getElementById('login-sync-text');
-
-            if (savedUrl) {
-                if (loginSyncDot) loginSyncDot.style.background = '#10b981'; // Green
-                if (loginSyncText) {
-                    loginSyncText.innerText = "Book found";
-                    loginSyncText.style.color = "#10b981";
+            window.updateLoginSyncStatus = function() {
+                const urlInput = document.getElementById('login-appscript-url');
+                const btn = document.getElementById('btn-login-sync');
+                const dot = document.getElementById('login-sync-dot');
+                const text = document.getElementById('login-sync-text');
+                const email = document.getElementById('login-email').value.trim();
+                const pass = document.getElementById('login-password').value.trim();
+                
+                let url = (urlInput.value || "").trim();
+                const isValidUrl = url.startsWith('https://script.google.com/') && url.includes('/exec');
+                
+                if (isValidUrl) {
+                    if (dot) dot.style.background = '#10b981'; // Green
+                    if (text) {
+                        text.innerText = "Book found";
+                        text.style.color = "#10b981";
+                    }
+                    if (btn) {
+                        btn.disabled = !(email && pass);
+                        btn.style.opacity = (email && pass) ? "1" : "0.5";
+                        btn.style.cursor = (email && pass) ? "pointer" : "not-allowed";
+                    }
+                } else {
+                    if (dot) dot.style.background = '#ef4444'; // Red
+                    if (text) {
+                        text.innerText = url.includes('/edit') ? "Wrong format (/edit)" : "Book not found";
+                        text.style.color = "#ef4444";
+                    }
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.style.opacity = "0.5";
+                        btn.style.cursor = "not-allowed";
+                    }
                 }
+            };
+
+            const savedUrl = localStorage.getItem('grants_appscript_url');
+            if (savedUrl) {
                 const urlInput = document.getElementById('login-appscript-url');
                 if (urlInput) urlInput.value = savedUrl;
             }
+            
+            // Add Listeners
+            ['login-email', 'login-password', 'login-appscript-url'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', window.updateLoginSyncStatus);
+            });
+
+            // Initial Check
+            window.updateLoginSyncStatus();
 
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
