@@ -596,6 +596,9 @@
         </nav>
 
         <div class="container">
+            <!-- Global Announcement Banner (Dynamic) -->
+            <div id="global-announcement" class="animate-fade-in" style="display:none; margin-bottom:2rem;"></div>
+
             <!-- Dashboard View (Program List) -->
             <div id="dashboard-view">
                 <header class="hero">
@@ -1528,7 +1531,7 @@
                 this.isSyncing = true;
                 syncHub.start();
                 try {
-                    const res = await fetch(cleanUrl + (cleanUrl.includes('?') ? '&' : '?') + 'action=pull');
+                    const res = await fetch(cleanUrl + (cleanUrl.includes('?') ? '&' : '?') + 'action=pull&_v=' + Date.now());
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
                     const data = await res.json();
@@ -1804,22 +1807,27 @@
             // Inject App Version
             document.querySelectorAll('.app-version-text').forEach(el => el.innerText = APP_VERSION);
 
-            // 1. GET PARAMS & CLEAN ADDRESS BAR IMMEDIATELY
+            // 1. GET PARAMS & FALLBACKS
             const params = new URLSearchParams(window.location.search);
-            const scriptUrl = params.get('script')?.trim() || params.get('url')?.trim();
+            const scriptUrlParam = params.get('script')?.trim() || params.get('url')?.trim();
             const isPiiMode = params.has('pii');
+            const storedScriptUrl = localStorage.getItem('grants_appscript_url');
+            
+            const effectiveScriptUrl = scriptUrlParam || storedScriptUrl;
 
-            if (scriptUrl) {
-                localStorage.setItem('grants_appscript_url', scriptUrl);
-                cloudSync.url = scriptUrl;
+            if (scriptUrlParam) {
+                localStorage.setItem('grants_appscript_url', scriptUrlParam);
+                cloudSync.url = scriptUrlParam;
+            } else if (storedScriptUrl) {
+                cloudSync.url = storedScriptUrl;
             }
 
-            if (scriptUrl || isPiiMode || params.toString()) {
+            if (scriptUrlParam || isPiiMode || params.toString()) {
                 const cleanUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, cleanUrl);
             }
 
-            if (savedUser && !scriptUrl) {
+            if (savedUser && !scriptUrlParam) {
                 if (loginGate) loginGate.style.display = 'none';
                 if (mainApp) mainApp.style.display = 'block';
                 currentUser = JSON.parse(savedUser);
@@ -1827,13 +1835,11 @@
                 return;
             }
 
-            // LOGIN GATE LOGIC (Using stored parameters)
-            if (scriptUrl) {
+            if (effectiveScriptUrl) {
                 setLoginState('searching');
-                localStorage.setItem('grants_appscript_url', scriptUrl);
-                cloudSync.url = scriptUrl;
+                localStorage.setItem('grants_appscript_url', effectiveScriptUrl);
+                cloudSync.url = effectiveScriptUrl;
 
-                // Wait 1s for visual effect then pull
                 setTimeout(async () => {
                     const data = await cloudSync.pull(true);
                     if (data && (data.registeredUsers || data.programs)) {
@@ -1841,11 +1847,11 @@
                     } else {
                         setLoginState('404');
                     }
-                }, 1000);
+                }, 800);
             } else if (isPiiMode) {
                 setLoginState('pii');
             } else {
-                setLoginState('404');
+                setLoginState('pii');
             }
         });
 
