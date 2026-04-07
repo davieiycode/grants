@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -152,7 +152,16 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Program Cards */
         .program-grid {
@@ -422,43 +431,60 @@
                 <div style="color:var(--error); margin-bottom:1.5rem;">
                     <span class="material-symbols-outlined" style="font-size:64px; opacity:0.3;">database_off</span>
                 </div>
-                <h1 style="font-size:2rem; font-weight:900; color:var(--text-main); letter-spacing:-0.03em;">404 Book not found</h1>
-                <p style="color:var(--text-muted); margin-bottom:2.5rem; font-weight:500;">Kode akses tidak valid atau link sudah kedaluwarsa.</p>
-                <button onclick="location.href='index.html?pii'" class="btn-primary" style="background:var(--text-main); color:white; width:100%; height:52px; border-radius:14px; border:none; font-weight:800; cursor:pointer;">Masuk Manual</button>
+                <h1 style="font-size:2rem; font-weight:900; color:var(--text-main); letter-spacing:-0.03em;">404 Book
+                    not found</h1>
+                <p style="color:var(--text-muted); margin-bottom:2.5rem; font-weight:500;">The book not found in the
+                    library.</p>
+                <button onclick="location.href='index.html?pii'" class="btn-primary"
+                    style="background:var(--text-main); color:white; width:100%; height:52px; border-radius:14px; border:none; font-weight:800; cursor:pointer;">Search
+                    the book</button>
             </div>
 
             <!-- STATE 3: BOOK CODE ENTRY -->
             <div id="state-pii" style="display:none;">
                 <h2 style="font-weight:900; margin-bottom:0.5rem; font-size:1.5rem;">Enter Book Code</h2>
-                <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem; font-weight:500;">Tempelkan URL Apps Script Anda di bawah ini.</p>
+                <p style="color:var(--text-muted); margin-bottom:2rem; font-size:0.9rem; font-weight:500;">Enter the
+                    code provided by your institution.</p>
                 <div class="f-group" style="margin-bottom:1.5rem;">
-                    <input type="url" id="pii-book-url" class="f-input" placeholder="https://script.google.com/..." style="height:52px; text-align:center; background:white; border-radius:14px; border:1px solid var(--border);">
+                    <input type="url" id="pii-book-url" class="f-input" placeholder="Enter the book code here"
+                        style="height:52px; text-align:center; background:white; border-radius:14px; border:1px solid var(--border);">
                 </div>
-                <button onclick="handlePiiSync()" class="btn-primary" style="width:100%; height:52px; border-radius:14px; background:var(--primary); color:white; border:none; font-weight:800; cursor:pointer;">Sync & Continue</button>
+                <button onclick="handlePiiSync()" class="btn-primary"
+                    style="width:100%; height:52px; border-radius:14px; background:var(--primary); color:white; border:none; font-weight:800; cursor:pointer;">Sync
+                    & Continue</button>
             </div>
 
             <!-- STATE 4: LOGIN FORM -->
             <div id="state-login" style="display:none;">
-                <h1 style="font-size:1.75rem; font-weight:900; color:var(--text-main); margin-bottom:0.75rem; letter-spacing:-0.02em;">Elevate your Research</h1>
-                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:2.5rem; font-weight:500;">Masuk untuk mengelola data hibah Anda.</p>
+                <h1
+                    style="font-size:1.75rem; font-weight:900; color:var(--text-main); margin-bottom:0.75rem; letter-spacing:-0.02em;">
+                    Elevate your Research</h1>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:2.5rem; font-weight:500;">Open the
+                    book to manage your space.</p>
                 <div style="display:grid; gap:1rem; margin-bottom:2rem; text-align:left;">
                     <div class="f-group">
                         <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Email address</label>
-                        <input type="email" id="login-email" class="f-input" placeholder="email@univ.ac.id" style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
+                        <input type="email" id="login-email" class="f-input" placeholder="email@ugm.ac.id"
+                            style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
                     </div>
                     <div class="f-group">
                         <label class="f-label" style="font-size:0.75rem; opacity:0.8;">Password</label>
-                        <input type="password" id="login-password" class="f-input" placeholder="••••••••" onkeydown="if(event.key === 'Enter') startAppWithSync()" style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
+                        <input type="password" id="login-password" class="f-input" placeholder="••••••••"
+                            onkeydown="if(event.key === 'Enter') startAppWithSync()"
+                            style="height:52px; background:white; border-radius:14px; border:1px solid var(--border);">
                     </div>
                 </div>
-                <button onclick="startAppWithSync()" class="btn-primary" style="width:100%; height:52px; border-radius:16px; background:var(--primary); color:white; border:none; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft);">Launch Project</button>
+                <button onclick="startAppWithSync()" class="btn-primary"
+                    style="width:100%; height:52px; border-radius:16px; background:var(--primary); color:white; border:none; font-weight:850; font-size:1rem; cursor:pointer; box-shadow:0 8px 24px var(--primary-soft);">Open
+                    the book</button>
             </div>
 
-            <p style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">
+            <p
+                style="margin-top:2.5rem; text-align:center; font-size:0.75rem; color:var(--text-muted); font-weight:600; opacity:0.5;">
                 © 2026 Universitas Gadjah Mada.<br><span style="letter-spacing:0.05em;">Powered by <span
                         class="logo-text-pro" style="font-size:0.7rem;">Pro</span><span class="logo-text-space"
                         style="font-size:0.75rem;">Space</span> <span class="app-version-text"
-                        style="font-style:normal; font-family:'Outfit';">v2.7.2, developed by Piieroglyph</span></span>
+                        style="font-style:normal; font-family:'Outfit';">v2.7.2, developed by Rafieiy</span></span>
             </p>
         </div>
     </div>
@@ -1304,7 +1330,7 @@
             async pull(skipRender = false) {
                 const cleanUrl = (this.url || "").trim();
                 if (!cleanUrl || this.isSyncing) return null;
-                
+
                 if (cleanUrl.includes('/edit')) {
                     syncHub.update('error', 'URL salah (/edit)');
                     return null;
@@ -1315,9 +1341,9 @@
                 try {
                     const res = await fetch(cleanUrl + (cleanUrl.includes('?') ? '&' : '?') + 'action=pull');
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    
+
                     const data = await res.json();
-                    
+
                     // 1. Process Programs
                     const rawPrograms = data.programs || [];
                     programs = parseSyncRows(rawPrograms);
@@ -1393,7 +1419,7 @@
             async push(collection, id, data) {
                 const cleanUrl = (this.url || "").trim();
                 if (!cleanUrl) return;
-                
+
                 // Align collection names with spreadsheet sheet names
                 let targetSheet = collection;
                 if (collection === 'globalBlacklist') targetSheet = 'global_blacklist';
@@ -1451,7 +1477,7 @@
                 else globalBlacklist.push(data);
                 localStorage.setItem('grants_global_blacklist', JSON.stringify(globalBlacklist));
             } else if (collection === 'globalPermissions') {
-                globalPermissions[id] = data; 
+                globalPermissions[id] = data;
                 localStorage.setItem('grants_global_permissions', JSON.stringify(globalPermissions));
             } else if (collection === 'globalLogs') {
                 if (!window.globalLogs) window.globalLogs = [];
@@ -1530,7 +1556,7 @@
             let url = localStorage.getItem('grants_appscript_url');
 
             if (!email || !password || !url) return alert("Silakan isi Email dan Password!");
-            
+
             showToast("Memverifikasi kredensial...");
             const data = await cloudSync.pull(true); // skipRender = true
 
@@ -1580,7 +1606,7 @@
             const isPiiMode = params.has('pii');
 
             if (scriptUrl || isPiiMode || params.toString()) {
-                const cleanUrl = window.location.pathname; 
+                const cleanUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, cleanUrl);
             }
 
@@ -1597,7 +1623,7 @@
                 setLoginState('searching');
                 localStorage.setItem('grants_appscript_url', scriptUrl);
                 cloudSync.url = scriptUrl;
-                
+
                 // Wait 1s for visual effect then pull
                 setTimeout(async () => {
                     const data = await cloudSync.pull(true);
@@ -3942,12 +3968,12 @@
             const role = document.getElementById('new-team-role').value;
 
             if (!name) return alert("Silakan pilih atau isi nama pengelola terlebih dahulu!");
-            
+
             const program = programs.find(p => p.id == (typeof progId !== 'undefined' ? progId : null));
             if (!program) return alert("Ups! Data program tidak ditemukan. Silakan refresh.");
 
             if (!program.team) program.team = { pic: [], staff: [] };
-            
+
             // Check for duplicates
             const allStaff = [...(program.team.pic || []), ...(program.team.staff || [])];
             if (allStaff.includes(name)) return alert("Pengguna ini sudah terdaftar di tim!");
@@ -5395,9 +5421,9 @@
                     ...proposals[idx],
                     title: title,
                     period: period,
-                    proposer: window.tempProposalMembers[0].name,
-                    unit: window.tempProposalMembers[0].unit,
-                    members: window.tempProposalMembers,
+                    proposer: window.tempProposalMembers[0]?.name || proposer,
+                    unit: window.tempProposalMembers[0]?.unit || (program ? program.unit : 'Unit'),
+                    members: JSON.parse(JSON.stringify(window.tempProposalMembers)),
                     attributes: attrData,
                     files: { ...(proposals[idx].files || {}), ...fileData }
                 };
@@ -5407,9 +5433,9 @@
                     program: program.name,
                     title: title,
                     period: period,
-                    proposer: window.tempProposalMembers[0].name,
-                    unit: window.tempProposalMembers[0].unit,
-                    members: window.tempProposalMembers,
+                    proposer: window.tempProposalMembers[0]?.name || (currentUser ? currentUser.name : 'Unknown'),
+                    unit: window.tempProposalMembers[0]?.unit || 'Pusat',
+                    members: JSON.parse(JSON.stringify(window.tempProposalMembers)),
                     date: new Date().toISOString().split('T')[0],
                     status: 'Submitted',
                     attributes: attrData,
@@ -5686,7 +5712,7 @@
             const role = window.tempProposalMembers.length === 0 ? "First Author" : "Member";
 
             window.tempProposalMembers.push({ name, role, unit, isCorresponding: isCorr });
-            
+
             // Handle unique corresponding author logic
             if (isCorr) {
                 window.tempProposalMembers.forEach((m, idx) => {
