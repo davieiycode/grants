@@ -10,7 +10,6 @@ import { cloudSync } from './utils/cloudSync';
 import { Rocket } from 'lucide-react';
 
 const App = () => {
-  console.log("App Rendering...");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [programs, setPrograms] = useState([]);
@@ -56,7 +55,7 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <Router basename="/grants">
       <div className="min-h-screen bg-[#f8fafc] text-[#0f172a]">
         <Navigation currentUser={currentUser} isSyncing={isSyncing} />
         
