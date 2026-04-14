@@ -58,29 +58,44 @@ const AstronautsList = ({ users }) => (
       </button>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {users.map((user, idx) => (
-        <div key={idx} className="p-5 bg-white border border-slate-100 rounded-2xl flex items-center gap-4 hover:shadow-lg hover:shadow-slate-100 transition-all group">
-          <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-sm">
-            <span className="text-xl font-black">{user.name[0]}</span>
+    {users.length > 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {users.map((user, idx) => (
+          <div key={idx} className="p-5 bg-white border border-slate-100 rounded-px-18 flex items-center gap-4 hover:shadow-lg hover:shadow-slate-100 transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-sm">
+              <span className="text-xl font-black">{user.name ? user.name[0] : 'U'}</span>
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="font-black text-[#0f172a] tracking-tight truncate font-['Outfit']">{user.name}</div>
+              <div className="flex items-center gap-3 mt-1">
+                  <div className="flex items-center gap-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">
+                    <MapPin size={12} className="text-sky-400" />
+                    {user.unit || 'General Service'}
+                  </div>
+                  <div className="w-1 h-1 rounded-full bg-slate-200" />
+                  <div className="text-[10px] font-black text-[#0ea5e9] tracking-wider uppercase">{user.role || 'Astronaut'}</div>
+              </div>
+            </div>
+            <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
+              <MoreVertical size={18} />
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-             <div className="font-black text-[#0f172a] tracking-tight truncate font-['Outfit']">{user.name}</div>
-             <div className="flex items-center gap-3 mt-1">
-                <div className="flex items-center gap-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">
-                  <MapPin size={12} className="text-sky-400" />
-                  {user.unit || 'General Service'}
-                </div>
-                <div className="w-1 h-1 rounded-full bg-slate-200" />
-                <div className="text-[10px] font-black text-[#0ea5e9] tracking-wider uppercase">{user.role || 'Astronaut'}</div>
-             </div>
-          </div>
-          <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
-            <MoreVertical size={18} />
-          </button>
+        ))}
+      </div>
+    ) : (
+      <div className="flex flex-col items-center justify-center py-20 px-6 border-2 border-dashed border-slate-100 rounded-[2rem] bg-slate-50/50">
+        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-slate-300 shadow-sm mb-6">
+          <Users size={40} strokeWidth={1.5} />
         </div>
-      ))}
-    </div>
+        <h3 className="text-xl font-black text-slate-900 mb-2 font-['Outfit']">No Crew Members Found</h3>
+        <p className="text-slate-500 text-sm max-w-[280px] text-center mb-8">
+          The space station is currently empty. Sync with the ground control or enlist your first crew.
+        </p>
+        <button className="text-sky-500 font-black text-xs uppercase tracking-widest hover:text-sky-600 transition-colors">
+          🔄 Trigger Telemetry Sync
+        </button>
+      </div>
+    )}
   </div>
 );
 
