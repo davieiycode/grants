@@ -1,11 +1,14 @@
 export const cloudSync = {
-    url: localStorage.getItem('grants_appscript_url'),
+    get url() {
+        return localStorage.getItem('grants_appscript_url');
+    },
     isSyncing: false,
     async pull() {
         if (!this.url || this.isSyncing) return null;
         this.isSyncing = true;
         try {
             const res = await fetch(this.url + '?action=pull');
+            if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
             
             if (data.programs) localStorage.setItem('grants_programs_meta', JSON.stringify(data.programs));

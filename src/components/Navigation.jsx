@@ -2,7 +2,7 @@ import React from 'react';
 import { Rocket, Users, BookOpen, Cloud, User, ChevronDown } from 'lucide-react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 
-const Navigation = ({ currentUser, isSyncing }) => {
+const Navigation = ({ currentUser, isSyncing, onLogout }) => {
   return (
     <nav className="sticky top-0 z-50 h-[72px] bg-white/80 backdrop-blur-xl border-b border-[#e2e8f0] px-[5%] flex items-center justify-between gap-8">
       <RouterNavLink to="/" className="flex items-center gap-3 shrink-0">
@@ -17,7 +17,9 @@ const Navigation = ({ currentUser, isSyncing }) => {
 
       <div className="flex items-center gap-8 flex-1">
         <NavLink to="/" icon={<Rocket size={18} />}>Expeditions</NavLink>
-        <NavLink to="/crew" icon={<Users size={18} />}>Crew & Protocols</NavLink>
+        {(currentUser?.role === 'SUPERADMIN' || currentUser?.role === 'ADMIN') && (
+          <NavLink to="/crew" icon={<Users size={18} />}>Crew & Protocols</NavLink>
+        )}
         <NavLink to="/manual" icon={<BookOpen size={18} />}>Flight Manual</NavLink>
       </div>
 
@@ -30,15 +32,19 @@ const Navigation = ({ currentUser, isSyncing }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3.5 cursor-pointer p-1.5 pr-4 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-[#e2e8f0] transition-all">
-          <div className="w-10 h-10 rounded-xl bg-sky-50 text-[#0ea5e9] flex items-center justify-center shadow-sm">
+        <div 
+          onClick={onLogout}
+          title="Click to logout"
+          className="flex items-center gap-3.5 cursor-pointer p-1.5 pr-4 rounded-2xl hover:bg-red-50 border border-transparent hover:border-red-100 transition-all group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-sky-50 text-[#0ea5e9] flex items-center justify-center shadow-sm group-hover:bg-red-100 group-hover:text-red-600 transition-all">
             <User size={24} />
           </div>
           <div className="text-left hidden md:block">
-            <div className="font-black text-sm text-[#0f172a] tracking-tight">{currentUser?.name || 'GUEST'}</div>
-            <div className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-wider leading-none mt-1">{currentUser?.role || 'ASTRONAUT'}</div>
+            <div className="font-black text-sm text-[#0f172a] tracking-tight group-hover:text-red-600">{currentUser?.name || 'GUEST'}</div>
+            <div className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-wider leading-none mt-1 group-hover:text-red-500">{currentUser?.role || 'ASTRONAUT'}</div>
           </div>
-          <ChevronDown size={14} className="text-slate-400 ml-1" />
+          <ChevronDown size={14} className="text-slate-400 ml-1 group-hover:text-red-400" />
         </div>
       </div>
     </nav>
