@@ -14,6 +14,7 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [programs, setPrograms] = useState([]);
   const [proposals, setProposals] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isInitialSync, setIsInitialSync] = useState(true);
 
@@ -44,6 +45,9 @@ const App = () => {
       const localProps = localStorage.getItem('grants_proposals');
       if (localProps) setProposals(JSON.parse(localProps));
 
+      const localLogs = localStorage.getItem('grants_global_logs');
+      if (localLogs) setLogs(JSON.parse(localLogs));
+
       // 4. Trigger initial sync if URL exists
       if (localStorage.getItem('grants_appscript_url')) {
         await handleSync();
@@ -61,6 +65,7 @@ const App = () => {
     if (data) {
       if (data.programs) setPrograms(data.programs);
       if (data.proposals) setProposals(data.proposals);
+      if (data.logs) setLogs(data.logs);
     }
     setIsSyncing(false);
   };
@@ -297,6 +302,7 @@ const AuthGate = ({ onLogin }) => {
                 localStorage.removeItem('grants_registeredUsers');
                 localStorage.removeItem('grants_programs_meta');
                 localStorage.removeItem('grants_proposals');
+                localStorage.removeItem('grants_global_logs');
                 setStep('config');
                 setError('');
               }}

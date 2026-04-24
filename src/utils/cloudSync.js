@@ -31,12 +31,14 @@ export const cloudSync = {
             const processedData = {
                 programs: parseRows(data.programs),
                 proposals: parseRows(data.proposals),
-                registeredUsers: parseRows(data.registeredUsers)
+                registeredUsers: parseRows(data.registeredUsers),
+                logs: parseRows(data.global_logs || data.logs)
             };
             
             if (processedData.programs.length) localStorage.setItem('grants_programs_meta', JSON.stringify(processedData.programs));
             if (processedData.proposals.length) localStorage.setItem('grants_proposals', JSON.stringify(processedData.proposals));
             if (processedData.registeredUsers.length) localStorage.setItem('grants_registeredUsers', JSON.stringify(processedData.registeredUsers));
+            if (processedData.logs.length) localStorage.setItem('grants_global_logs', JSON.stringify(processedData.logs));
             
             this.isSyncing = false;
             return processedData;
