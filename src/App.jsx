@@ -170,7 +170,15 @@ const AuthGate = ({ onLogin }) => {
     setError('');
     const registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers') || '[]');
     
-    const user = registeredUsers.find(u => u.email === email && u.password === password);
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = String(password).trim();
+    
+    const user = registeredUsers.find(u => {
+      const userIdentifier = (u.email || u.id || '').toString().trim().toLowerCase();
+      const userPassword = (u.password || u.pass || '').toString().trim();
+      
+      return userIdentifier === normalizedEmail && userPassword === normalizedPassword;
+    });
     
     if (user) {
       onLogin(user);
@@ -239,14 +247,14 @@ const AuthGate = ({ onLogin }) => {
 
             <div className="space-y-6 text-left mb-10">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#64748b] uppercase tracking-wider pl-1">Crew Email</label>
+                <label className="text-[10px] font-black text-[#64748b] uppercase tracking-wider pl-1">Crew Identifier</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <input 
-                    type="email" 
+                    type="text" 
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    placeholder="email@ugm.ac.id" 
+                    placeholder="Email or Personnel ID" 
                     className="w-full h-[60px] pl-12 pr-5 bg-white border border-[#e2e8f0] rounded-2xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-medium" 
                   />
                 </div>
