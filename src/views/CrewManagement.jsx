@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, ShieldCheck, History, Archive, Search, MoreVertical, Mail, MapPin } from 'lucide-react';
 
-const CrewManagement = () => {
+const CrewManagement = ({ logs }) => {
   const [activeTab, setActiveTab] = useState('astronauts');
   const [users, setUsers] = useState([]);
 
@@ -30,7 +30,7 @@ const CrewManagement = () => {
         <main className="flex-1 p-10">
            {activeTab === 'astronauts' && <AstronautsList users={users} />}
            {activeTab === 'clearance' && <ClearanceLevels users={users} />}
-           {activeTab === 'logs' && <BlackBoxData />}
+           {activeTab === 'logs' && <BlackBoxData logs={logs} />}
            {activeTab === 'archives' && (
              <div className="flex flex-col items-center justify-center h-full text-slate-300">
                 <Archive size={64} strokeWidth={1} className="mb-4 opacity-20" />
@@ -125,23 +125,36 @@ const ClearanceLevels = ({ users }) => {
   );
 };
 
-const BlackBoxData = () => {
-  const logs = [
-    { time: 'T+24:12:05', event: 'Telemetry synchronization successful', status: 'OK' },
-    { time: 'T+23:45:12', event: 'New proposal payload detected in Sector 7', status: 'ALERT' },
-    { time: 'T+22:10:55', event: 'Superadmin accessed Crew Manifest', status: 'OK' },
-    { time: 'T+21:05:22', event: 'System maintenance backup initiated', status: 'OK' },
-  ];
+const BlackBoxData = ({ logs }) => {
+  if (!logs || logs.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-slate-300">
+         <History size={48} strokeWidth={1} className="mb-4 opacity-20" />
+         <p className="font-bold text-sm uppercase tracking-widest opacity-40">No activity logs found.</p>
+      </div>
+    );
+  }
+
+  // Sort logs by timestamp descending
+  const sortedLogs = [...logs].sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
   return (
     <div className="space-y-6 animate-fade-in font-mono">
-      {logs.map((log, idx) => (
-        <div key={idx} className="flex gap-6 items-start p-4 border-l-2 border-slate-100 hover:border-[#0ea5e9] hover:bg-slate-50 transition-all">
-          <span className="text-sky-500 font-bold whitespace-nowrap">{log.time}</span>
-          <span className="text-slate-600 flex-1">{log.event}</span>
-          <span className={`text-[10px] font-black px-2 py-0.5 rounded ${log.status === 'OK' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-            {log.status}
-          </span>
+      {sortedLogs.map((log, idx) => (
+        <div key={idx} className="flex gap-6 items-start p-4 border-l-2 border-slate-100 hover:border-[#0ea5e9] hover:bg-slate-50 transition-all group">
+          <div className="flex flex-col min-w-[120px]">
+            <span className="text-sky-500 font-bold whitespace-nowrap text-xs">{new Date(log.timestamp).toLocaleTimeString()}</span>
+            <span className="text-[10px] text-slate-400">{new Date(log.timestamp).toLocaleDateString()}</span>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className={`text-[9px] font-black px-1.5 py-0.5 rounded uppercase ${log.action?.includes('DELETE') ? 'bg-rose-50 text-rose-600' : 'bg-sky-50 text-sky-600'}`}>
+                {log.action || 'ACTIVITY'}
+              </span>
+              <span className="text-xs font-bold text-slate-400">by {log.user || 'System'}</span>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed">{log.details}</p>
+          </div>
         </div>
       ))}
     </div>

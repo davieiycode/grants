@@ -134,7 +134,11 @@ const App = () => {
             <Route path="/" element={<Dashboard programs={programs} currentUser={currentUser} />} />
             <Route path="/program/:id" element={<ProgramDetail programs={programs} proposals={proposals} currentUser={currentUser} />} />
             <Route path="/proposal/:id" element={<ProposalDetail proposals={proposals} currentUser={currentUser} />} />
-            <Route path="/crew" element={<CrewManagement currentUser={currentUser} />} />
+            <Route path="/crew" element={
+              ['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role) 
+                ? <CrewManagement currentUser={currentUser} logs={logs} /> 
+                : <Navigate to="/" />
+            } />
             <Route path="/manual" element={<FlightManual currentUser={currentUser} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
