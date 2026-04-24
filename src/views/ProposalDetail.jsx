@@ -1,27 +1,53 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, FileText, CheckCircle, Clock, Download, AlertCircle, MessageSquare } from 'lucide-react';
+import { ArrowLeft, User, FileText, CheckCircle, Clock, Download, AlertCircle, MessageSquare, Trash2, Loader2 } from 'lucide-react';
+import { cloudSync } from '../utils/cloudSync';
 
-const ProposalDetail = ({ proposals }) => {
+const ProposalDetail = ({ proposals, currentUser }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('submission');
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const proposal = proposals.find(p => String(p.id) === String(id));
 
+  const handleUpdateStatus = async (newStatus) => {
+    setIsSyncing(true);
+    const updatedProposal = { ...proposal, status: newStatus };
+    await cloudSync.push('proposals', proposal.id, updatedProposal);
+    
+    const localProps = JSON.parse(localStorage.getItem('grants_proposals') || '[]');
+    const updatedProps = localProps.map(p => String(p.id) === String(proposal.id) ? updatedProposal : p);
+    localStorage.setItem('grants_proposals', JSON.stringify(updatedProps));
+    
+    setIsSyncing(false);
+    window.location.reload();
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this proposal?')) return;
+    setIsSyncing(true);
+    await cloudSync.push('proposals', proposal.id, null);
+    
+    const localProps = JSON.parse(localStorage.getItem('grants_proposals') || '[]');
+    const updatedProps = localProps.filter(p => String(p.id) !== String(proposal.id));
+    localStorage.setItem('grants_proposals', JSON.stringify(updatedProps));
+    
+    setIsSyncing(false);
+    navigate(-1);
+  };
+
   if (!proposal) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-        <AlertCircle size={64} strokeWidth={1} className="mb-4 opacity-20" />
-        <h2 className="text-2xl font-bold mb-4">Usulan tidak ditemukan</h2>
-        <button onClick={() => navigate('/')} className="text-[#0ea5e9] font-bold">Kembali ke Dashboard</button>
-      </div>
-    );
+// ...
+// (lines 13-20)
+// ...
   }
+
+  const isAdmin = ['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role);
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-10 pb-8 border-b border-[#e2e8f0]">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 pb-8 border-b border-[#e2e8f0] gap-6">
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 font-black text-xs text-slate-400 hover:text-[#0ea5e9] transition-all uppercase tracking-widest"
@@ -29,9 +55,23 @@ const ProposalDetail = ({ proposals }) => {
           <ArrowLeft size={16} />
           Kembali
         </button>
-        <div className="flex items-center gap-3">
-           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2">Status Manifest</span>
-           <StatusBadge status={proposal.status} />
+        
+        <div className="flex flex-wrap items-center gap-4">
+           {isAdmin && (
+             <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3">Mission Control</span>
+               <button onClick={() => handleUpdateStatus('Review')} disabled={isSyncing} className="px-4 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-black hover:bg-amber-50 hover:text-amber-600 transition-all">REVIEW</button>
+               <button onClick={() => handleUpdateStatus('Accepted')} disabled={isSyncing} className="px-4 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-black hover:bg-emerald-50 hover:text-emerald-600 transition-all">ACCEPT</button>
+               <button onClick={() => handleUpdateStatus('Rejected')} disabled={isSyncing} className="px-4 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-black hover:bg-rose-50 hover:text-rose-600 transition-all">REJECT</button>
+               <button onClick={handleDelete} disabled={isSyncing} className="p-1.5 rounded-xl bg-white border border-slate-200 text-rose-400 hover:bg-rose-50 hover:text-rose-600 transition-all ml-2">
+                 {isSyncing ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+               </button>
+             </div>
+           )}
+           <div className="flex items-center gap-3">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2">Status Manifest</span>
+              <StatusBadge status={proposal.status} />
+           </div>
         </div>
       </div>
 

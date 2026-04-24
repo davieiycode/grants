@@ -97,7 +97,7 @@ const ProgramDetail = ({ programs, proposals }) => {
 
       {/* Tab Content */}
       <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-sm min-h-[400px] overflow-hidden">
-        {activeTab === 'proposals' && <ProposalsTable proposals={proposals} programId={id} />}
+        {activeTab === 'proposals' && <ProposalsTable proposals={proposals} programId={id} programs={programs} currentUser={currentUser} />}
         {activeTab === 'settings' && <ProgramSettings program={program} />}
         {activeTab === 'timeline' && <ProgramTimeline program={program} />}
       </div>

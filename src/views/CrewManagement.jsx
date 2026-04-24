@@ -1,20 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ShieldCheck, History, Archive, Search, MoreVertical, Mail, MapPin } from 'lucide-react';
+import { Users, ShieldCheck, History, Archive, Search, X, Plus, Trash2, Loader2, RefreshCw, Mail, MapPin } from 'lucide-react';
+import { cloudSync } from '../utils/cloudSync';
 
 const CrewManagement = ({ logs }) => {
   const [activeTab, setActiveTab] = useState('astronauts');
   const [users, setUsers] = useState([]);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    const localUsers = localStorage.getItem('grants_registeredUsers');
-    if (localUsers) setUsers(JSON.parse(localUsers));
+    refreshData();
   }, []);
 
+  const refreshData = () => {
+    const localUsers = localStorage.getItem('grants_registeredUsers');
+    if (localUsers) setUsers(JSON.parse(localUsers));
+  };
+
+  const handleSaveUser = async (userData) => {
+    setIsSyncing(true);
+    const userId = userData.email || editingUser?.email || `USER-${Date.now()}`;
+    const newUser = { ...userData, email: userId };
+    
+    await cloudSync.push('registeredUsers', userId, newUser);
+    
+    // Update local state
+    const currentUsers = JSON.parse(localStorage.getItem('grants_registeredUsers') || '[]');
+    let updatedUsers;
+    if (editingUser) {
+      updatedUsers = currentUsers.map(u => u.email === editingUser.email ? newUser : u);
+    } else {
+      updatedUsers = [...currentUsers, newUser];
+    }
+    
+    localStorage.setItem('grants_registeredUsers', JSON.stringify(updatedUsers));
+    setUsers(updatedUsers);
+    setIsSyncing(false);
+    setShowUserModal(false);
+    setEditingUser(null);
+  };
+
+  const handleDeleteUser = async (email) => {
+    if (!window.confirm('Are you sure you want to remove this crew member?')) return;
+    setIsSyncing(true);
+    const currentUsers = JSON.parse(localStorage.getItem('grants_registeredUsers') || '[]');
+    const updatedUsers = currentUsers.filter(u => u.email !== email);
+    
+    await cloudSync.push('registeredUsers', email, null); 
+    
+    localStorage.setItem('grants_registeredUsers', JSON.stringify(updatedUsers));
+    setUsers(updatedUsers);
+    setIsSyncing(false);
+  };
+
   return (
-    <div className="animate-fade-in">
-      <header className="mb-12">
-        <h1 className="text-4xl font-black font-['Outfit'] mb-2 tracking-tight text-[#0f172a]">Crew Management</h1>
-        <p className="text-[#64748b] font-medium">Log out into space, manage astronaut access, and check activity logs.</p>
+    <div className="animate-fade-in relative">
+      <header className="mb-12 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-black font-['Outfit'] mb-2 tracking-tight text-[#0f172a]">Crew Management</h1>
+          <p className="text-[#64748b] font-medium">Manage astronaut access, personnel clearance, and activity logs.</p>
+        </div>
+        <button 
+           onClick={async () => {
+             setIsSyncing(true);
+             await cloudSync.pull();
+             refreshData();
+             setIsSyncing(false);
+           }}
+           className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-[#0ea5e9] transition-all shadow-sm"
+        >
+           <RefreshCw size={18} className={isSyncing ? 'animate-spin' : ''} />
+        </button>
       </header>
 
       <div className="flex flex-col lg:flex-row bg-white rounded-[2.5rem] border border-[#e2e8f0] overflow-hidden min-h-[600px] shadow-sm">
@@ -28,7 +85,14 @@ const CrewManagement = ({ logs }) => {
         </aside>
 
         <main className="flex-1 p-10">
-           {activeTab === 'astronauts' && <AstronautsList users={users} />}
+           {activeTab === 'astronauts' && (
+             <AstronautsList 
+               users={users} 
+               onAdd={() => { setEditingUser(null); setShowUserModal(true); }}
+               onEdit={(u) => { setEditingUser(u); setShowUserModal(true); }}
+               onDelete={handleDeleteUser}
+             />
+           )}
            {activeTab === 'clearance' && <ClearanceLevels users={users} />}
            {activeTab === 'logs' && <BlackBoxData logs={logs} />}
            {activeTab === 'archives' && (
@@ -39,11 +103,20 @@ const CrewManagement = ({ logs }) => {
            )}
         </main>
       </div>
+
+      {showUserModal && (
+        <UserModal 
+          user={editingUser} 
+          onSave={handleSaveUser} 
+          onClose={() => setShowUserModal(false)}
+          isSyncing={isSyncing}
+        />
+      )}
     </div>
   );
 };
 
-const AstronautsList = ({ users }) => (
+const AstronautsList = ({ users, onAdd, onEdit, onDelete }) => (
   <div className="space-y-8 animate-fade-in">
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div className="relative flex-1 max-w-md">
@@ -54,8 +127,11 @@ const AstronautsList = ({ users }) => (
           className="w-full pl-12 pr-6 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-medium text-sm" 
         />
       </div>
-      <button className="bg-[#0f172a] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2 hover:-translate-y-1 transition-all">
-        <Users size={18} />
+      <button 
+        onClick={onAdd}
+        className="bg-[#0f172a] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2 hover:-translate-y-1 transition-all"
+      >
+        <Plus size={18} />
         ENLIST NEW CREW
       </button>
     </div>
@@ -63,7 +139,7 @@ const AstronautsList = ({ users }) => (
     {users.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {users.map((user, idx) => (
-          <div key={idx} className="p-5 bg-white border border-slate-100 rounded-px-18 flex items-center gap-4 hover:shadow-lg hover:shadow-slate-100 transition-all group">
+          <div key={idx} className="p-5 bg-white border border-slate-100 rounded-[1.5rem] flex items-center gap-4 hover:shadow-lg hover:shadow-slate-100 transition-all group">
             <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-sm">
               <span className="text-xl font-black">{user.name ? user.name[0] : 'U'}</span>
             </div>
@@ -78,9 +154,14 @@ const AstronautsList = ({ users }) => (
                   <div className="text-[10px] font-black text-[#0ea5e9] tracking-wider uppercase">{user.role || 'Astronaut'}</div>
               </div>
             </div>
-            <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
-              <MoreVertical size={18} />
-            </button>
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={() => onEdit(user)} className="p-2 text-slate-300 hover:text-sky-500 transition-colors">
+                <ShieldCheck size={18} />
+              </button>
+              <button onClick={() => onDelete(user.email)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+                <Trash2 size={18} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -93,13 +174,112 @@ const AstronautsList = ({ users }) => (
         <p className="text-slate-500 text-sm max-w-[280px] text-center mb-8">
           The space station is currently empty. Sync with the ground control or enlist your first crew.
         </p>
-        <button className="text-sky-500 font-black text-xs uppercase tracking-widest hover:text-sky-600 transition-colors">
-          🔄 Trigger Telemetry Sync
+        <button onClick={onAdd} className="text-sky-500 font-black text-xs uppercase tracking-widest hover:text-sky-600 transition-colors">
+          ➕ Enlist First Crew
         </button>
       </div>
     )}
   </div>
 );
+
+const UserModal = ({ user, onSave, onClose, isSyncing }) => {
+  const [formData, setFormData] = useState(user || { name: '', email: '', role: 'PENGUSUL', password: '', unit: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
+      <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 relative shadow-2xl animate-in slide-in-from-bottom-8 duration-500">
+         <button onClick={onClose} className="absolute top-8 right-8 text-slate-300 hover:text-slate-600 transition-colors">
+            <X size={24} />
+         </button>
+         
+         <div className="flex items-center gap-4 mb-10">
+            <div className="w-12 h-12 bg-sky-50 text-[#0ea5e9] rounded-2xl flex items-center justify-center">
+               <Users size={24} />
+            </div>
+            <div>
+               <h2 className="text-2xl font-black font-['Outfit'] text-[#0f172a]">{user ? 'Edit Crew Details' : 'Enlist New Crew'}</h2>
+               <p className="text-sm text-slate-500 font-medium">Configure personnel clearance and access.</p>
+            </div>
+         </div>
+
+         <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5 col-span-2">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                 <input 
+                    required
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    placeholder="e.g. Dr. Jane Doe"
+                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email / ID</label>
+                 <input 
+                    required
+                    disabled={!!user}
+                    value={formData.email}
+                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    placeholder="jane@ugm.ac.id"
+                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm disabled:opacity-50"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit / Sector</label>
+                 <input 
+                    required
+                    value={formData.unit}
+                    onChange={e => setFormData({...formData, unit: e.target.value})}
+                    placeholder="e.g. BioScience"
+                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Security Role</label>
+                 <select 
+                    value={formData.role}
+                    onChange={e => setFormData({...formData, role: e.target.value})}
+                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm appearance-none"
+                 >
+                    <option value="SUPERADMIN">SUPERADMIN</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="MANAGER">MANAGER</option>
+                    <option value="EDITOR">EDITOR</option>
+                    <option value="REVIEWER">REVIEWER</option>
+                    <option value="PENGUSUL">PENGUSUL</option>
+                 </select>
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Key</label>
+                 <input 
+                    required
+                    type="password"
+                    value={formData.password}
+                    onChange={e => setFormData({...formData, password: e.target.value})}
+                    placeholder="••••••••"
+                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                 />
+              </div>
+            </div>
+
+            <button 
+               disabled={isSyncing}
+               className="w-full h-14 bg-[#0ea5e9] text-white rounded-xl font-black text-sm shadow-xl shadow-sky-100 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:translate-y-0 mt-6"
+            >
+               {isSyncing ? <Loader2 className="animate-spin" /> : (user ? 'UPDATE CLEARANCE' : 'ENLIST CREW')}
+            </button>
+         </form>
+      </div>
+    </div>
+  );
+};
 
 const ClearanceLevels = ({ users }) => {
   const roles = users.reduce((acc, user) => {
@@ -135,7 +315,6 @@ const BlackBoxData = ({ logs }) => {
     );
   }
 
-  // Sort logs by timestamp descending
   const sortedLogs = [...logs].sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
   return (

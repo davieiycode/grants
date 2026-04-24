@@ -1,8 +1,9 @@
 import React from 'react';
-import { FileText, User, Calendar, Eye } from 'lucide-react';
+import { FileText, User, Calendar, Eye, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { cloudSync } from '../utils/cloudSync';
 
-const ProposalsTable = ({ proposals, programId, programs }) => {
+const ProposalsTable = ({ proposals, programId, programs, currentUser }) => {
   const navigate = useNavigate();
   
   // Find program name for fallback filtering
@@ -38,6 +39,7 @@ const ProposalsTable = ({ proposals, programId, programs }) => {
           {filteredProposals.map(proposal => {
             const displayId = String(proposal.id);
             const leaderName = proposal.leader || proposal.proposer || 'Unknown';
+            const isAdmin = ['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role);
             
             return (
               <tr key={proposal.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -68,12 +70,30 @@ const ProposalsTable = ({ proposals, programId, programs }) => {
                   <StatusBadge status={proposal.status} />
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <button 
-                    onClick={() => navigate(`/proposal/${proposal.id}`)}
-                    className="p-2 rounded-lg hover:bg-white hover:shadow-md transition-all text-slate-400 hover:text-[#0ea5e9]"
-                  >
-                    <Eye size={18} />
-                  </button>
+                  <div className="flex items-center justify-end gap-1">
+                    <button 
+                      onClick={() => navigate(`/proposal/${proposal.id}`)}
+                      className="p-2 rounded-lg hover:bg-white hover:shadow-md transition-all text-slate-400 hover:text-[#0ea5e9]"
+                      title="View Details"
+                    >
+                      <Eye size={18} />
+                    </button>
+                    {isAdmin && (
+                       <button 
+                         onClick={async () => {
+                           if (!window.confirm('Delete this proposal?')) return;
+                           await cloudSync.push('proposals', proposal.id, null);
+                           const localProps = JSON.parse(localStorage.getItem('grants_proposals') || '[]');
+                           localStorage.setItem('grants_proposals', JSON.stringify(localProps.filter(p => String(p.id) !== String(proposal.id))));
+                           window.location.reload();
+                         }}
+                         className="p-2 rounded-lg hover:bg-white hover:shadow-md transition-all text-slate-400 hover:text-rose-500"
+                         title="Delete Proposal"
+                       >
+                         <Trash2 size={18} />
+                       </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
