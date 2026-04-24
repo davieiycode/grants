@@ -213,15 +213,17 @@ const AttributeManager = ({ attributes, onUpdate }) => {
 
 const ReviewerManager = ({ reviewers, crew, onUpdate }) => {
   const [selectedCrew, setSelectedCrew] = useState('');
+  const [selectedRole, setSelectedRole] = useState('REVIEWER');
 
   const handleAdd = () => {
-    if (!selectedCrew || reviewers.includes(selectedCrew)) return;
-    onUpdate([...reviewers, selectedCrew]);
+    if (!selectedCrew || (reviewers || []).find(r => r.email === selectedCrew)) return;
+    const assignment = { email: selectedCrew, role: selectedRole };
+    onUpdate([...(reviewers || []), assignment]);
     setSelectedCrew('');
   };
 
   const handleRemove = (email) => {
-    onUpdate(reviewers.filter(r => r !== email));
+    onUpdate(reviewers.filter(r => r.email !== email));
   };
 
   return (
@@ -233,9 +235,9 @@ const ReviewerManager = ({ reviewers, crew, onUpdate }) => {
         Reviewer & Staf PIC
       </h3>
 
-      <div className="flex gap-4 mb-8 p-6 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 mb-8 p-6 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm">
          <div className="flex-1 space-y-1.5">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Assign Personnel from Crew</label>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Assign Personnel</label>
             <select 
               value={selectedCrew}
               onChange={e => setSelectedCrew(e.target.value)}
@@ -247,14 +249,26 @@ const ReviewerManager = ({ reviewers, crew, onUpdate }) => {
               ))}
             </select>
          </div>
-         <button onClick={handleAdd} className="self-end h-12 px-6 bg-[#0ea5e9] text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-100">
+         <div className="w-full md:w-48 space-y-1.5">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Program Role</label>
+            <select 
+              value={selectedRole}
+              onChange={e => setSelectedRole(e.target.value)}
+              className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold appearance-none"
+            >
+              <option value="REVIEWER">REVIEWER</option>
+              <option value="STAFF">STAFF PIC</option>
+              <option value="MANAGER">MANAGER</option>
+            </select>
+         </div>
+         <button onClick={handleAdd} className="self-end h-12 px-6 bg-[#0ea5e9] text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-100 shrink-0">
             Assign Duty
          </button>
       </div>
 
       <div className="grid gap-4">
-        {reviewers.map((email, idx) => {
-          const person = crew.find(c => c.email === email);
+        {(reviewers || []).map((assignment, idx) => {
+          const person = crew.find(c => c.email === assignment.email);
           return (
             <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 flex items-center justify-between group">
               <div className="flex items-center gap-4">
@@ -262,11 +276,14 @@ const ReviewerManager = ({ reviewers, crew, onUpdate }) => {
                    {person?.name?.[0] || 'U'}
                 </div>
                 <div>
-                   <div className="font-bold text-[#0f172a]">{person?.name || email}</div>
-                   <div className="text-[10px] font-black text-sky-500 uppercase tracking-widest">{person?.role || 'Reviewer'}</div>
+                   <div className="font-bold text-[#0f172a]">{person?.name || assignment.email}</div>
+                   <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[9px] font-black bg-sky-50 text-sky-500 px-2 py-0.5 rounded uppercase tracking-wider">Role: {assignment.role}</span>
+                      <span className="text-[9px] font-bold text-slate-300 uppercase">| Global: {person?.role || 'Guest'}</span>
+                   </div>
                 </div>
               </div>
-              <button onClick={() => handleRemove(email)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+              <button onClick={() => handleRemove(assignment.email)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
                 <Trash2 size={18} />
               </button>
             </div>
