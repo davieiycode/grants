@@ -43,7 +43,7 @@ const ProposalDetail = ({ proposals }) => {
               </h1>
               <div className="flex flex-wrap gap-4">
                  <InfoChip icon={<Clock size={14} />} label="Submitted On" value={proposal.date || 'N/A'} />
-                 <InfoChip icon={<FileText size={14} />} label="Program ID" value={proposal.programId} />
+                 <InfoChip icon={<FileText size={14} />} label="Program ID" value={proposal.programId || proposal.program || 'N/A'} />
                  <InfoChip icon={<User size={14} />} label="Unit Origin" value={proposal.unit || 'General'} />
               </div>
            </section>
@@ -75,9 +75,9 @@ const ProposalDetail = ({ proposals }) => {
               </h3>
               <div className="flex flex-col items-center text-center">
                  <div className="w-24 h-24 rounded-3xl bg-sky-50 text-[#0ea5e9] flex items-center justify-center mb-4 shadow-sm border border-sky-100">
-                    <span className="text-4xl font-black">{proposal.leader[0]}</span>
+                    <span className="text-4xl font-black">{(proposal.leader || proposal.proposer || 'U')[0]}</span>
                  </div>
-                 <h4 className="text-xl font-black font-['Outfit'] text-[#0f172a]">{proposal.leader}</h4>
+                 <h4 className="text-xl font-black font-['Outfit'] text-[#0f172a]">{proposal.leader || proposal.proposer || 'Unknown'}</h4>
                  <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">{proposal.unit || 'ASTRONAUT'}</p>
                  <div className="mt-8 pt-6 border-t border-slate-50 w-full text-left space-y-4">
                     <div className="flex items-center gap-3 text-sm text-slate-500 font-medium">
