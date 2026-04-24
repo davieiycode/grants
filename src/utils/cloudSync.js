@@ -15,16 +15,24 @@ export const cloudSync = {
             const parseRows = (rows) => {
                 if (!rows) return [];
                 return rows.map(row => {
-                    if (row.JSON_DATA) {
-                        try {
-                            const parsed = typeof row.JSON_DATA === 'string' ? JSON.parse(row.JSON_DATA) : row.JSON_DATA;
-                            return { ...row, ...parsed };
-                        } catch (e) {
-                            console.error("Failed to parse JSON_DATA:", e);
-                            return row;
+                    let data = {};
+                    try {
+                        // If it looks like JSON, try to parse it
+                        if (row.JSON_DATA && (typeof row.JSON_DATA === 'string' && (row.JSON_DATA.startsWith('{') || row.JSON_DATA.startsWith('[')))) {
+                            data = JSON.parse(row.JSON_DATA);
+                        } else if (row.JSON_DATA) {
+                            // It's a plain string, treat as details/raw
+                            data = { details: row.JSON_DATA };
                         }
+                    } catch (e) {
+                        console.warn('Failed to parse JSON_DATA:', e, row.JSON_DATA);
+                        data = { details: row.JSON_DATA };
                     }
-                    return row;
+                    return {
+                        id: row.ID,
+                        lastUpdated: row.LAST_UPDATED,
+                        ...data
+                    };
                 });
             };
 

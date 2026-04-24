@@ -5,7 +5,7 @@ import ProposalsTable from '../components/ProposalsTable';
 import ProgramSettings from '../components/ProgramSettings';
 import { cloudSync } from '../utils/cloudSync';
 
-const ProgramDetail = ({ programs, proposals }) => {
+const ProgramDetail = ({ programs, proposals, currentUser }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('proposals'); // proposals, settings, timeline

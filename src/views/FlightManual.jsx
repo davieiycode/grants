@@ -1,7 +1,7 @@
 import React from 'react';
 import { BookOpen, Search, HelpCircle, ChevronRight } from 'lucide-react';
 
-const FlightManual = () => {
+const FlightManual = ({ currentUser }) => {
   const categories = [
     { title: 'Submisi Usulan', count: 12, icon: 'FileText' },
     { title: 'Proses Penilaian', count: 8, icon: 'Award' },
