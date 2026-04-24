@@ -17,7 +17,7 @@ const Navigation = ({ currentUser, isSyncing, onLogout }) => {
 
       <div className="flex items-center gap-8 flex-1">
         <NavLink to="/" icon={<Rocket size={18} />}>Expeditions</NavLink>
-        {(currentUser?.role === 'SUPERADMIN' || currentUser?.role === 'ADMIN') && (
+        {['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role) && (
           <NavLink to="/crew" icon={<Users size={18} />}>Crew & Protocols</NavLink>
         )}
         <NavLink to="/manual" icon={<BookOpen size={18} />}>Flight Manual</NavLink>

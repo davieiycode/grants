@@ -19,21 +19,21 @@ const App = () => {
 
   useEffect(() => {
     const initializeApp = async () => {
-      // 1. Check for script URL in query params
+      // ... (URL param check logic remains the same)
       const params = new URLSearchParams(window.location.search);
       const scriptUrl = params.get('script');
-      
       if (scriptUrl && scriptUrl.startsWith('https://script.google.com/')) {
         localStorage.setItem('grants_appscript_url', scriptUrl);
-        // Clean URL without reloading
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
       }
 
-      // 2. Check local session
+      // 2. Check local session with role normalization
       const savedUser = localStorage.getItem('grants_currentUser');
       if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+        const user = JSON.parse(savedUser);
+        if (user.role) user.role = user.role.toUpperCase();
+        setCurrentUser(user);
         setIsLoggedIn(true);
       }
       
@@ -72,8 +72,10 @@ const App = () => {
   };
 
   if (isInitialSync) {
+    // ... (Loading screen remains same)
     return (
       <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center font-['Outfit'] p-6">
+        {/* ... (loader content) */}
         <div className="relative mb-10">
           <div className="w-20 h-20 bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-sky-100 animate-pulse">
             <Rocket size={40} className="animate-bounce" />
@@ -108,9 +110,10 @@ const App = () => {
   if (!isLoggedIn) {
     return (
       <AuthGate onLogin={(user) => {
-        setCurrentUser(user);
+        const normalizedUser = { ...user, role: (user.role || 'GUEST').toUpperCase() };
+        setCurrentUser(normalizedUser);
         setIsLoggedIn(true);
-        localStorage.setItem('grants_currentUser', JSON.stringify(user));
+        localStorage.setItem('grants_currentUser', JSON.stringify(normalizedUser));
         handleSync();
       }} />
     );
