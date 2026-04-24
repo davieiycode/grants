@@ -29,10 +29,12 @@ const CrewManagement = () => {
 
         <main className="flex-1 p-10">
            {activeTab === 'astronauts' && <AstronautsList users={users} />}
-           {activeTab !== 'astronauts' && (
+           {activeTab === 'clearance' && <ClearanceLevels users={users} />}
+           {activeTab === 'logs' && <BlackBoxData />}
+           {activeTab === 'archives' && (
              <div className="flex flex-col items-center justify-center h-full text-slate-300">
-                <ShieldCheck size={64} strokeWidth={1} className="mb-4 opacity-20" />
-                <p className="font-bold text-sm uppercase tracking-widest opacity-40">Modul ini segera tersedia.</p>
+                <Archive size={64} strokeWidth={1} className="mb-4 opacity-20" />
+                <p className="font-bold text-sm uppercase tracking-widest opacity-40">Arsip data sedang dienkripsi.</p>
              </div>
            )}
         </main>
@@ -98,6 +100,53 @@ const AstronautsList = ({ users }) => (
     )}
   </div>
 );
+
+const ClearanceLevels = ({ users }) => {
+  const roles = users.reduce((acc, user) => {
+    const role = user.role || 'GUEST';
+    acc[role] = (acc[role] || 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.entries(roles).map(([role, count]) => (
+          <div key={role} className="p-8 bg-slate-50 border border-slate-100 rounded-[2rem] hover:bg-white hover:shadow-lg transition-all">
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{role} Level</div>
+            <div className="text-4xl font-black font-['Outfit'] text-[#0f172a] mb-4">{count}</div>
+            <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+               <div className="h-full bg-[#0ea5e9]" style={{ width: `${(count / users.length) * 100}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BlackBoxData = () => {
+  const logs = [
+    { time: 'T+24:12:05', event: 'Telemetry synchronization successful', status: 'OK' },
+    { time: 'T+23:45:12', event: 'New proposal payload detected in Sector 7', status: 'ALERT' },
+    { time: 'T+22:10:55', event: 'Superadmin accessed Crew Manifest', status: 'OK' },
+    { time: 'T+21:05:22', event: 'System maintenance backup initiated', status: 'OK' },
+  ];
+
+  return (
+    <div className="space-y-6 animate-fade-in font-mono">
+      {logs.map((log, idx) => (
+        <div key={idx} className="flex gap-6 items-start p-4 border-l-2 border-slate-100 hover:border-[#0ea5e9] hover:bg-slate-50 transition-all">
+          <span className="text-sky-500 font-bold whitespace-nowrap">{log.time}</span>
+          <span className="text-slate-600 flex-1">{log.event}</span>
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded ${log.status === 'OK' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+            {log.status}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const SideTab = ({ children, active, onClick, icon }) => (
   <button 
