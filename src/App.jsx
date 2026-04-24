@@ -15,25 +15,44 @@ const App = () => {
   const [programs, setPrograms] = useState([]);
   const [proposals, setProposals] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isInitialSync, setIsInitialSync] = useState(true);
 
   useEffect(() => {
-    // Check local session
-    const savedUser = localStorage.getItem('grants_currentUser');
-    if (savedUser) {
-      setCurrentUser(JSON.parse(savedUser));
-      setIsLoggedIn(true);
-    }
-    
-    // Load local data
-    const localProgs = localStorage.getItem('grants_programs_meta');
-    if (localProgs) setPrograms(JSON.parse(localProgs));
+    const initializeApp = async () => {
+      // 1. Check for script URL in query params
+      const params = new URLSearchParams(window.location.search);
+      const scriptUrl = params.get('script');
+      
+      if (scriptUrl && scriptUrl.startsWith('https://script.google.com/')) {
+        localStorage.setItem('grants_appscript_url', scriptUrl);
+        // Clean URL without reloading
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
 
-    const localProps = localStorage.getItem('grants_proposals');
-    if (localProps) setProposals(JSON.parse(localProps));
+      // 2. Check local session
+      const savedUser = localStorage.getItem('grants_currentUser');
+      if (savedUser) {
+        setCurrentUser(JSON.parse(savedUser));
+        setIsLoggedIn(true);
+      }
+      
+      // 3. Load local data
+      const localProgs = localStorage.getItem('grants_programs_meta');
+      if (localProgs) setPrograms(JSON.parse(localProgs));
 
-    if (localStorage.getItem('grants_appscript_url')) {
-      handleSync();
-    }
+      const localProps = localStorage.getItem('grants_proposals');
+      if (localProps) setProposals(JSON.parse(localProps));
+
+      // 4. Trigger initial sync if URL exists
+      if (localStorage.getItem('grants_appscript_url')) {
+        await handleSync();
+      }
+      
+      setIsInitialSync(false);
+    };
+
+    initializeApp();
   }, []);
 
   const handleSync = async () => {
@@ -51,6 +70,40 @@ const App = () => {
     setCurrentUser(null);
     localStorage.removeItem('grants_currentUser');
   };
+
+  if (isInitialSync) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center font-['Outfit'] p-6">
+        <div className="relative mb-10">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#0ea5e9] to-[#6366f1] rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-sky-100 animate-pulse">
+            <Rocket size={40} className="animate-bounce" />
+          </div>
+          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-white rounded-xl shadow-lg flex items-center justify-center">
+            <Loader2 className="animate-spin text-[#0ea5e9]" size={18} />
+          </div>
+        </div>
+        
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-0.5 mb-2">
+            <span className="text-3xl font-black text-[#0ea5e9] tracking-tight">Pro</span>
+            <span className="font-['Playfair_Display'] text-[2rem] font-bold italic text-[#0f172a]">Space</span>
+          </div>
+          <h2 className="text-sm font-black text-[#64748b] uppercase tracking-[0.3em] mb-8">Ground Control Link</h2>
+          
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-[#0ea5e9] to-[#6366f1] animate-progress" />
+            </div>
+            <p className="text-xs font-bold text-[#0ea5e9] animate-pulse">SYNCHRONIZING TELEMETRY DATA...</p>
+          </div>
+        </div>
+
+        <p className="fixed bottom-10 text-[10px] font-black text-[#64748b]/30 uppercase tracking-widest">
+          Secure Protocol v4.0.0
+        </p>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
