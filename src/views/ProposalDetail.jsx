@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, FileText, CheckCircle, Clock, Download, AlertCircle, MessageSquare, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, FileText, CheckCircle, Clock, Download, AlertCircle, MessageSquare, Trash2, Loader2, Mail } from 'lucide-react';
 import { cloudSync } from '../utils/cloudSync';
 
 const ProposalDetail = ({ proposals, currentUser }) => {
