@@ -105,7 +105,7 @@ const ProgramDetail = ({ programs, proposals, crew, currentUser }) => {
       {/* Tab Content */}
       <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-sm min-h-[400px] overflow-hidden">
         {activeTab === 'proposals' && <ProposalsTable proposals={proposals} programId={id} programs={programs} currentUser={currentUser} />}
-        {activeTab === 'settings' && <ProgramSettings program={program} />}
+        {activeTab === 'settings' && <ProgramSettings program={program} crew={crew} />}
         {activeTab === 'timeline' && <ProgramTimeline program={program} />}
       </div>
 
@@ -196,7 +196,7 @@ const ProgramDetail = ({ programs, proposals, crew, currentUser }) => {
 };
 
 const ProgramTimeline = ({ program }) => {
-  const events = [
+  const events = program.timeline || [
     { date: '2026-01-10', title: 'Mission Planning', desc: 'Initial program configuration and scope definition.' },
     { date: '2026-02-15', title: 'Call for Proposals', desc: 'Sector-wide announcement for research payloads.' },
     { date: '2026-04-01', title: 'Review Phase', desc: 'Mission Control evaluating all submitted docking requests.' },

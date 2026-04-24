@@ -147,20 +147,26 @@ const SubmissionContent = ({ proposal }) => (
     <div>
       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Berkas Payload (Attachments)</h3>
       <div className="grid gap-4">
-        {(proposal.files || []).map((file, idx) => (
-          <div key={idx} className="flex items-center justify-between p-6 bg-slate-50 border border-slate-100 rounded-[1.5rem] group hover:bg-white hover:border-[#0ea5e9] transition-all">
-             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-[#0ea5e9] transition-colors shadow-sm">
-                   <Download size={20} />
-                </div>
-                <div>
-                   <div className="font-bold text-[#0f172a] text-sm">{file.name}</div>
-                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{file.size || 'N/A KB'} • PDF DOCUMENT</div>
-                </div>
-             </div>
-             <button className="text-xs font-black text-[#0ea5e9] px-4 py-2 bg-white border border-sky-100 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm">UNDUH</button>
+        {Array.isArray(proposal.files) && proposal.files.length > 0 ? (
+          proposal.files.map((file, idx) => (
+            <div key={idx} className="flex items-center justify-between p-6 bg-slate-50 border border-slate-100 rounded-[1.5rem] group hover:bg-white hover:border-[#0ea5e9] transition-all">
+               <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-[#0ea5e9] transition-colors shadow-sm">
+                     <Download size={20} />
+                  </div>
+                  <div>
+                     <div className="font-bold text-[#0f172a] text-sm">{file.name}</div>
+                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{file.size || 'N/A KB'} • PDF DOCUMENT</div>
+                  </div>
+               </div>
+               <button className="text-xs font-black text-[#0ea5e9] px-4 py-2 bg-white border border-sky-100 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm">UNDUH</button>
+            </div>
+          ))
+        ) : (
+          <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-[1.5rem]">
+             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest opacity-60">Tidak ada berkas yang diunggah.</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   </div>
