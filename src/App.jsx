@@ -14,6 +14,7 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [programs, setPrograms] = useState([]);
   const [proposals, setProposals] = useState([]);
+  const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isInitialSync, setIsInitialSync] = useState(true);
@@ -45,6 +46,9 @@ const App = () => {
       const localProps = localStorage.getItem('grants_proposals');
       if (localProps) setProposals(JSON.parse(localProps));
 
+      const localUsers = localStorage.getItem('grants_registeredUsers');
+      if (localUsers) setUsers(JSON.parse(localUsers));
+
       const localLogs = localStorage.getItem('grants_global_logs');
       if (localLogs) setLogs(JSON.parse(localLogs));
 
@@ -65,6 +69,7 @@ const App = () => {
     if (data) {
       if (data.programs) setPrograms(data.programs);
       if (data.proposals) setProposals(data.proposals);
+      if (data.registeredUsers) setUsers(data.registeredUsers);
       if (data.logs) setLogs(data.logs);
     }
     setIsSyncing(false);
@@ -132,7 +137,7 @@ const App = () => {
         <main className="container py-12 px-4 md:px-8">
           <Routes>
             <Route path="/" element={<Dashboard programs={programs} currentUser={currentUser} />} />
-            <Route path="/program/:id" element={<ProgramDetail programs={programs} proposals={proposals} currentUser={currentUser} />} />
+            <Route path="/program/:id" element={<ProgramDetail programs={programs} proposals={proposals} crew={users} currentUser={currentUser} />} />
             <Route path="/proposal/:id" element={<ProposalDetail proposals={proposals} currentUser={currentUser} />} />
             <Route path="/crew" element={
               ['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role) 

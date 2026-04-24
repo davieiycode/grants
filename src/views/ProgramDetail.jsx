@@ -5,7 +5,7 @@ import ProposalsTable from '../components/ProposalsTable';
 import ProgramSettings from '../components/ProgramSettings';
 import { cloudSync } from '../utils/cloudSync';
 
-const ProgramDetail = ({ programs, proposals, currentUser }) => {
+const ProgramDetail = ({ programs, proposals, crew, currentUser }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('proposals'); // proposals, settings, timeline
@@ -19,14 +19,18 @@ const ProgramDetail = ({ programs, proposals, currentUser }) => {
     e.preventDefault();
     setIsCreating(true);
     const newId = `PROP-${Date.now()}`;
+    
+    // Find the selected leader's full name if it's an email
+    const selectedCrew = (crew || []).find(c => c.email === formData.leader || c.name === formData.leader);
+    const leaderName = selectedCrew ? selectedCrew.name : formData.leader;
+
     const newProposal = {
       id: newId,
       programId: id,
       ...formData,
+      leader: leaderName,
       status: 'Submitted',
-      date: new Date().toLocaleDateString(),
-      leader: formData.leader || 'Unknown Lead',
-      unit: formData.unit || 'General'
+      date: new Date().toISOString().split('T')[0],
     };
 
     await cloudSync.push('proposals', newId, newProposal);
@@ -37,7 +41,10 @@ const ProgramDetail = ({ programs, proposals, currentUser }) => {
     
     setIsCreating(false);
     setShowCreateModal(false);
-    window.location.reload(); 
+    setFormData({ title: '', leader: '', unit: '' });
+    
+    // Instead of reload, just navigate to the proposal detail or list
+    navigate(`/proposal/${newId}`);
   };
 
   if (!program) {
@@ -134,14 +141,35 @@ const ProgramDetail = ({ programs, proposals, currentUser }) => {
                 </div>
                 <div className="space-y-1.5">
                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ketua Peneliti (Leader)</label>
-                   <input 
+                   <select 
                       required
                       value={formData.leader}
-                      onChange={e => setFormData({...formData, leader: e.target.value})}
-                      placeholder="Nama lengkap gelar"
-                      className="w-full h-14 px-6 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
-                   />
+                      onChange={e => {
+                         const person = crew.find(c => c.email === e.target.value || c.name === e.target.value);
+                         setFormData({ ...formData, leader: e.target.value, unit: person?.unit || formData.unit });
+                      }}
+                      className="w-full h-14 px-6 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm appearance-none"
+                   >
+                      <option value="">Pilih Personel Crew...</option>
+                      {(crew || []).map((person, idx) => (
+                        <option key={idx} value={person.email}>{person.name} ({person.unit})</option>
+                      ))}
+                      <option value="EXTERNAL">-- External Researcher --</option>
+                   </select>
                 </div>
+                
+                {formData.leader === 'EXTERNAL' && (
+                   <div className="space-y-1.5 animate-in slide-in-from-top-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama Peneliti Luar</label>
+                      <input 
+                         required
+                         onChange={e => setFormData({...formData, leader: e.target.value})}
+                         placeholder="Nama Lengkap Peneliti"
+                         className="w-full h-14 px-6 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                      />
+                   </div>
+                )}
+
                 <div className="space-y-1.5">
                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit / Departemen</label>
                    <input 
