@@ -11,12 +11,35 @@ export const cloudSync = {
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
             
-            if (data.programs) localStorage.setItem('grants_programs_meta', JSON.stringify(data.programs));
-            if (data.proposals) localStorage.setItem('grants_proposals', JSON.stringify(data.proposals));
-            if (data.registeredUsers) localStorage.setItem('grants_registeredUsers', JSON.stringify(data.registeredUsers));
+            // Helper to parse JSON_DATA from rows
+            const parseRows = (rows) => {
+                if (!rows) return [];
+                return rows.map(row => {
+                    if (row.JSON_DATA) {
+                        try {
+                            const parsed = typeof row.JSON_DATA === 'string' ? JSON.parse(row.JSON_DATA) : row.JSON_DATA;
+                            return { ...row, ...parsed };
+                        } catch (e) {
+                            console.error("Failed to parse JSON_DATA:", e);
+                            return row;
+                        }
+                    }
+                    return row;
+                });
+            };
+
+            const processedData = {
+                programs: parseRows(data.programs),
+                proposals: parseRows(data.proposals),
+                registeredUsers: parseRows(data.registeredUsers)
+            };
+            
+            if (processedData.programs.length) localStorage.setItem('grants_programs_meta', JSON.stringify(processedData.programs));
+            if (processedData.proposals.length) localStorage.setItem('grants_proposals', JSON.stringify(processedData.proposals));
+            if (processedData.registeredUsers.length) localStorage.setItem('grants_registeredUsers', JSON.stringify(processedData.registeredUsers));
             
             this.isSyncing = false;
-            return data;
+            return processedData;
         } catch (e) {
             console.error("Pull Sync Failed:", e);
             this.isSyncing = false;

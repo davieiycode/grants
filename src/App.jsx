@@ -291,6 +291,9 @@ const AuthGate = ({ onLogin }) => {
             <button 
               onClick={() => {
                 localStorage.removeItem('grants_appscript_url');
+                localStorage.removeItem('grants_registeredUsers');
+                localStorage.removeItem('grants_programs_meta');
+                localStorage.removeItem('grants_proposals');
                 setStep('config');
                 setError('');
               }}
