@@ -11,42 +11,21 @@ export const cloudSync = {
             if (!res.ok) throw new Error('Network response was not ok');
             const data = await res.json();
             
-            // Helper to parse JSON_DATA from rows
-            const parseRows = (rows) => {
-                if (!rows) return [];
-                return rows.map(row => {
-                    let data = {};
-                    try {
-                        // If it looks like JSON, try to parse it
-                        if (row.JSON_DATA && (typeof row.JSON_DATA === 'string' && (row.JSON_DATA.startsWith('{') || row.JSON_DATA.startsWith('[')))) {
-                            data = JSON.parse(row.JSON_DATA);
-                        } else if (row.JSON_DATA) {
-                            // It's a plain string, treat as details/raw
-                            data = { details: row.JSON_DATA };
-                        }
-                    } catch (e) {
-                        console.warn('Failed to parse JSON_DATA:', e, row.JSON_DATA);
-                        data = { details: row.JSON_DATA };
-                    }
-                    return {
-                        id: row.ID,
-                        lastUpdated: row.LAST_UPDATED,
-                        ...data
-                    };
-                });
-            };
-
             const processedData = {
-                programs: parseRows(data.programs),
-                proposals: parseRows(data.proposals),
-                registeredUsers: parseRows(data.registeredUsers),
-                logs: parseRows(data.global_logs || data.logs)
+                users: data.user || data.users || [],
+                roles: data.role || data.roles || [],
+                blacklists: data.blacklist || data.blacklists || [],
+                events: data.event || data.events || [],
+                proposals: data.proposal || data.proposals || [],
+                reviews: data.review || data.reviews || []
             };
             
-            if (processedData.programs.length) localStorage.setItem('grants_programs_meta', JSON.stringify(processedData.programs));
+            if (processedData.users.length) localStorage.setItem('grants_users', JSON.stringify(processedData.users));
+            if (processedData.roles.length) localStorage.setItem('grants_roles', JSON.stringify(processedData.roles));
+            if (processedData.blacklists.length) localStorage.setItem('grants_blacklists', JSON.stringify(processedData.blacklists));
+            if (processedData.events.length) localStorage.setItem('grants_events', JSON.stringify(processedData.events));
             if (processedData.proposals.length) localStorage.setItem('grants_proposals', JSON.stringify(processedData.proposals));
-            if (processedData.registeredUsers.length) localStorage.setItem('grants_registeredUsers', JSON.stringify(processedData.registeredUsers));
-            if (processedData.logs.length) localStorage.setItem('grants_global_logs', JSON.stringify(processedData.logs));
+            if (processedData.reviews.length) localStorage.setItem('grants_reviews', JSON.stringify(processedData.reviews));
             
             this.isSyncing = false;
             return processedData;

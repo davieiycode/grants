@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Dashboard from './views/Dashboard';
-import ProgramDetail from './views/ProgramDetail';
-import CrewManagement from './views/CrewManagement';
-import FlightManual from './views/FlightManual';
-import ProposalDetail from './views/ProposalDetail';
+import UserManagement from './views/UserManagement';
+import RoleManagement from './views/RoleManagement';
+import BlacklistManagement from './views/BlacklistManagement';
+import EventManagement from './views/EventManagement';
+import ProposalManagement from './views/ProposalManagement';
+import ReviewManagement from './views/ReviewManagement';
 import { cloudSync } from './utils/cloudSync';
 import { Rocket, Database, Lock, AlertCircle, Loader2 } from 'lucide-react';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [programs, setPrograms] = useState([]);
-  const [proposals, setProposals] = useState([]);
   const [users, setUsers] = useState([]);
-  const [logs, setLogs] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [blacklists, setBlacklists] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [proposals, setProposals] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isInitialSync, setIsInitialSync] = useState(true);
 
@@ -40,17 +44,23 @@ const App = () => {
       }
       
       // 3. Load local data
-      const localProgs = localStorage.getItem('grants_programs_meta');
-      if (localProgs) setPrograms(JSON.parse(localProgs));
+      const localUsers = localStorage.getItem('grants_users');
+      if (localUsers) setUsers(JSON.parse(localUsers));
+
+      const localRoles = localStorage.getItem('grants_roles');
+      if (localRoles) setRoles(JSON.parse(localRoles));
+
+      const localBlacklists = localStorage.getItem('grants_blacklists');
+      if (localBlacklists) setBlacklists(JSON.parse(localBlacklists));
+
+      const localEvents = localStorage.getItem('grants_events');
+      if (localEvents) setEvents(JSON.parse(localEvents));
 
       const localProps = localStorage.getItem('grants_proposals');
       if (localProps) setProposals(JSON.parse(localProps));
 
-      const localUsers = localStorage.getItem('grants_registeredUsers');
-      if (localUsers) setUsers(JSON.parse(localUsers));
-
-      const localLogs = localStorage.getItem('grants_global_logs');
-      if (localLogs) setLogs(JSON.parse(localLogs));
+      const localReviews = localStorage.getItem('grants_reviews');
+      if (localReviews) setReviews(JSON.parse(localReviews));
 
       // 4. Trigger initial sync if URL exists
       if (localStorage.getItem('grants_appscript_url')) {
@@ -67,10 +77,12 @@ const App = () => {
     setIsSyncing(true);
     const data = await cloudSync.pull();
     if (data) {
-      if (data.programs) setPrograms(data.programs);
+      if (data.users) setUsers(data.users);
+      if (data.roles) setRoles(data.roles);
+      if (data.blacklists) setBlacklists(data.blacklists);
+      if (data.events) setEvents(data.events);
       if (data.proposals) setProposals(data.proposals);
-      if (data.registeredUsers) setUsers(data.registeredUsers);
-      if (data.logs) setLogs(data.logs);
+      if (data.reviews) setReviews(data.reviews);
     }
     setIsSyncing(false);
   };
@@ -136,15 +148,13 @@ const App = () => {
         
         <main className="container py-12 px-4 md:px-8">
           <Routes>
-            <Route path="/" element={<Dashboard programs={programs} currentUser={currentUser} />} />
-            <Route path="/program/:id" element={<ProgramDetail programs={programs} proposals={proposals} crew={users} currentUser={currentUser} />} />
-            <Route path="/proposal/:id" element={<ProposalDetail proposals={proposals} currentUser={currentUser} />} />
-            <Route path="/crew" element={
-              ['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role) 
-                ? <CrewManagement currentUser={currentUser} logs={logs} /> 
-                : <Navigate to="/" />
-            } />
-            <Route path="/manual" element={<FlightManual currentUser={currentUser} />} />
+            <Route path="/" element={<Dashboard events={events} currentUser={currentUser} proposals={proposals} reviews={reviews} />} />
+            <Route path="/user" element={<UserManagement users={users} roles={roles} currentUser={currentUser} />} />
+            <Route path="/role" element={<RoleManagement roles={roles} currentUser={currentUser} />} />
+            <Route path="/blacklist" element={<BlacklistManagement blacklists={blacklists} users={users} currentUser={currentUser} />} />
+            <Route path="/event" element={<EventManagement events={events} users={users} proposals={proposals} currentUser={currentUser} />} />
+            <Route path="/proposal" element={<ProposalManagement proposals={proposals} events={events} users={users} reviews={reviews} currentUser={currentUser} />} />
+            <Route path="/review" element={<ReviewManagement reviews={reviews} proposals={proposals} users={users} currentUser={currentUser} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
@@ -185,16 +195,16 @@ const AuthGate = ({ onLogin }) => {
 
   const handleLogin = () => {
     setError('');
-    const registeredUsers = JSON.parse(localStorage.getItem('grants_registeredUsers') || '[]');
+    const usersData = JSON.parse(localStorage.getItem('grants_users') || '[]');
     
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = String(password).trim();
     
-    const user = registeredUsers.find(u => {
-      const userIdentifier = (u.email || u.id || '').toString().trim().toLowerCase();
-      const userPassword = (u.password || u.pass || '').toString().trim();
+    const user = usersData.find(u => {
+      const userEmail = (u.email_address || u.email || '').toString().trim().toLowerCase();
+      const userPass = (u.password || '').toString().trim();
       
-      return userIdentifier === normalizedEmail && userPassword === normalizedPassword;
+      return userEmail === normalizedEmail && userPass === normalizedPassword;
     });
     
     if (user) {
@@ -308,10 +318,12 @@ const AuthGate = ({ onLogin }) => {
             <button 
               onClick={() => {
                 localStorage.removeItem('grants_appscript_url');
-                localStorage.removeItem('grants_registeredUsers');
-                localStorage.removeItem('grants_programs_meta');
+                localStorage.removeItem('grants_users');
+                localStorage.removeItem('grants_roles');
+                localStorage.removeItem('grants_blacklists');
+                localStorage.removeItem('grants_events');
                 localStorage.removeItem('grants_proposals');
-                localStorage.removeItem('grants_global_logs');
+                localStorage.removeItem('grants_reviews');
                 setStep('config');
                 setError('');
               }}

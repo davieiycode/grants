@@ -15,12 +15,26 @@ const Navigation = ({ currentUser, isSyncing, onLogout }) => {
         </div>
       </RouterNavLink>
 
-      <div className="flex items-center gap-8 flex-1">
-        <NavLink to="/" icon={<Rocket size={18} />}>Expeditions</NavLink>
-        {['SUPERADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'REVIEWER'].includes(currentUser?.role) && (
-          <NavLink to="/crew" icon={<Users size={18} />}>Crew & Protocols</NavLink>
+      <div className="flex items-center gap-6 flex-1 text-sm">
+        <NavLink to="/" icon={<Rocket size={18} />}>Dashboard</NavLink>
+        <NavLink to="/event" icon={<BookOpen size={18} />}>Event</NavLink>
+        <NavLink to="/proposal" icon={<BookOpen size={18} />}>Proposal</NavLink>
+        
+        {['SUPERADMIN', 'ADMIN', 'MANAGER', 'REVIEWER'].includes(currentUser?.role) && (
+          <NavLink to="/review" icon={<BookOpen size={18} />}>Review</NavLink>
         )}
-        <NavLink to="/manual" icon={<BookOpen size={18} />}>Flight Manual</NavLink>
+        
+        {['SUPERADMIN', 'ADMIN', 'MANAGER'].includes(currentUser?.role) && (
+          <NavLink to="/user" icon={<Users size={18} />}>User</NavLink>
+        )}
+        
+        {['SUPERADMIN'].includes(currentUser?.role) && (
+          <NavLink to="/role" icon={<Users size={18} />}>Role</NavLink>
+        )}
+        
+        {['SUPERADMIN', 'ADMIN'].includes(currentUser?.role) && (
+          <NavLink to="/blacklist" icon={<Users size={18} />}>Blacklist</NavLink>
+        )}
       </div>
 
       <div className="flex items-center gap-5">
