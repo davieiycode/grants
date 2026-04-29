@@ -149,12 +149,12 @@ const App = () => {
         <main className="container py-12 px-4 md:px-8">
           <Routes>
             <Route path="/" element={<Dashboard events={events} currentUser={currentUser} proposals={proposals} reviews={reviews} />} />
-            <Route path="/user" element={<UserManagement users={users} roles={roles} currentUser={currentUser} />} />
-            <Route path="/role" element={<RoleManagement roles={roles} currentUser={currentUser} />} />
-            <Route path="/blacklist" element={<BlacklistManagement blacklists={blacklists} users={users} currentUser={currentUser} />} />
-            <Route path="/event" element={<EventManagement events={events} users={users} proposals={proposals} currentUser={currentUser} />} />
-            <Route path="/proposal" element={<ProposalManagement proposals={proposals} events={events} users={users} reviews={reviews} currentUser={currentUser} />} />
-            <Route path="/review" element={<ReviewManagement reviews={reviews} proposals={proposals} users={users} currentUser={currentUser} />} />
+            <Route path="/user" element={<UserManagement users={users} roles={roles} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/role" element={<RoleManagement roles={roles} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/blacklist" element={<BlacklistManagement blacklists={blacklists} users={users} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/event" element={<EventManagement events={events} users={users} proposals={proposals} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/proposal" element={<ProposalManagement proposals={proposals} events={events} users={users} reviews={reviews} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/review" element={<ReviewManagement reviews={reviews} proposals={proposals} users={users} currentUser={currentUser} onRefresh={handleSync} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
