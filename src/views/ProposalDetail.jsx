@@ -189,8 +189,8 @@ const SubmissionContent = ({ proposal, events }) => {
         )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ReviewsContent = ({ proposal }) => (
   <div className="space-y-8 animate-fade-in">
