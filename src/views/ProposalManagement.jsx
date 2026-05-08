@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, X, Loader2, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, X, Loader2, FileText, Eye } from 'lucide-react';
 import { cloudSync } from '../utils/cloudSync';
 
 const ProposalManagement = ({ proposals, events, users, currentUser, onRefresh }) => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [editingProposal, setEditingProposal] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -86,6 +88,9 @@ const ProposalManagement = ({ proposals, events, users, currentUser, onRefresh }
                     </td>
                     <td className="p-6 text-slate-600">{p.submission_date}</td>
                     <td className="p-6 flex justify-end gap-2">
+                      <button onClick={() => navigate(`/proposal/${p.proposal_id}`)} className="p-2 text-slate-400 hover:text-[#0ea5e9] transition-colors bg-white rounded-lg border border-slate-200 shadow-sm">
+                        <Eye size={16} />
+                      </button>
                       <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-sky-500 transition-colors bg-white rounded-lg border border-slate-200 shadow-sm">
                         <Edit2 size={16} />
                       </button>
@@ -127,8 +132,22 @@ const ProposalModal = ({ proposal, events, users, onSave, onClose, isSyncing }) 
     user_id: '',
     title_proposal: '', 
     submission_date: new Date().toISOString().split('T')[0], 
-    status: 'Draft'
+    status: 'Draft',
+    form_data: {}
   });
+
+  const selectedEvent = events?.find(e => e.event_id === formData.event_id);
+  const formSchema = selectedEvent?.form_schema || [];
+
+  const handleDynamicChange = (fieldId, value) => {
+    setFormData({
+      ...formData,
+      form_data: {
+        ...(formData.form_data || {}),
+        [fieldId]: value
+      }
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -211,16 +230,45 @@ const ProposalModal = ({ proposal, events, users, onSave, onClose, isSyncing }) 
                  </select>
               </div>
 
-              <div className="space-y-1.5">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Submit</label>
-                 <input 
-                    type="date"
-                    required
-                    value={formData.submission_date}
-                    onChange={e => setFormData({...formData, submission_date: e.target.value})}
-                    className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
-                 />
-              </div>
+               <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tanggal Submit</label>
+                  <input 
+                     type="date"
+                     required
+                     value={formData.submission_date}
+                     onChange={e => setFormData({...formData, submission_date: e.target.value})}
+                     className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                  />
+               </div>
+
+               {/* Dynamic Fields Section */}
+               {formSchema.length > 0 && (
+                 <div className="col-span-2 pt-6 border-t border-slate-100 space-y-4">
+                   <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Isian Kustom Event</h3>
+                   <div className="grid grid-cols-2 gap-4">
+                     {formSchema.map(field => (
+                       <div key={field.id} className={`${field.type === 'textarea' ? 'col-span-2' : ''} space-y-1.5`}>
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{field.label}</label>
+                         {field.type === 'textarea' ? (
+                           <textarea 
+                             value={formData.form_data?.[field.id] || ''}
+                             onChange={e => handleDynamicChange(field.id, e.target.value)}
+                             rows={4}
+                             className="w-full p-4 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                           />
+                         ) : (
+                           <input 
+                             type={field.type}
+                             value={formData.form_data?.[field.id] || ''}
+                             onChange={e => handleDynamicChange(field.id, e.target.value)}
+                             className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all font-bold text-sm"
+                           />
+                         )}
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+               )}
             </div>
 
             <button 

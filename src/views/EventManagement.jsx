@@ -105,8 +105,28 @@ const EventModal = ({ event, onSave, onClose, isSyncing }) => {
     start_date: '', 
     end_date: '', 
     allocated_fee: '',
-    status: 'ACTIVE'
+    status: 'ACTIVE',
+    form_schema: []
   });
+
+  const addField = () => {
+    const newField = { id: Date.now(), label: '', type: 'text', required: false };
+    setFormData({ ...formData, form_schema: [...(formData.form_schema || []), newField] });
+  };
+
+  const updateField = (id, updates) => {
+    setFormData({
+      ...formData,
+      form_schema: formData.form_schema.map(f => f.id === id ? { ...f, ...updates } : f)
+    });
+  };
+
+  const removeField = (id) => {
+    setFormData({
+      ...formData,
+      form_schema: formData.form_schema.filter(f => f.id !== id)
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -194,6 +214,63 @@ const EventModal = ({ event, onSave, onClose, isSyncing }) => {
                     <option value="DRAFT">DRAFT</option>
                     <option value="CLOSED">CLOSED</option>
                  </select>
+              </div>
+
+              {/* Dynamic Form Schema Section */}
+              <div className="col-span-2 pt-6 border-t border-slate-100">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Konfigurasi Isian Proposal</label>
+                  <button 
+                    type="button"
+                    onClick={addField}
+                    className="text-[10px] font-black text-sky-600 uppercase flex items-center gap-1 hover:text-sky-700"
+                  >
+                    <Plus size={12} /> Tambah Field
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {(formData.form_schema || []).map((field, idx) => (
+                    <div key={field.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                      <button 
+                        type="button"
+                        onClick={() => removeField(field.id)}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-black text-slate-400 uppercase">Label</label>
+                          <input 
+                            value={field.label}
+                            onChange={e => updateField(field.id, { label: e.target.value })}
+                            placeholder="e.g. Abstraksi"
+                            className="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-black text-slate-400 uppercase">Tipe</label>
+                          <select 
+                            value={field.type}
+                            onChange={e => updateField(field.id, { type: e.target.value })}
+                            className="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                          >
+                            <option value="text">Teks Singkat</option>
+                            <option value="textarea">Teks Panjang</option>
+                            <option value="number">Angka</option>
+                            <option value="date">Tanggal</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {(formData.form_schema || []).length === 0 && (
+                    <div className="text-center py-4 border-2 border-dashed border-slate-100 rounded-2xl">
+                      <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Belum ada isian kustom.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

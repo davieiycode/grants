@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, FileText, CheckCircle, Clock, Download, AlertCircle, MessageSquare, Trash2, Loader2, Mail } from 'lucide-react';
 import { cloudSync } from '../utils/cloudSync';
 
-const ProposalDetail = ({ proposals, currentUser }) => {
+const ProposalDetail = ({ proposals, events, currentUser }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('submission');
@@ -95,7 +95,7 @@ const ProposalDetail = ({ proposals, currentUser }) => {
                  <DetailTab active={activeTab === 'discussions'} onClick={() => setActiveTab('discussions')} icon={<MessageSquare size={18} />}>Diskusi</DetailTab>
               </div>
               <div className="p-10 min-h-[400px]">
-                 {activeTab === 'submission' && <SubmissionContent proposal={proposal} />}
+                 {activeTab === 'submission' && <SubmissionContent proposal={proposal} events={events} />}
                  {activeTab === 'reviews' && <ReviewsContent proposal={proposal} />}
                  {activeTab === 'discussions' && (
                    <div className="flex flex-col items-center justify-center h-full py-20 text-slate-300">
@@ -142,8 +142,28 @@ const ProposalDetail = ({ proposals, currentUser }) => {
   );
 };
 
-const SubmissionContent = ({ proposal }) => (
+const SubmissionContent = ({ proposal, events }) => {
+  const event = events?.find(e => e.event_id === proposal.event_id);
+  const formSchema = event?.form_schema || [];
+
+  return (
   <div className="space-y-10 animate-fade-in">
+    {formSchema.length > 0 && (
+      <div>
+        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Isian Kustom Event</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-slate-50 border border-slate-100 rounded-[2rem]">
+          {formSchema.map(field => (
+            <div key={field.id} className={field.type === 'textarea' ? 'col-span-2' : ''}>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">{field.label}</label>
+              <div className="text-sm font-bold text-[#0f172a] bg-white p-4 rounded-xl border border-slate-100 min-h-[48px]">
+                {proposal.form_data?.[field.id] || <span className="text-slate-300 italic font-medium">Tidak ada data</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
     <div>
       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Berkas Payload (Attachments)</h3>
       <div className="grid gap-4">

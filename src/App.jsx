@@ -1,3 +1,4 @@
+import ProposalDetail from './views/ProposalDetail';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -154,6 +155,7 @@ const App = () => {
             <Route path="/blacklist" element={<BlacklistManagement blacklists={blacklists} users={users} currentUser={currentUser} onRefresh={handleSync} />} />
             <Route path="/event" element={<EventManagement events={events} users={users} proposals={proposals} currentUser={currentUser} onRefresh={handleSync} />} />
             <Route path="/proposal" element={<ProposalManagement proposals={proposals} events={events} users={users} reviews={reviews} currentUser={currentUser} onRefresh={handleSync} />} />
+            <Route path="/proposal/:id" element={<ProposalDetail proposals={proposals} events={events} currentUser={currentUser} />} />
             <Route path="/review" element={<ReviewManagement reviews={reviews} proposals={proposals} users={users} currentUser={currentUser} onRefresh={handleSync} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
